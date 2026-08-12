@@ -1,4 +1,4 @@
 package com.example.Spring_Salon_Project.entity;
 
-public class AppoinmenrService {
+public class AppointmentService {
 }
