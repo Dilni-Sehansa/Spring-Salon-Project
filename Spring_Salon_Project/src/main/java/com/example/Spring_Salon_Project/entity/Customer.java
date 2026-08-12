@@ -1,7 +1,5 @@
 package com.example.Spring_Salon_Project.entity;
 
-
-import com.example.Spring_Salon_Project.enumiration.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,15 +11,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "customers")
+public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
-    private String userName;
-    private String password;
+    private Long customerId;
+    private String firstName;
+    private String lastName;
+    private String phone;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole userRole;
-
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
