@@ -2,6 +2,7 @@ package com.example.Spring_Salon_Project.entity;
 
 
 import com.example.Spring_Salon_Project.enumiration.UserRole;
+import com.example.Spring_Salon_Project.enumiration.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,5 +24,8 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus;
 
 }
