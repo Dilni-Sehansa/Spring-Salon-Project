@@ -43,6 +43,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/v1/user/user_saved").permitAll()
                                 .requestMatchers("/*.html", "/css/**", "/js/**", "/images/**").permitAll()
+//                                .requestMatchers("/v1/user/**").hasAnyRole("ADMIN", "STAFF")
+                                .requestMatchers("/v1/user/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

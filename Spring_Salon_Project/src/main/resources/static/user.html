@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glow · User Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffeef0 100%);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Floating petals ── */
+        .petal {
+            position: fixed;
+            border-radius: 50% 0 50% 50%;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+            animation: petalFloat 14s infinite ease-in-out;
+            background: #ff6f91;
+        }
+        .petal:nth-child(1) {
+            width: 40px;
+            height: 40px;
+            top: 5%;
+            left: 3%;
+            animation-delay: 0s;
+        }
+        .petal:nth-child(2) {
+            width: 25px;
+            height: 25px;
+            top: 20%;
+            right: 5%;
+            animation-delay: 3s;
+            background: #ffb6c1;
+        }
+        .petal:nth-child(3) {
+            width: 50px;
+            height: 50px;
+            bottom: 10%;
+            left: 8%;
+            animation-delay: 6s;
+        }
+        .petal:nth-child(4) {
+            width: 30px;
+            height: 30px;
+            bottom: 25%;
+            right: 6%;
+            animation-delay: 9s;
+            background: #ffb6c1;
+        }
+
+        @keyframes petalFloat {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            33% {
+                transform: translateY(-35px) rotate(25deg) scale(1.05);
+            }
+            66% {
+                transform: translateY(20px) rotate(-15deg) scale(0.95);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 260px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 32px 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 2px 0 30px rgba(0, 0, 0, 0.03);
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid rgba(255, 111, 145, 0.10);
+        }
+
+        .sidebar-brand i {
+            font-size: 2rem;
+            color: #ff6f91;
+            background: rgba(255, 111, 145, 0.10);
+            padding: 12px;
+            border-radius: 18px;
+        }
+
+        .sidebar-brand h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d2d2d;
+        }
+        .sidebar-brand h1 span {
+            color: #ff6f91;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #5a4a44;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .sidebar-nav a i {
+            width: 22px;
+            font-size: 1.1rem;
+            color: #b3886a;
+            transition: color 0.25s;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+        .sidebar-nav a:hover i {
+            color: #ff6f91;
+        }
+
+        .sidebar-nav a.active {
+            background: #ff6f91;
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(255, 111, 145, 0.25);
+        }
+        .sidebar-nav a.active i {
+            color: #fff;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 16px;
+            border-radius: 14px;
+            color: #5a4a44;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.25s;
+        }
+        .sidebar-footer a i {
+            width: 22px;
+            color: #b3886a;
+        }
+        .sidebar-footer a:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+
+        /* ── Main content ── */
+        .main {
+            flex: 1;
+            padding: 32px 40px;
+            overflow-y: auto;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .main-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2d2d2d;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .main-header h2 i {
+            color: #ff6f91;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #ff6f91;
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(255, 111, 145, 0.3);
+        }
+        .btn-primary:hover {
+            background: #ff527b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 111, 145, 0.35);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            color: #2d2d2d;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-secondary:hover {
+            background: #fff;
+            border-color: #ff6f91;
+        }
+
+        /* ── Filters & Search ── */
+        .filter-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-bar .search-wrapper {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .filter-bar .search-wrapper input {
+            width: 100%;
+            padding: 12px 20px 12px 44px;
+            border-radius: 50px;
+            border: 2px solid #f5f0f0;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(6px);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .filter-bar .search-wrapper input:focus {
+            border-color: #ff6f91;
+            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.08);
+            background: #fff;
+        }
+        .filter-bar .search-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b7a89c;
+        }
+
+        .filter-bar select {
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: 2px solid #f5f0f0;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(6px);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+        .filter-bar select:focus {
+            border-color: #ff6f91;
+            background: #fff;
+        }
+
+        /* ── Table ── */
+        .card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 24px 28px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.02);
+            overflow-x: auto;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 600px;
+        }
+
+        table th {
+            text-align: left;
+            padding: 14px 8px 14px 0;
+            font-weight: 600;
+            color: #5a4a44;
+            border-bottom: 2px solid rgba(255, 111, 145, 0.10);
+            white-space: nowrap;
+        }
+
+        table td {
+            padding: 14px 8px 14px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            color: #2d2d2d;
+            vertical-align: middle;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ff6f91;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-cell .info .name {
+            font-weight: 600;
+        }
+        .user-cell .info .sub {
+            font-size: 0.75rem;
+            color: #b7a89c;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 3px 14px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: #f5f0f0;
+            color: #5a4a44;
+        }
+        .role-badge.admin {
+            background: #ff6f91;
+            color: #fff;
+        }
+        .role-badge.staff {
+            background: #6fcf97;
+            color: #fff;
+        }
+        .role-badge.customer {
+            background: #f2c94a;
+            color: #fff;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .status-dot.active {
+            background: #6fcf97;
+        }
+        .status-dot.inactive {
+            background: #eb5757;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #b7a89c;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        .action-btn:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+        .action-btn.delete:hover {
+            color: #eb5757;
+            background: rgba(235, 87, 87, 0.08);
+        }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 40px;
+            max-width: 520px;
+            width: 100%;
+            padding: 36px 40px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.12);
+            animation: modalSlide 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d2d2d;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #b7a89c;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .modal-close:hover {
+            color: #2d2d2d;
+        }
+
+        .modal .input-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .modal .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4d4038;
+            margin-bottom: 6px;
+        }
+        .modal .input-group input,
+        .modal .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 50px;
+            border: 2px solid #f5f0f0;
+            background: #fcf9f9;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        .modal .input-group input:focus,
+        .modal .input-group select:focus {
+            border-color: #ff6f91;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.08);
+        }
+
+        .modal .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .modal .btn-row .btn-primary {
+            flex: 1;
+            justify-content: center;
+        }
+        .modal .btn-row .btn-secondary {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 1024px) {
+            .main {
+                padding: 24px 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                overflow: auto;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 16px 20px;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+                gap: 12px;
+                align-items: center;
+            }
+            .sidebar-brand {
+                margin-bottom: 0;
+                padding-bottom: 0;
+                border-bottom: none;
+                flex: 1;
+            }
+            .sidebar-nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 4px;
+                flex: 1 1 100%;
+            }
+            .sidebar-nav a {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+                border-radius: 30px;
+            }
+            .sidebar-footer {
+                display: none;
+            }
+            .main {
+                height: auto;
+                padding: 20px 16px;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .modal {
+                padding: 28px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .filter-bar {
+                flex-direction: column;
+            }
+            .filter-bar .search-wrapper {
+                width: 100%;
+            }
+            .header-actions {
+                width: 100%;
+            }
+            .header-actions .btn-primary {
+                flex: 1;
+                justify-content: center;
+            }
+            .modal .btn-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Petals -->
+<div class="petal"></div>
+<div class="petal"></div>
+<div class="petal"></div>
+<div class="petal"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-spa"></i>
+        <h1>Glow<span>.</span></h1>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="#" class="active"><i class="fas fa-users-cog"></i> Users</a>
+        <a href="#"><i class="fas fa-calendar-check"></i> Appointments</a>
+        <a href="#"><i class="fas fa-users"></i> Customers</a>
+        <a href="#"><i class="fas fa-concierge-bell"></i> Services</a>
+        <a href="#"><i class="fas fa-user-md"></i> Staff</a>
+        <a href="#"><i class="fas fa-box"></i> Products</a>
+        <a href="#"><i class="fas fa-credit-card"></i> Payments</a>
+        <a href="#"><i class="fas fa-tags"></i> Promotions</a>
+        <a href="#"><i class="fas fa-star"></i> Reviews</a>
+        <a href="#"><i class="fas fa-clock"></i> Schedules</a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+        <a href="login.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+    <!-- Header -->
+    <div class="main-header">
+        <h2><i class="fas fa-users-cog"></i> User Management</h2>
+        <div class="header-actions">
+            <button class="btn-primary" id="addUserBtn"><i class="fas fa-plus"></i> Add New User</button>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by name or email..." />
+        </div>
+        <select id="roleFilter">
+            <option value="all">All Roles</option>
+            <option value="ADMIN">Admin</option>
+            <option value="STAFF">Staff</option>
+            <option value="CUSTOMER">Customer</option>
+        </select>
+        <select id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+        </select>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+        <div class="table-wrap">
+            <table id="userTable">
+                <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+                </thead>
+                <tbody id="userTableBody">
+                <!-- Sample data will be injected via JS -->
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 16px; text-align: center; color: #b7a89c; font-size: 0.8rem;">
+            Showing <span id="rowCount">0</span> users
+        </div>
+    </div>
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="userModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">Add New User</h3>
+            <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="userForm">
+            <input type="hidden" id="userId" value="" />
+            <div class="input-group">
+                <label>First Name</label>
+                <input type="text" id="firstName" placeholder="e.g. dilni" required />
+            </div>
+            <div class="input-group">
+                <label>Last Name</label>
+                <input type="text" id="lastName" placeholder="e.g. Doe" required />
+            </div>
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="jane@example.com" required />
+            </div>
+            <div class="input-group" id="passwordGroup">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Min 6 characters" />
+            </div>
+            <div class="input-group">
+                <label>Role</label>
+                <select id="role">
+                    <option value="CUSTOMER">Customer</option>
+                    <option value="STAFF">Staff</option>
+                    <option value="ADMIN">Admin</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Status</label>
+                <select id="status">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button type="button" class="btn-secondary" id="modalCancel">Cancel</button>
+                <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save User</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+        loadAllUsers();
+        $('#addUserBtn').on('click', function() {
+            $('#userForm')[0].reset();
+            $('#userId').val('');
+            $('#modalTitle').text('Add New User');
+            $('#passwordGroup').show();
+            $('#userModal').addClass('show');
+        });
+        $('#modalClose, #modalCancel').on('click', function() {
+            $('#userModal').removeClass('show');
+        });
+        $('#userForm').on('submit', function(e) {
+            e.preventDefault();
+            let userId = $('#userId').val();
+            if (userId) {
+                updateUser();
+            } else {
+                saveUser();
+            }
+        });
+
+        $('#searchInput').on('keyup', searchUsers);
+        $('#roleFilter, #statusFilter').on('change', searchUsers);
+    });
+    function renderTable(users) {
+        let html = "";
+        if (Array.isArray(users) && users.length > 0) {
+            users.forEach(user => {
+                let roleClass = (user.userRoles || user.role || 'customer').toLowerCase();
+                let statusClass = (user.userStatus || user.status || 'active').toLowerCase();
+                let firstInitial = (user.firstName || user.username || 'U').charAt(0).toUpperCase();
+                html += `
+                    <tr>
+                        <td>
+                            <div class="user-cell">
+                                <div class="user-avatar">${firstInitial}</div>
+                                <div class="info">
+                                    <div class="name">${user.firstName || user.username || ''} ${user.lastName || ''}</div>
+                                    <div class="sub">ID: ${user.userId}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${user.email || 'N/A'}</td>
+                        <td><span class="role-badge ${roleClass}">${user.userRoles || user.role || 'CUSTOMER'}</span></td>
+                        <td><span class="status-dot ${statusClass}"></span>${user.userStatus || user.status || 'Active'}</td>
+                        <td>${user.joinedDate || 'N/A'}</td>
+                        <td style="text-align:right;">
+                            <button class="action-btn" onclick="selectUser(${user.userId})"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete" onclick="deleteUser(${user.userId})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        } else {
+            html = `<tr><td colspan="6" style="text-align:center;">No users found</td></tr>`;
+        }
+        $('#userTableBody').html(html);
+        $('#rowCount').text(Array.isArray(users) ? users.length : 0);
+    }
+    function loadAllUsers(){
+        $.ajax({
+            url: "http://localhost:8080/v1/user/users",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('JWT'),
+            },
+            success: function(response){
+                let users = response.body || response;
+                renderTable(users);
+            },
+            error: function(xhr) {
+                console.error("Failed to fetch users", xhr.status);
+            }
+        })
+    }
+    function saveUser() {
+        let firstName = $('#firstName').val().trim();
+        let lastName = $('#lastName').val().trim();
+        let email = $('#email').val().trim();
+        let role = $('#role').val().trim();
+        let password = $('#password').val().trim();
+        let status = $('#status').val()
+
+        const obj = JSON.stringify({"firstName":firstName,"lastName":lastName,"email":email,"userRole":role,"password":password,"status":status});
+
+        let fullUserName = (firstName + " " + lastName).trim();
+
+        const userDTO = {
+            "userName": fullUserName,
+            "email": email,
+            "userRole": role,
+            "password": password,
+            "status": status
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/v1/user/user_saved",
+            type: "POST",
+            contentType: "application/json",
+            // headers: {
+            //     'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            // },
+            data: JSON.stringify(userDTO),
+            success: function(response) {
+                alert("User created successfully!");
+                $('#userModal').removeClass('show');
+                loadAllUsers();
+            },
+            error: function(xhr) {
+                alert("Error saving user!");
+            }
+        });
+    }
+    function updateUser(){
+        let userId = $('#userId').val();
+        let firstName = $('#firstName').val();
+        let lastName = $('#lastName').val();
+        let email = $('#email').val()
+        let password = $('#password').val();
+        const obj = JSON.stringify({"userId":userId,"firstName": firstName, "lastName": lastName, "email": email, "password": password});
+        $.ajax({
+            url:"http://localhost:8080/v1/user/update-user",
+            type:"PUT",
+            contentType:"application/json",
+            headers:{
+                'Authorization': 'Bearer '+localStorage.getItem("JWT")
+            },
+            data:obj,
+            success:function (response){
+                alert(response.message);
+                $('#userModal').removeClass('show');
+                loadAllUsers();
+            }
+        });
+    }
+    function selectUser(userId){
+        $.ajax({
+            url:"http://localhost:8080/v1/user/select-user/"+userId,
+            type:"GET",
+            contentType:"application/json",
+            headers:{
+                'Authorization': 'Bearer '+localStorage.getItem("JWT")
+            },
+            success:function (response){
+                $('#userId').val(response.body.userId);
+                $('#firstName').val(response.body.firstName);
+                $('#lastName').val(response.body.lastName);
+                $('#email').val(response.body.email);
+                $('#password').val(response.body.password);
+                // $('#role').val(user.userRole || 'customer');
+                // $('#status').val(user.userStatus || 'active')
+
+                $('#role').val(response.body.userRoles || 'CUSTOMER');
+                // $('#status').val(response.body.userStatus || 'active');
+
+                $('#passwordGroup').hide();
+                $('#modalTitle').text('Edit User');
+                $('#userModal').addClass('show');
+            }
+        })
+    }
+    function deleteUser(userId){
+        console.log(userId);
+        $.ajax({
+            url:"http://localhost:8080/v1/user/"+userId,
+            type:"DELETE",
+            contentType:"application/json",
+            headers:{
+                'Authorization':'Bearer '+localStorage.getItem("JWT")
+            },
+            success:function (response){
+                alert("User deleted successful");
+                loadAllUsers();
+            }
+        });
+    }
+    function clearTable() {
+        $('#searchInput').val("");
+        $('#roleFilter').val("all");
+        $('#statusFilter').val("all");
+        loadAllUsers();
+    }
+    function searchUsers(){
+        let searchValue = $('#searchInput').val();
+        let role = $('#roleFilter').val();
+        let status = $('#statusFilter').val();
+        let param = {
+            search : searchValue,
+            role: role !== 'all' ? role : '',
+            status: status !== 'all' ? status : ''}
+        let queryParam = $.param(param);
+        $.ajax({
+            url: "http://localhost:8080/v1/user/filter-users?"+queryParam,
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization':'Bearer '+localStorage.getItem("JWT")
+            },
+            success:function (response) {
+                let users = response.body || response;
+                renderTable(users);
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import tools.jackson.databind.ObjectMapper;
 
+
 import java.io.IOException;
 
 
@@ -33,6 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     private final ObjectMapper objectMapper;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -49,6 +51,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                System.out.println("USERNAME = " + userDetails.getUsername());
+                System.out.println("AUTHORITIES = " + userDetails.getAuthorities());
 
                 if (jwtUtil.validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -78,4 +82,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         CommonResponse errorResponse = new CommonResponse(code, message);
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
+
 }

@@ -27,6 +27,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 
         String userRolesStr = String.valueOf(optionalUser.get().getUserRole());//string.valueOf
+
+
         String[] roles = new String[0];
         if (userRolesStr != null && !userRolesStr.trim().isEmpty()) {
             roles = Arrays.stream(userRolesStr.split(","))
@@ -35,6 +37,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .filter(role -> !role.isEmpty())
                     .toArray(String[]::new);
         }
+
+
 
         return User.builder()
                 .username(optionalUser.get().getUserName())

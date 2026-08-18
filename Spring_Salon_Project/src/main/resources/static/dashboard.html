@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glow · Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffeef0 100%);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Floating petals ── */
+        .petal {
+            position: fixed;
+            border-radius: 50% 0 50% 50%;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+            animation: petalFloat 14s infinite ease-in-out;
+            background: #ff6f91;
+        }
+        .petal:nth-child(1) {
+            width: 40px;
+            height: 40px;
+            top: 5%;
+            left: 3%;
+            animation-delay: 0s;
+        }
+        .petal:nth-child(2) {
+            width: 25px;
+            height: 25px;
+            top: 20%;
+            right: 5%;
+            animation-delay: 3s;
+            background: #ffb6c1;
+        }
+        .petal:nth-child(3) {
+            width: 50px;
+            height: 50px;
+            bottom: 10%;
+            left: 8%;
+            animation-delay: 6s;
+        }
+        .petal:nth-child(4) {
+            width: 30px;
+            height: 30px;
+            bottom: 25%;
+            right: 6%;
+            animation-delay: 9s;
+            background: #ffb6c1;
+        }
+
+        @keyframes petalFloat {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            33% {
+                transform: translateY(-35px) rotate(25deg) scale(1.05);
+            }
+            66% {
+                transform: translateY(20px) rotate(-15deg) scale(0.95);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 260px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 32px 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 2px 0 30px rgba(0, 0, 0, 0.03);
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid rgba(255, 111, 145, 0.10);
+        }
+
+        .sidebar-brand i {
+            font-size: 2rem;
+            color: #ff6f91;
+            background: rgba(255, 111, 145, 0.10);
+            padding: 12px;
+            border-radius: 18px;
+        }
+
+        .sidebar-brand h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d2d2d;
+        }
+        .sidebar-brand h1 span {
+            color: #ff6f91;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #5a4a44;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .sidebar-nav a i {
+            width: 22px;
+            font-size: 1.1rem;
+            color: #b3886a;
+            transition: color 0.25s;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+        .sidebar-nav a:hover i {
+            color: #ff6f91;
+        }
+
+        .sidebar-nav a.active {
+            background: #ff6f91;
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(255, 111, 145, 0.25);
+        }
+        .sidebar-nav a.active i {
+            color: #fff;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 16px;
+            border-radius: 14px;
+            color: #5a4a44;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.25s;
+        }
+        .sidebar-footer a i {
+            width: 22px;
+            color: #b3886a;
+        }
+        .sidebar-footer a:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+
+        /* ── Main content ── */
+        .main {
+            flex: 1;
+            padding: 32px 40px;
+            overflow-y: auto;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .main-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2d2d2d;
+        }
+
+        .main-header .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px 8px 16px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-badge i {
+            font-size: 1.4rem;
+            color: #ff6f91;
+        }
+
+        .user-badge span {
+            font-weight: 500;
+            color: #2d2d2d;
+        }
+
+        /* ── Stats cards ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 24px 22px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.02);
+            transition: transform 0.25s ease, box-shadow 0.25s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(255, 111, 145, 0.08);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1.6rem;
+            color: #ff6f91;
+            margin-bottom: 6px;
+        }
+
+        .stat-card .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d2d2d;
+            line-height: 1.2;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.85rem;
+            color: #7f7168;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        /* ── Section: recent activity & quick actions ── */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 24px 28px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.02);
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d2d2d;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 i {
+            color: #ff6f91;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ff6f91;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .activity-item .details {
+            flex: 1;
+        }
+        .activity-item .details .name {
+            font-weight: 600;
+            color: #2d2d2d;
+            font-size: 0.95rem;
+        }
+        .activity-item .details .action {
+            font-size: 0.85rem;
+            color: #5a4a44;
+        }
+        .activity-item .time {
+            font-size: 0.75rem;
+            color: #b7a89c;
+        }
+
+        .quick-link-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .quick-link-item {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 18px;
+            padding: 16px 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #2d2d2d;
+            transition: all 0.25s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .quick-link-item i {
+            font-size: 1.6rem;
+            color: #ff6f91;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .quick-link-item span {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .quick-link-item:hover {
+            background: #ff6f91;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 111, 145, 0.2);
+        }
+        .quick-link-item:hover i {
+            color: #fff;
+        }
+
+        /* ── Table for upcoming appointments ── */
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        table th {
+            text-align: left;
+            padding: 10px 6px 10px 0;
+            font-weight: 600;
+            color: #5a4a44;
+            border-bottom: 2px solid rgba(255, 111, 145, 0.10);
+        }
+
+        table td {
+            padding: 12px 6px 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            color: #2d2d2d;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: #ff6f91;
+            color: #fff;
+        }
+        .status-badge.confirmed {
+            background: #6fcf97;
+        }
+        .status-badge.pending {
+            background: #f2c94a;
+        }
+        .status-badge.cancelled {
+            background: #eb5757;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .main {
+                padding: 24px 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                overflow: auto;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 16px 20px;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+                gap: 12px;
+                align-items: center;
+            }
+            .sidebar-brand {
+                margin-bottom: 0;
+                padding-bottom: 0;
+                border-bottom: none;
+                flex: 1;
+            }
+            .sidebar-nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 4px;
+                flex: 1 1 100%;
+            }
+            .sidebar-nav a {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+                border-radius: 30px;
+            }
+            .sidebar-footer {
+                display: none;
+            }
+            .main {
+                height: auto;
+                padding: 20px 16px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            .stat-card {
+                padding: 18px 16px;
+            }
+            .stat-card .stat-number {
+                font-size: 1.5rem;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .quick-link-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Petals -->
+<div class="petal"></div>
+<div class="petal"></div>
+<div class="petal"></div>
+<div class="petal"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-spa"></i>
+        <h1>Glow<span>.</span></h1>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="#" class="active"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="#"><i class="fas fa-calendar-check"></i> Appointments</a>
+        <a href="#"><i class="fas fa-users"></i> Customers</a>
+        <a href="#"><i class="fas fa-concierge-bell"></i> Services</a>
+        <a href="#"><i class="fas fa-user-md"></i> Staff</a>
+        <a href="#"><i class="fas fa-box"></i> Products</a>
+        <a href="#"><i class="fas fa-credit-card"></i> Payments</a>
+        <a href="#"><i class="fas fa-tags"></i> Promotions</a>
+        <a href="#"><i class="fas fa-star"></i> Reviews</a>
+        <a href="#"><i class="fas fa-clock"></i> Schedules</a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+        <a href="login.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+</aside>
+
+<!-- Main content -->
+<main class="main">
+    <div class="main-header">
+        <h2>Dashboard</h2>
+        <div class="user-badge">
+            <i class="fas fa-user-circle"></i>
+            <span>Admin</span>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+            <div class="stat-number">124</div>
+            <div class="stat-label">Total Appointments</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-user-friends"></i></div>
+            <div class="stat-number">86</div>
+            <div class="stat-label">Active Customers</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-hand-holding-usd"></i></div>
+            <div class="stat-number">$4,820</div>
+            <div class="stat-label">Revenue (this month)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+            <div class="stat-number">12</div>
+            <div class="stat-label">Staff Members</div>
+        </div>
+    </div>
+
+    <!-- Dashboard grid -->
+    <div class="dashboard-grid">
+        <!-- Recent activity -->
+        <div class="card">
+            <h3><i class="fas fa-bolt"></i> Recent Activity</h3>
+            <div class="activity-item">
+                <div class="avatar">JD</div>
+                <div class="details">
+                    <div class="name">Jane Doe</div>
+                    <div class="action">booked a <strong>Facial</strong> treatment</div>
+                </div>
+                <div class="time">2h ago</div>
+            </div>
+            <div class="activity-item">
+                <div class="avatar">MS</div>
+                <div class="details">
+                    <div class="name">Mark Smith</div>
+                    <div class="action">completed payment for <strong>Hair Styling</strong></div>
+                </div>
+                <div class="time">4h ago</div>
+            </div>
+            <div class="activity-item">
+                <div class="avatar">LR</div>
+                <div class="details">
+                    <div class="name">Lisa Ray</div>
+                    <div class="action">cancelled appointment for <strong>Manicure</strong></div>
+                </div>
+                <div class="time">6h ago</div>
+            </div>
+            <div class="activity-item">
+                <div class="avatar">AK</div>
+                <div class="details">
+                    <div class="name">Alex Kim</div>
+                    <div class="action">new customer registered</div>
+                </div>
+                <div class="time">1d ago</div>
+            </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="card">
+            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+            <div class="quick-link-grid">
+                <a href="#" class="quick-link-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>New Appointment</span>
+                </a>
+                <a href="#" class="quick-link-item">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Customer</span>
+                </a>
+                <a href="#" class="quick-link-item">
+                    <i class="fas fa-tasks"></i>
+                    <span>Manage Services</span>
+                </a>
+                <a href="#" class="quick-link-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>View Schedule</span>
+                </a>
+            </div>
+            <div style="margin-top: 20px; font-size: 0.85rem; color: #7f7168;">
+                <i class="fas fa-info-circle"></i> Last updated: today at 10:30 AM
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming appointments table -->
+    <div class="card" style="margin-bottom: 20px;">
+        <h3><i class="fas fa-clock"></i> Upcoming Appointments</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th>Staff</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Emma Watson</td>
+                    <td>Bridal Makeup</td>
+                    <td>2026-08-15 10:00</td>
+                    <td>Sarah</td>
+                    <td><span class="status-badge confirmed">Confirmed</span></td>
+                </tr>
+                <tr>
+                    <td>Olivia Chen</td>
+                    <td>Hair Coloring</td>
+                    <td>2026-08-15 13:30</td>
+                    <td>Mike</td>
+                    <td><span class="status-badge pending">Pending</span></td>
+                </tr>
+                <tr>
+                    <td>Sophia Brown</td>
+                    <td>Manicure & Pedicure</td>
+                    <td>2026-08-16 09:00</td>
+                    <td>Lisa</td>
+                    <td><span class="status-badge confirmed">Confirmed</span></td>
+                </tr>
+                <tr>
+                    <td>James Lee</td>
+                    <td>Men's Grooming</td>
+                    <td>2026-08-16 14:00</td>
+                    <td>David</td>
+                    <td><span class="status-badge cancelled">Cancelled</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer note -->
+    <div style="text-align: center; color: #b7a89c; font-size: 0.75rem; padding: 12px 0;">
+        &copy; 2026 Glow Beauty Salon — All rights reserved.
+    </div>
+</main>
+
+<script>
+
+
+</script>
+</body>
+</html>
