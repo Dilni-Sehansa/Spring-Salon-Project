@@ -6,6 +6,7 @@ import com.example.Spring_Salon_Project.dto.UserDTO;
 import com.example.Spring_Salon_Project.dto.UserDataDTO;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -14,17 +15,14 @@ import java.util.List;
 import static com.example.Spring_Salon_Project.constant.ResponseCode.OPERATION_SUCCESS;
 import static com.example.Spring_Salon_Project.constant.ResponseMassage.SUCCESS_MESSAGE;
 
+@CrossOrigin
 @RestController
 @RequestMapping(value = "v1/user")
+@RequiredArgsConstructor
 
 public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
-
-    public UserController(UserService userService, JwtUtil jwtUtil) {
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @PostMapping(value = "/user_saved", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonResponse saveUser(@RequestBody UserDTO userDTO){
@@ -65,7 +63,7 @@ public class UserController {
 
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonResponse loginUser(@RequestBody AuthDTO authDTO) {
-        UserDTO userDetails = userService.getUserDetails(authDTO.getUsername(), authDTO.getPassword());
+        UserDTO userDetails = userService.getUserDetails(authDTO.getUserName(), authDTO.getPassword());
 
         System.out.println("API called here");
         String token = jwtUtil.generateToken(userDetails);

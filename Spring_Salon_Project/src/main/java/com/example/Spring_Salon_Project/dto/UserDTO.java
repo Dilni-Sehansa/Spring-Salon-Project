@@ -13,6 +13,7 @@ public class UserDTO {
     private UserRole userRole;
     private String password;
     private UserStatus userStatus;
+    private String email;
 
     public UserDTO(Long userId,String userName, UserRole userRole) {
         this.userId = userId;

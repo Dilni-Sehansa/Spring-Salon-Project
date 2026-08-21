@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Glow · User Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -65,18 +64,10 @@
         }
 
         @keyframes petalFloat {
-            0% {
-                transform: translateY(0) rotate(0deg) scale(1);
-            }
-            33% {
-                transform: translateY(-35px) rotate(25deg) scale(1.05);
-            }
-            66% {
-                transform: translateY(20px) rotate(-15deg) scale(0.95);
-            }
-            100% {
-                transform: translateY(0) rotate(0deg) scale(1);
-            }
+            0% { transform: translateY(0) rotate(0deg) scale(1); }
+            33% { transform: translateY(-35px) rotate(25deg) scale(1.05); }
+            66% { transform: translateY(20px) rotate(-15deg) scale(0.95); }
+            100% { transform: translateY(0) rotate(0deg) scale(1); }
         }
 
         /* ── Sidebar ── */
@@ -119,9 +110,7 @@
             font-weight: 700;
             color: #2d2d2d;
         }
-        .sidebar-brand h1 span {
-            color: #ff6f91;
-        }
+        .sidebar-brand h1 span { color: #ff6f91; }
 
         .sidebar-nav {
             flex: 1;
@@ -154,18 +143,14 @@
             background: rgba(255, 111, 145, 0.08);
             color: #ff6f91;
         }
-        .sidebar-nav a:hover i {
-            color: #ff6f91;
-        }
+        .sidebar-nav a:hover i { color: #ff6f91; }
 
         .sidebar-nav a.active {
             background: #ff6f91;
             color: #fff;
             box-shadow: 0 6px 18px rgba(255, 111, 145, 0.25);
         }
-        .sidebar-nav a.active i {
-            color: #fff;
-        }
+        .sidebar-nav a.active i { color: #fff; }
 
         .sidebar-footer {
             margin-top: auto;
@@ -187,10 +172,7 @@
             text-decoration: none;
             transition: all 0.25s;
         }
-        .sidebar-footer a i {
-            width: 22px;
-            color: #b3886a;
-        }
+        .sidebar-footer a i { width: 22px; color: #b3886a; }
         .sidebar-footer a:hover {
             background: rgba(255, 111, 145, 0.08);
             color: #ff6f91;
@@ -223,9 +205,7 @@
             align-items: center;
             gap: 12px;
         }
-        .main-header h2 i {
-            color: #ff6f91;
-        }
+        .main-header h2 i { color: #ff6f91; }
 
         .header-actions {
             display: flex;
@@ -348,9 +328,7 @@
             overflow-x: auto;
         }
 
-        .table-wrap {
-            overflow-x: auto;
-        }
+        .table-wrap { overflow-x: auto; }
 
         table {
             width: 100%;
@@ -361,7 +339,7 @@
 
         table th {
             text-align: left;
-            padding: 14px 8px 14px 0;
+            padding: 14px 12px;
             font-weight: 600;
             color: #5a4a44;
             border-bottom: 2px solid rgba(255, 111, 145, 0.10);
@@ -369,78 +347,33 @@
         }
 
         table td {
-            padding: 14px 8px 14px 0;
+            padding: 14px 12px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.03);
             color: #2d2d2d;
             vertical-align: middle;
         }
 
-        table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #ff6f91;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.8rem;
-            flex-shrink: 0;
-        }
-
-        .user-cell {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .user-cell .info .name {
-            font-weight: 600;
-        }
-        .user-cell .info .sub {
-            font-size: 0.75rem;
-            color: #b7a89c;
-        }
-
         .role-badge {
             display: inline-block;
-            padding: 3px 14px;
+            padding: 4px 12px;
             border-radius: 50px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            background: #f5f0f0;
-            color: #5a4a44;
+            text-transform: uppercase;
         }
-        .role-badge.admin {
-            background: #ff6f91;
-            color: #fff;
-        }
-        .role-badge.staff {
-            background: #6fcf97;
-            color: #fff;
-        }
-        .role-badge.customer {
-            background: #f2c94a;
-            color: #fff;
-        }
+        .role-badge.admin { background: #ff6f91; color: #fff; }
+        .role-badge.staff { background: #6fcf97; color: #fff; }
+        .role-badge.customer { background: #f2c94a; color: #fff; }
 
         .status-dot {
             display: inline-block;
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             margin-right: 6px;
         }
-        .status-dot.active {
-            background: #6fcf97;
-        }
-        .status-dot.inactive {
-            background: #eb5757;
-        }
+        .status-dot.active { background: #6fcf97; }
+        .status-dot.inactive { background: #eb5757; }
 
         .action-btn {
             background: transparent;
@@ -450,7 +383,7 @@
             cursor: pointer;
             color: #b7a89c;
             transition: all 0.2s;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
         .action-btn:hover {
             background: rgba(255, 111, 145, 0.08);
@@ -473,9 +406,7 @@
             justify-content: center;
             padding: 20px;
         }
-        .modal-overlay.show {
-            display: flex;
-        }
+        .modal-overlay.show { display: flex; }
 
         .modal {
             background: #fff;
@@ -490,14 +421,8 @@
         }
 
         @keyframes modalSlide {
-            0% {
-                opacity: 0;
-                transform: translateY(30px) scale(0.96);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            0% { opacity: 0; transform: translateY(30px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .modal-header {
@@ -506,11 +431,7 @@
             align-items: center;
             margin-bottom: 24px;
         }
-        .modal-header h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #2d2d2d;
-        }
+        .modal-header h3 { font-size: 1.5rem; font-weight: 600; color: #2d2d2d; }
         .modal-close {
             background: none;
             border: none;
@@ -519,9 +440,7 @@
             cursor: pointer;
             transition: color 0.2s;
         }
-        .modal-close:hover {
-            color: #2d2d2d;
-        }
+        .modal-close:hover { color: #2d2d2d; }
 
         .modal .input-group {
             margin-bottom: 16px;
@@ -559,100 +478,19 @@
             gap: 12px;
             margin-top: 8px;
         }
-        .modal .btn-row .btn-primary {
+        .modal .btn-row .btn-primary, .modal .btn-row .btn-secondary {
             flex: 1;
             justify-content: center;
-        }
-        .modal .btn-row .btn-secondary {
-            flex: 1;
-            justify-content: center;
-        }
-
-        /* ── Responsive ── */
-        @media (max-width: 1024px) {
-            .main {
-                padding: 24px 24px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-                overflow: auto;
-            }
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                flex-direction: row;
-                flex-wrap: wrap;
-                padding: 16px 20px;
-                border-right: none;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-                gap: 12px;
-                align-items: center;
-            }
-            .sidebar-brand {
-                margin-bottom: 0;
-                padding-bottom: 0;
-                border-bottom: none;
-                flex: 1;
-            }
-            .sidebar-nav {
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 4px;
-                flex: 1 1 100%;
-            }
-            .sidebar-nav a {
-                padding: 8px 14px;
-                font-size: 0.8rem;
-                border-radius: 30px;
-            }
-            .sidebar-footer {
-                display: none;
-            }
-            .main {
-                height: auto;
-                padding: 20px 16px;
-            }
-            .main-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .modal {
-                padding: 28px 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .filter-bar {
-                flex-direction: column;
-            }
-            .filter-bar .search-wrapper {
-                width: 100%;
-            }
-            .header-actions {
-                width: 100%;
-            }
-            .header-actions .btn-primary {
-                flex: 1;
-                justify-content: center;
-            }
-            .modal .btn-row {
-                flex-direction: column;
-            }
         }
     </style>
 </head>
 <body>
-<!-- Petals -->
+
 <div class="petal"></div>
 <div class="petal"></div>
 <div class="petal"></div>
 <div class="petal"></div>
 
-<!-- Sidebar -->
 <aside class="sidebar">
     <div class="sidebar-brand">
         <i class="fas fa-spa"></i>
@@ -677,9 +515,7 @@
     </div>
 </aside>
 
-<!-- Main -->
 <main class="main">
-    <!-- Header -->
     <div class="main-header">
         <h2><i class="fas fa-users-cog"></i> User Management</h2>
         <div class="header-actions">
@@ -687,7 +523,6 @@
         </div>
     </div>
 
-    <!-- Filter Bar -->
     <div class="filter-bar">
         <div class="search-wrapper">
             <i class="fas fa-search"></i>
@@ -701,27 +536,25 @@
         </select>
         <select id="statusFilter">
             <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
         </select>
     </div>
 
-    <!-- Table -->
     <div class="card">
         <div class="table-wrap">
             <table id="userTable">
                 <thead>
                 <tr>
-                    <th>User</th>
+                    <th>User ID</th>
+                    <th>Name</th>
                     <th>Email</th>
                     <th>Role</th>
                     <th>Status</th>
-                    <th>Joined</th>
                     <th style="text-align:right;">Actions</th>
                 </tr>
                 </thead>
                 <tbody id="userTableBody">
-                <!-- Sample data will be injected via JS -->
                 </tbody>
             </table>
         </div>
@@ -731,7 +564,6 @@
     </div>
 </main>
 
-<!-- Modal -->
 <div class="modal-overlay" id="userModal">
     <div class="modal">
         <div class="modal-header">
@@ -742,11 +574,11 @@
             <input type="hidden" id="userId" value="" />
             <div class="input-group">
                 <label>First Name</label>
-                <input type="text" id="firstName" placeholder="e.g. dilni" required />
+                <input type="text" id="firstName" placeholder="e.g. Dilni" required />
             </div>
             <div class="input-group">
                 <label>Last Name</label>
-                <input type="text" id="lastName" placeholder="e.g. Doe" required />
+                <input type="text" id="lastName" placeholder="e.g. Sehansa" required />
             </div>
             <div class="input-group">
                 <label>Email Address</label>
@@ -767,8 +599,8 @@
             <div class="input-group">
                 <label>Status</label>
                 <select id="status">
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
                 </select>
             </div>
             <div class="btn-row">
@@ -778,10 +610,13 @@
         </form>
     </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
     $(document).ready(function() {
+
         loadAllUsers();
+
         $('#addUserBtn').on('click', function() {
             $('#userForm')[0].reset();
             $('#userId').val('');
@@ -789,9 +624,11 @@
             $('#passwordGroup').show();
             $('#userModal').addClass('show');
         });
+
         $('#modalClose, #modalCancel').on('click', function() {
             $('#userModal').removeClass('show');
         });
+
         $('#userForm').on('submit', function(e) {
             e.preventDefault();
             let userId = $('#userId').val();
@@ -805,72 +642,64 @@
         $('#searchInput').on('keyup', searchUsers);
         $('#roleFilter, #statusFilter').on('change', searchUsers);
     });
-    function renderTable(users) {
-        let html = "";
-        if (Array.isArray(users) && users.length > 0) {
-            users.forEach(user => {
-                let roleClass = (user.userRoles || user.role || 'customer').toLowerCase();
-                let statusClass = (user.userStatus || user.status || 'active').toLowerCase();
-                let firstInitial = (user.firstName || user.username || 'U').charAt(0).toUpperCase();
-                html += `
-                    <tr>
-                        <td>
-                            <div class="user-cell">
-                                <div class="user-avatar">${firstInitial}</div>
-                                <div class="info">
-                                    <div class="name">${user.firstName || user.username || ''} ${user.lastName || ''}</div>
-                                    <div class="sub">ID: ${user.userId}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>${user.email || 'N/A'}</td>
-                        <td><span class="role-badge ${roleClass}">${user.userRoles || user.role || 'CUSTOMER'}</span></td>
-                        <td><span class="status-dot ${statusClass}"></span>${user.userStatus || user.status || 'Active'}</td>
-                        <td>${user.joinedDate || 'N/A'}</td>
-                        <td style="text-align:right;">
-                            <button class="action-btn" onclick="selectUser(${user.userId})"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn delete" onclick="deleteUser(${user.userId})"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-        } else {
-            html = `<tr><td colspan="6" style="text-align:center;">No users found</td></tr>`;
-        }
-        $('#userTableBody').html(html);
-        $('#rowCount').text(Array.isArray(users) ? users.length : 0);
-    }
-    function loadAllUsers(){
+
+
+    function loadAllUsers() {
         $.ajax({
             url: "http://localhost:8080/v1/user/users",
             type: "GET",
             contentType: "application/json",
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('JWT'),
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
             },
-            success: function(response){
-                let users = response.body || response;
+            success: function (response) {
+                let users = response.body || response.data || response || [];
                 renderTable(users);
             },
-            error: function(xhr) {
-                console.error("Failed to fetch users", xhr.status);
+            error: function (xhr) {
+                console.error("Error loading users", xhr);
             }
-        })
+        });
     }
+
+    function renderTable(users) {
+        let html = "";
+        for (const u of users) {
+            let roleClass = u.userRole ? u.userRole.toLowerCase() : 'customer';
+            let statusClass = (u.status || 'ACTIVE').toUpperCase() === 'ACTIVE' ? 'active' : 'inactive';
+
+            html += `<tr>
+                <td>#${u.userId}</td>
+                <td><b>${u.firstName ? u.firstName + ' ' + u.lastName : u.userName}</b></td>
+                <td>${u.email}</td>
+                <td><span class="role-badge ${roleClass}">${u.userRole || u.role}</span></td>
+                <td><span class="status-dot ${statusClass}"></span> ${u.status || 'ACTIVE'}</td>
+                <td style="text-align:right;">
+                    <button type="button" class="action-btn" onclick="selectUser(${u.userId})"><i class="fas fa-edit"></i></button>
+                    <button type="button" class="action-btn delete" onclick="deleteUser(${u.userId})"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+        }
+
+        $('#userTableBody').html(html);
+        $('#rowCount').text(users.length);
+    }
+
+
     function saveUser() {
         let firstName = $('#firstName').val().trim();
         let lastName = $('#lastName').val().trim();
         let email = $('#email').val().trim();
-        let role = $('#role').val().trim();
+        let role = $('#role').val();
         let password = $('#password').val().trim();
-        let status = $('#status').val()
-
-        const obj = JSON.stringify({"firstName":firstName,"lastName":lastName,"email":email,"userRole":role,"password":password,"status":status});
+        let status = $('#status').val().toUpperCase();
 
         let fullUserName = (firstName + " " + lastName).trim();
 
         const userDTO = {
             "userName": fullUserName,
+            "firstName": firstName,
+            "lastName": lastName,
             "email": email,
             "userRole": role,
             "password": password,
@@ -881,9 +710,9 @@
             url: "http://localhost:8080/v1/user/user_saved",
             type: "POST",
             contentType: "application/json",
-            // headers: {
-            //     'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            // },
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
             data: JSON.stringify(userDTO),
             success: function(response) {
                 alert("User created successfully!");
@@ -895,94 +724,117 @@
             }
         });
     }
-    function updateUser(){
+
+
+    function updateUser() {
         let userId = $('#userId').val();
-        let firstName = $('#firstName').val();
-        let lastName = $('#lastName').val();
-        let email = $('#email').val()
-        let password = $('#password').val();
-        const obj = JSON.stringify({"userId":userId,"firstName": firstName, "lastName": lastName, "email": email, "password": password});
+        let firstName = $('#firstName').val().trim();
+        let lastName = $('#lastName').val().trim();
+        let email = $('#email').val().trim();
+        let role = $('#role').val();
+        let status = $('#status').val().toUpperCase();
+
+        const userDTO = {
+            "userId": userId,
+            "firstName": firstName,
+            "lastName": lastName,
+            "email": email,
+            "userRole": role,
+            "status": status
+        };
+
         $.ajax({
-            url:"http://localhost:8080/v1/user/update-user",
-            type:"PUT",
-            contentType:"application/json",
-            headers:{
-                'Authorization': 'Bearer '+localStorage.getItem("JWT")
+            url: "http://localhost:8080/v1/user/update-user",
+            type: "PUT",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
             },
-            data:obj,
-            success:function (response){
-                alert(response.message);
+            data: JSON.stringify(userDTO),
+            success: function (response) {
+                alert(response.message || "User updated successfully!");
                 $('#userModal').removeClass('show');
                 loadAllUsers();
+            },
+            error: function (xhr) {
+                alert("Error updating user!");
             }
         });
     }
-    function selectUser(userId){
-        $.ajax({
-            url:"http://localhost:8080/v1/user/select-user/"+userId,
-            type:"GET",
-            contentType:"application/json",
-            headers:{
-                'Authorization': 'Bearer '+localStorage.getItem("JWT")
-            },
-            success:function (response){
-                $('#userId').val(response.body.userId);
-                $('#firstName').val(response.body.firstName);
-                $('#lastName').val(response.body.lastName);
-                $('#email').val(response.body.email);
-                $('#password').val(response.body.password);
-                // $('#role').val(user.userRole || 'customer');
-                // $('#status').val(user.userStatus || 'active')
 
-                $('#role').val(response.body.userRoles || 'CUSTOMER');
-                // $('#status').val(response.body.userStatus || 'active');
+
+    function selectUser(userId) {
+        $.ajax({
+            url: "http://localhost:8080/v1/user/select-user/" + userId,
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response) {
+                let u = response.body || response;
+                $('#userId').val(u.userId);
+                $('#firstName').val(u.firstName);
+                $('#lastName').val(u.lastName);
+                $('#email').val(u.email);
+                $('#role').val(u.userRole || u.role || 'CUSTOMER');
+                $('#status').val((u.status || 'ACTIVE').toUpperCase());
 
                 $('#passwordGroup').hide();
                 $('#modalTitle').text('Edit User');
                 $('#userModal').addClass('show');
             }
-        })
-    }
-    function deleteUser(userId){
-        console.log(userId);
-        $.ajax({
-            url:"http://localhost:8080/v1/user/"+userId,
-            type:"DELETE",
-            contentType:"application/json",
-            headers:{
-                'Authorization':'Bearer '+localStorage.getItem("JWT")
-            },
-            success:function (response){
-                alert("User deleted successful");
-                loadAllUsers();
-            }
         });
     }
-    function clearTable() {
-        $('#searchInput').val("");
-        $('#roleFilter').val("all");
-        $('#statusFilter').val("all");
-        loadAllUsers();
+
+
+    function deleteUser(userId) {
+        if (confirm("Are you sure you want to delete this user?")) {
+            $.ajax({
+                url: "http://localhost:8080/v1/user/" + userId,
+                type: "DELETE",
+                contentType: "application/json",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+                },
+                success: function (response) {
+                    alert("User deleted successfully!");
+                    loadAllUsers();
+                }
+            });
+        }
     }
-    function searchUsers(){
-        let searchValue = $('#searchInput').val();
+
+
+    function searchUsers() {
+        let searchValue = $('#searchInput').val().toLowerCase().trim();
         let role = $('#roleFilter').val();
         let status = $('#statusFilter').val();
-        let param = {
-            search : searchValue,
-            role: role !== 'all' ? role : '',
-            status: status !== 'all' ? status : ''}
-        let queryParam = $.param(param);
+
         $.ajax({
-            url: "http://localhost:8080/v1/user/filter-users?"+queryParam,
+            url: "http://localhost:8080/v1/user/users",
             type: "GET",
             contentType: "application/json",
             headers: {
-                'Authorization':'Bearer '+localStorage.getItem("JWT")
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
             },
-            success:function (response) {
-                let users = response.body || response;
-                renderTable(users);
+            success: function (response) {
+                let users = response.body || response.data || response || [];
+
+                let filtered = users.filter(u => {
+                    let name = (u.firstName ? u.firstName + " " + u.lastName : u.userName || '').toLowerCase();
+                    let email = (u.email || '').toLowerCase();
+                    let uRole = (u.userRole || u.role || '').toUpperCase();
+                    let uStatus = (u.status || '').toUpperCase();
+
+                    let matchesSearch = name.includes(searchValue) || email.includes(searchValue);
+                    let matchesRole = (role === 'all') || (uRole === role);
+                    let matchesStatus = (status === 'all') || (uStatus === status);
+
+                    return matchesSearch && matchesRole && matchesStatus;
+                });
+
+                renderTable(filtered);
             }
         });
     }

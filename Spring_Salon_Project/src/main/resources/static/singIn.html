@@ -22,19 +22,15 @@
             padding: 15px;
             width: 100%;
             height: 100vh;
-
             font-family: 'Poppins', sans-serif;
-
             background: linear-gradient(
                     135deg,
                     #fff5f5 0%,
                     #ffeef0 100%
             );
-
             display: flex;
             justify-content: center;
             align-items: center;
-
             overflow: hidden;
             position: relative;
         }
@@ -77,55 +73,39 @@
             0% {
                 transform: translateY(0px) rotate(0deg);
             }
-
             50% {
                 transform: translateY(-20px) rotate(45deg);
             }
-
             100% {
                 transform: translateY(0px) rotate(0deg);
             }
         }
 
-
-
         .container {
             background: #ffffff;
-
             width: 100%;
             max-width: 600px;
-
             padding: 28px 40px;
-
             border-radius: 35px;
-
-            box-shadow:
-                    0 20px 40px rgba(255, 105, 135, 0.15);
-
+            box-shadow: 0 20px 40px rgba(255, 105, 135, 0.15);
             text-align: center;
-
             position: relative;
             z-index: 10;
-
             box-sizing: border-box;
         }
-
 
         .brand-title {
             font-size: 26px;
             font-weight: 700;
             color: #2d2d2d;
-
             margin-bottom: 2px;
         }
 
         .brand-sub {
             font-size: 11px;
             color: #ff6f91;
-
             font-weight: 600;
             letter-spacing: 3px;
-
             margin-bottom: 20px;
         }
 
@@ -136,49 +116,34 @@
 
         .input-group label {
             display: block;
-
             font-size: 13px;
             font-weight: 600;
-
             color: #444;
-
             margin-bottom: 5px;
         }
 
         .input-group input {
             width: 100%;
-
             padding: 11px 17px;
-
             border: 2px solid #f5f0f0;
             border-radius: 50px;
-
             background: #fcf9f9;
-
             font-family: inherit;
             font-size: 13px;
-
             outline: none;
-
             transition: all 0.3s;
-
             box-sizing: border-box;
         }
 
         .input-group input:focus {
             border-color: #ff6f91;
-
             background: #fff;
-
-            box-shadow:
-                    0 0 0 4px rgba(255, 111, 145, 0.1);
+            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.1);
         }
 
         .name-row {
             display: flex;
-
             gap: 15px;
-
             width: 100%;
         }
 
@@ -187,79 +152,50 @@
             min-width: 0;
         }
 
-
         .input-group select {
             width: 100%;
-
             padding: 11px 17px;
-
             border: 2px solid #f5f0f0;
             border-radius: 50px;
-
             background-color: #fcf9f9;
-
             font-family: inherit;
-
             outline: none;
-
             transition: all 0.3s;
-
             box-sizing: border-box;
-
             font-size: 13px;
-
             appearance: none;
             -webkit-appearance: none;
-
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-
             background-repeat: no-repeat;
-
             background-position: right 18px center;
-
             padding-right: 42px;
-
             cursor: pointer;
         }
 
         .input-group select:focus {
             border-color: #ff6f91;
-
             background-color: #fff;
-
-            box-shadow:
-                    0 0 0 4px rgba(255, 111, 145, 0.1);
+            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.1);
         }
 
         .btn-pink {
             width: 100%;
-
             background: #ff6f91;
             color: white;
-
             padding: 13px;
-
             border: none;
-
             border-radius: 50px;
-
             font-size: 15px;
             font-weight: 600;
-
             cursor: pointer;
-
             transition: all 0.3s ease;
-
-            box-shadow:
-                    0 5px 15px rgba(255, 111, 145, 0.3);
-
+            box-shadow: 0 5px 15px rgba(255, 111, 145, 0.3);
             margin-bottom: 8px;
             margin-top: 3px;
         }
 
         .btn-pink:hover {
             background: #ff527b;
-
             transform: translateY(-2px);
         }
 
@@ -267,22 +203,16 @@
             transform: scale(0.98);
         }
 
-
         .toggle-text {
             font-size: 12px;
-
             color: #888;
-
             margin-top: 5px;
         }
 
         .toggle-link {
             color: #ff6f91;
-
             font-weight: 600;
-
             cursor: pointer;
-
             text-decoration: none;
         }
 
@@ -290,232 +220,174 @@
             text-decoration: underline;
         }
 
-
         @media (max-height: 800px) {
-
             .container {
                 padding: 22px 35px;
                 border-radius: 30px;
             }
-
             .brand-title {
                 font-size: 24px;
             }
-
             .brand-sub {
                 margin-bottom: 15px;
             }
-
             .input-group {
                 margin-bottom: 7px;
             }
-
             .input-group label {
                 font-size: 12px;
                 margin-bottom: 4px;
             }
-
             .input-group input,
             .input-group select {
                 padding: 9px 15px;
                 font-size: 12px;
             }
-
             .btn-pink {
                 padding: 11px;
                 font-size: 14px;
                 margin-top: 2px;
                 margin-bottom: 5px;
             }
-
             .toggle-text {
                 font-size: 11px;
             }
         }
 
-
         @media (max-width: 768px) {
-
             body {
                 padding: 12px;
             }
-
             .container {
                 max-width: 550px;
                 padding: 25px 30px;
             }
-
             .name-row {
                 gap: 12px;
             }
         }
 
-
         @media (max-width: 500px) {
-
             body {
                 padding: 8px;
             }
-
             .container {
                 width: 100%;
                 max-width: 100%;
-
                 padding: 22px 18px;
-
                 border-radius: 27px;
             }
-
             .brand-title {
                 font-size: 22px;
             }
-
             .brand-sub {
                 font-size: 10px;
                 letter-spacing: 2px;
-
                 margin-bottom: 15px;
             }
-
-            /*
-               Password + Confirm Password
-               stay in the SAME ROW
-            */
-
             .name-row {
                 display: flex;
                 flex-direction: row;
-
                 gap: 10px;
             }
-
             .name-row .input-group {
                 width: 50%;
                 min-width: 0;
             }
-
             .input-group {
                 margin-bottom: 7px;
             }
-
             .input-group label {
                 font-size: 11px;
                 margin-bottom: 4px;
             }
-
             .input-group input,
             .input-group select {
                 padding: 9px 12px;
                 font-size: 12px;
             }
-
             .btn-pink {
                 padding: 11px;
                 font-size: 14px;
             }
-
             .toggle-text {
                 font-size: 11px;
             }
         }
 
-
         @media (max-width: 380px) {
-
             body {
                 padding: 5px;
             }
-
             .container {
                 padding: 18px 14px;
-
                 border-radius: 23px;
             }
-
             .brand-title {
                 font-size: 20px;
             }
-
             .brand-sub {
                 font-size: 9px;
                 letter-spacing: 1.5px;
-
                 margin-bottom: 12px;
             }
-
             .name-row {
                 gap: 8px;
             }
-
             .input-group {
                 margin-bottom: 6px;
             }
-
             .input-group label {
                 font-size: 10px;
                 margin-bottom: 3px;
             }
-
             .input-group input,
             .input-group select {
                 padding: 8px 10px;
                 font-size: 11px;
             }
-
             .input-group select {
                 padding-right: 32px;
                 background-position: right 12px center;
             }
-
             .btn-pink {
                 padding: 10px;
                 font-size: 13px;
-
                 margin-top: 2px;
                 margin-bottom: 4px;
             }
-
             .toggle-text {
                 font-size: 10px;
             }
         }
 
-
         @media (max-width: 340px) {
-
             .container {
                 padding: 15px 11px;
             }
-
             .brand-title {
                 font-size: 19px;
             }
-
             .brand-sub {
                 font-size: 8px;
                 margin-bottom: 10px;
             }
-
             .name-row {
                 gap: 6px;
             }
-
             .input-group input,
             .input-group select {
                 padding: 7px 8px;
                 font-size: 10px;
             }
-
             .input-group label {
                 font-size: 9px;
             }
-
             .btn-pink {
                 padding: 9px;
                 font-size: 12px;
             }
         }
-
     </style>
 </head>
 <body>
@@ -524,47 +396,70 @@
     <div class="brand-title">🌸 Glow</div>
     <div class="brand-sub">BEAUTY SALON</div>
 
-    <div class="name-row">
-        <div class="input-group"><label>First Name</label><input type="text" placeholder="Sehansa" name="firstName" id="firstName"></div>
-        <div class="input-group"><label>Last Name</label><input type="text" placeholder="Sesadee" name="lastName" id="lastName"></div>
-    </div>
+    <form id="signupForm" onsubmit="handleSingUp(event)">
+        <div class="name-row">
+            <div class="input-group">
+                <label for="firstName">First Name</label>
+                <input type="text" placeholder="Sehansa" name="firstName" id="firstName" required>
+            </div>
+            <div class="input-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" placeholder="Sesadee" name="lastName" id="lastName" required>
+            </div>
+        </div>
 
-    <div class="input-group"><label>Email Address</label><input type="email" placeholder="your@email.com" name="email" id="email"></div>
-    <div class="input-group">
-        <label>User Role</label>
-        <select id="userRole">
-            <option value="CUSTOMER">🌸 Customer</option>
-            <option value="STAFF">💆 Staff</option>
-            <option value="ADMIN">✨ Admin</option>
-        </select>
-    </div>
-    <div class="name-row">
-    <div class="input-group"><label>Password</label><input type="password" placeholder="Create a password" name="password" id="password"></div>
-    <div class="input-group"><label>Confirm Password</label><input type="password" placeholder="Confirm your password" name="confirmPassword" id="confirmPassword"></div>
-    </div>
+        <div class="input-group">
+            <label for="email">Email Address</label>
+            <input type="email" placeholder="your@email.com" name="email" id="email" required>
+        </div>
 
-    <button class="btn-pink" type="button" onclick="handleSingUp(event)" >Sign Up</button>
+        <div class="input-group">
+            <label for="userRole">User Role</label>
+            <select id="userRole">
+                <option value="CUSTOMER">🌸 Customer</option>
+                <option value="STAFF">💆 Staff</option>
+                <option value="ADMIN">✨ Admin</option>
+            </select>
+        </div>
+
+        <div class="name-row">
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" placeholder="Create a password" name="password" id="password" required>
+            </div>
+            <div class="input-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" placeholder="Confirm your password" name="confirmPassword" id="confirmPassword" required>
+            </div>
+        </div>
+
+        <button class="btn-pink" type="submit">Sign Up</button>
+    </form>
+
     <div class="toggle-text">Already a member? <a href="login.html" class="toggle-link">Sign In</a></div>
 </div>
 
 <script>
-    function handleSingUp(event){
-
+    function handleSingUp(event) {
         if (event) event.preventDefault();
 
         let firstName = $('#firstName').val().trim();
         let lastName = $('#lastName').val().trim();
         let email = $('#email').val().trim();
-        let role = $('#userRole').val().trim();
+        let role = $('#userRole').val();
         let password = $('#password').val().trim();
         let confirmPassword = $('#confirmPassword').val().trim();
 
 
-        if (password === "" || password!==confirmPassword){
-            alert("password are Incorrect or not match");
-            return
+        if (!firstName || !lastName || !email || !password) {
+            alert("Please fill in all required fields.");
+            return;
         }
-        const obj = JSON.stringify({"firstName":firstName,"lastName":lastName,"email":email,"userRole":role,"password":password});
+
+        if (password !== confirmPassword) {
+            alert("Passwords do not match. Please try again.");
+            return;
+        }
 
         let fullUserName = (firstName + " " + lastName).trim();
 
@@ -576,16 +471,21 @@
         };
 
         $.ajax({
-            url:"http://localhost:8080/v1/user/user_saved",
-            type:"POST",
-            contentType:"application/json",
-            data:JSON.stringify(userDTO),
-            // headers:{
-            //     'Authorization':'Bearer'+localStorage.getItem("JWT")
-            // },
-            success:function (response){
-                alert(response.message)
+            url: "http://localhost:8080/v1/user/user_saved",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(userDTO),
+            success: function (response) {
+                alert(response.message || "Registration successful!");
                 window.location.href = "login.html";
+            },
+            error: function (xhr, status, error) {
+                console.error("Error details:", xhr.responseText);
+                let message = "Registration failed!";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert(message);
             }
         });
     }

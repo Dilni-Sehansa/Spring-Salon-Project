@@ -33,19 +33,30 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+//                .authorizeHttpRequests(auth -> auth
+////                        .requestMatchers(HttpMethod.POST, "/v1/test/login").permitAll()
+////                        .requestMatchers(HttpMethod.GET,"/v1/test/users").hasAnyRole("CUSTOMER")
+////                        .anyRequest().authenticated()
+//
+//                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+//                                .requestMatchers("/", "/login.html", "/singIn.html", "/dashboard.html","/user.html").permitAll()
+//                                .requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll()
+//                                .requestMatchers("/v1/user/**").authenticated()
+//                                .anyRequest().authenticated()
+
+//                                .anyRequest().authenticated()
+//                                .requestMatchers(HttpMethod.POST, "/v1/user/user_saved").permitAll()
+//                                .requestMatchers("/*.html", "/css/**", "/js/**", "/images/**").permitAll()
+////                                .requestMatchers("/v1/user/**").hasAnyRole("ADMIN", "STAFF")
+//                                .requestMatchers("/v1/user/**").permitAll()
+//                )
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(HttpMethod.POST, "/v1/test/login").permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/v1/test/users").hasAnyRole("CUSTOMER")
-//                        .anyRequest().authenticated()
-
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                                .requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/v1/user/user_saved").permitAll()
-                                .requestMatchers("/*.html", "/css/**", "/js/**", "/images/**").permitAll()
-//                                .requestMatchers("/v1/user/**").hasAnyRole("ADMIN", "STAFF")
-                                .requestMatchers("/v1/user/**").permitAll()
-                                .anyRequest().authenticated()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/","/login.html", "/singIn.html", "/dashboard.html", "/user.html").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/v1/user/user_saved").permitAll()
+                        .requestMatchers("/v1/user/**").authenticated()
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()) // Add this

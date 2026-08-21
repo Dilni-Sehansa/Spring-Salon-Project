@@ -30,6 +30,7 @@ public class UserServiceImpl implements UserService {
             User user = new User();
             user.setUserName(userDTO.getUserName());
             user.setUserRole(userDTO.getUserRole());
+            user.setEmail(userDTO.getEmail());
 //            user.setPassword(userDTO.getPassword());
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             user.setUserStatus(UserStatus.ACTIVE);
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserService {
             log.info("User saved successfully");
 
 //            return new UserDTO(save.getUserId(),save.getUserName(),save.getUserRole(),save.getPassword());
-            return new UserDTO(save.getUserId(),save.getUserName(),save.getUserRole(),null,save.getUserStatus());
+            return new UserDTO(save.getUserId(),save.getUserName(),save.getUserRole(),null,save.getUserStatus(),user.getEmail());
 
         }catch (Exception e){
             log.info("Error saving user");
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService {
                 throw new RuntimeException("Your account is suspended/Inactive");
             }
 //            return new UserDTO(user.getUserId(),user.getUserName(),user.getUserRole(),user.getPassword());
-            return new UserDTO(user.getUserId(),user.getUserName(),user.getUserRole(),null,user.getUserStatus());
+            return new UserDTO(user.getUserId(),user.getUserName(),user.getUserRole(),null,user.getUserStatus(),user.getEmail());
 
 
         }catch (Exception e){
@@ -104,10 +105,23 @@ public class UserServiceImpl implements UserService {
 
         User user = optionalUser.get();
         user.setUserName(userDTO.getUserName());
-        user.setUserRole(userDTO.getUserRole());
+//        user.setUserRole(userDTO.getUserRole());
+
+        if (userDTO.getEmail() != null &&
+                !userDTO.getEmail().trim().isEmpty()) {
+
+            user.setEmail(userDTO.getEmail());
+        }
+        if (userDTO.getUserRole() != null) {
+            user.setUserRole(userDTO.getUserRole());
+        }
 
         if (userDTO.getPassword() != null && !userDTO.getPassword().trim().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
+
+        if (userDTO.getUserStatus() != null) {
+            user.setUserStatus(userDTO.getUserStatus());
         }
 
         userRepository.save(user);
