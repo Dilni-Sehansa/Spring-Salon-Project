@@ -56,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/user/user_saved").permitAll()
                         .requestMatchers("/v1/user/**").authenticated()
+                        .requestMatchers("/v1/customer/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

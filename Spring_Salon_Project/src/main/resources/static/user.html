@@ -643,7 +643,6 @@
         $('#roleFilter, #statusFilter').on('change', searchUsers);
     });
 
-
     function loadAllUsers() {
         $.ajax({
             url: "http://localhost:8080/v1/user/users",
@@ -695,7 +694,6 @@
         $('#rowCount').text(users.length);
     }
 
-
     function saveUser() {
         let firstName = $('#firstName').val().trim();
         let lastName = $('#lastName').val().trim();
@@ -738,7 +736,6 @@
         });
     }
 
-
     function updateUser() {
         let userId = $('#userId').val();
         let firstName = $('#firstName').val().trim();
@@ -779,7 +776,6 @@
         });
     }
 
-
     function selectUser(userId) {
         $.ajax({
             url: "http://localhost:8080/v1/user/select-user/" + userId,
@@ -813,7 +809,6 @@
         });
     }
 
-
     function deleteUser(userId) {
         if (confirm("Are you sure you want to delete this user?")) {
             $.ajax({
@@ -833,7 +828,6 @@
             });
         }
     }
-
 
     function searchUsers() {
         let searchValue = $('#searchInput').val().toLowerCase().trim();

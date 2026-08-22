@@ -694,12 +694,8 @@
         <form id="customerForm">
             <input type="hidden" id="customerId" value="" />
             <div class="input-group">
-                <label>First Name</label>
-                <input type="text" id="firstName" placeholder="e.g. Dilni" required />
-            </div>
-            <div class="input-group">
-                <label>Last Name</label>
-                <input type="text" id="lastName" placeholder="e.g. Sehansa" />
+                <label>Customer Name</label>
+                <input type="text" id="customerName" placeholder="e.g. Dilni Sehansa" required />
             </div>
             <div class="input-group">
                 <label>Phone Number</label>
@@ -737,6 +733,261 @@
 </script>
 <script>
 
+    let allCustomers = [];
+
+    $(document).ready(function (){
+        loadAllCustomers();
+        loadAllUsersDropdown();
+
+        $('#addCustomerBtn').on('click', function () {
+            $('#customerForm')[0].reset();
+            $('#customerId').val('');
+            $('#modalTitle').text('Add New Customer');
+            $('#customerModal').addClass('show');
+        });
+
+        $('#modalCancel, #modalClose').on('click', function () {
+            $('#customerModal').removeClass('show');
+        });
+
+        $('#customerForm').on('submit',function (e){
+           e.preventDefault();
+           let customerId = $('#customerId').val();
+           if (customerId){
+               updateCustomer();
+           }else{
+               saveCustomer();
+           }
+        });
+
+        $('#searchInput').on('keyup', searchCustomer);
+        $('#statusFilter').on('change', searchCustomer);
+    });
+
+    function showToast(message, type = 'success') {
+        const toast = $('#toast');
+        toast.text(message).removeClass('success error').addClass(`${type} show`);
+        setTimeout(() => {
+            toast.removeClass('show');
+        }, 3000);
+    }
+
+    function loadAllUsersDropdown() {
+        $.ajax({
+            url: "http://localhost:8080/v1/user/users",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response) {
+                let users = response.body || response.data || response || [];
+                let options = '<option value="">select user</option>';
+                users.forEach(u => {
+                    options += `<option value="${u.userId}">${u.userName} (ID: ${u.userId})</option>`;
+                });
+                $('#userId').html(options);
+            },
+            error: function (xhr) {
+                console.error("Error loading users dropdown", xhr);
+            }
+        });
+    }
+
+    function loadAllCustomers(){
+        $.ajax({
+            url: "http://localhost:8080/v1/customer/customer",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                allCustomers = response.body || response.data || response || [];
+                renderTable(allCustomers);
+            },
+            error: function (xhr){
+                console.error("Error loading customers", xhr);
+                showToast("Failed to load customer", "error");
+            }
+        });
+    }
+
+    function renderTable(customerList) {
+        let html = "";
+        if (!customerList || customerList.length === 0) {
+            html = `<tr><td colspan="6" style="text-align:center; color:#b7a89c; padding:20px;">No customers found</td></tr>`;
+        } else {
+            for (const c of customerList) {
+                let currentStatus = (c.customerStatus || 'ACTIVE').toString().toUpperCase();
+                let statusClass = currentStatus === 'ACTIVE' ? 'active' : 'inactive';
+                let linkedUser = c.userId ? `#${c.userId}` : '<i>None</i>';
+
+                html += `<tr>
+                    <td>#${c.customerId}</td>
+                    <td><b>${c.customerName}</b></td>
+                    <td>${c.phone}</td>
+                    <td>${linkedUser}</td>
+                    <td><span class="status-dot ${statusClass}"></span> ${currentStatus}</td>
+                    <td style="text-align:right;">
+                        <button type="button" class="action-btn" onclick="selectCustomer(${c.customerId})"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="action-btn delete" onclick="deleteCustomer(${c.customerId})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+        }
+
+        $('#customerTableBody').html(html);
+        $('#rowCount').text(customerList ? customerList.length : 0);
+    }
+
+    function saveCustomer(){
+        let customerName = $('#customerName').val().trim();
+        let phone = $('#phone').val().trim();
+        let userId = $('#userId').val() ? parseInt($('#userId').val()) : null;
+
+        let customerStatus = $('#customerStatus').val().toUpperCase();
+
+        const customerDTO = {
+            "customerName": customerName,
+            "phone": phone,
+            "userId": userId,
+            "customerStatus": customerStatus
+        };
+
+        console.log("Sending DTO:", customerDTO);
+
+        $.ajax({
+            url: "http://localhost:8080/v1/customer/customer-saved",
+            type: "POST",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            data: JSON.stringify(customerDTO),
+            success: function (response){
+                alert("customer save successfully!");
+                $('#customerModal').removeClass('show');
+                loadAllCustomers();
+            },
+            error: function (xhr){
+                alert("Error saving customer")
+            }
+        });
+    }
+
+    function updateCustomer(){
+        let customerId = $('#customerId').val()
+        let customerName = $('#customerName').val().trim();
+        let phone = $('#phone').val().trim();
+        let userId = $('#userId').val() ? parseInt($('#userId').val()) : null;
+        let customerStatus = $('#customerStatus').val().toUpperCase();
+
+        const customerDTO = {
+            "customerId": customerId,
+            "customerName": customerName,
+            "phone": phone,
+            "userId": userId,
+            "customerStatus": customerStatus
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/v1/customer/update-customer",
+            type: "PUT",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            data: JSON.stringify(customerDTO),
+            success: function (response){
+                alert(response.message || "Customer update successfully!");
+                $('#customerModal').removeClass('show');
+                loadAllCustomers();
+            },
+            error: function (xhr){
+                alert("Error updating customer!");
+            }
+        });
+    }
+
+    function selectCustomer(customerId){
+        $.ajax({
+            url: "http://localhost:8080/v1/customer/select-customer/"+ customerId,
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                let c = response.body || response.data ||  response;
+                $('#customerId').val(c.customerId);
+                $('#customerName').val(c.customerName);
+                $('#phone').val(c.phone);
+                $('#userId').val(c.userId || '');
+
+                let currentStatus = (c.customerStatus || 'ACTIVE').toString().toUpperCase();
+                $('#customerStatus').val(currentStatus);
+
+                $('#modalTitle').text('Edit Customer');
+                $('#customerModal').addClass('show');
+            },
+            error: function (xhr){
+                showToast("Error fetching customer details!")
+            }
+        });
+    }
+
+    function deleteCustomer(customerId){
+        if(confirm("Are you sure, you want to delete this customer?")){
+            $.ajax({
+                url: "http://localhost:8080/v1/customer/" + customerId,
+                type: "DELETE",
+                contentType: "application/json",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+                },
+                success: function (response){
+                    alert("Customer delete successfully!");
+                    loadAllCustomers();
+                },
+                error: function (xhr){
+                    alert("Error deleting customer!")
+                }
+            });
+        }
+    }
+
+    function searchCustomer(){
+        let searchValue = $('#searchInput').val().toLowerCase().trim();
+        let selectedStatus = $('#statusFilter').val().toUpperCase();
+
+        $.ajax({
+            url: "http://localhost:8080/v1/customer/customer",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                let customer = response.body || response.data || response || [];
+
+                let filtered = customer.filter(c => {
+                    let name = (c.customerName || '').toLowerCase();
+                    let phone = (c.phone || '').toLowerCase();
+                    let currentStatus = (c.customerStatus || c.status || 'ACTIVE').toString().toUpperCase();
+                    let matchesSearch = name.includes(searchValue) || phone.includes(searchValue);
+                    let matchesStatus = (selectedStatus === 'ALL') || (currentStatus === selectedStatus);
+
+                    return matchesSearch && matchesStatus;
+                });
+
+                renderTable(filtered);
+            },
+            error: function (xhr){
+                console.error("Error filtering customer", xhr)
+            }
+        });
+    }
 </script>
 </body>
 </html>
