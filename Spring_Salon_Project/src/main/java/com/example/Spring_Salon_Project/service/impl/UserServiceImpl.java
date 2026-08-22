@@ -3,8 +3,10 @@ package com.example.Spring_Salon_Project.service.impl;
 import com.example.Spring_Salon_Project.dto.UserDTO;
 import com.example.Spring_Salon_Project.entity.User;
 import com.example.Spring_Salon_Project.enumiration.UserStatus;
+import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.UserRepository;
 import com.example.Spring_Salon_Project.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -59,16 +61,17 @@ public class UserServiceImpl implements UserService {
 
 
             if(optionUser.isEmpty())
-                throw new RuntimeException(("Sorry, user not found"));
+                throw new CustomerException(404,"Sorry, user not found");
 
             User user = optionUser.get();
 
             if (!passwordEncoder.matches(password, user.getPassword())) {
-                throw new RuntimeException("Invalid Password");
+                throw new CustomerException(404,"Invalid Password");
+
             }
 
             if (user.getUserStatus() == UserStatus.INACTIVE) {
-                throw new RuntimeException("Your account is suspended/Inactive");
+                throw new CustomerException(404,"Your account is suspended/Inactive");
             }
 //            return new UserDTO(user.getUserId(),user.getUserName(),user.getUserRole(),user.getPassword());
             return new UserDTO(user.getUserId(),user.getUserName(),user.getUserRole(),null,user.getUserStatus(),user.getEmail());
@@ -101,7 +104,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findById(userDTO.getUserId());
 
         if(optionalUser.isEmpty())
-            throw new RuntimeException(("Sorry, user not found"));
+            throw new CustomerException(404,"Sorry, user not found");
 
         User user = optionalUser.get();
         user.setUserName(userDTO.getUserName());
@@ -127,7 +130,9 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+
     @Override
+    @Transactional
     public void deleteUser(long userId) {
 
         log.info("Execute method deleteUser() id{}", userId);
@@ -136,12 +141,11 @@ public class UserServiceImpl implements UserService {
             Optional<User> userOptional = userRepository.findById(userId);
 
             if (userOptional.isEmpty())
-                throw new RuntimeException("Sorry, related user is not found.");
+                throw new CustomerException(404,"Sorry, related user is not found.");
+
 
             User user = userOptional.get();
             user.setUserStatus(UserStatus.INACTIVE);
-
-
             userRepository.save(user);
 
             log.info("User Status Changed Successfully");
