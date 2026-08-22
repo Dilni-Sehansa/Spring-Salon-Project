@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +33,7 @@ public class UserServiceImpl implements UserService {
             user.setEmail(userDTO.getEmail());
 //            user.setPassword(userDTO.getPassword());
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-            user.setUserStatus(UserStatus.ACTIVE);
+            user.setUserStatus(userDTO.getUserStatus());
 
             User save = userRepository.save(user);
 
@@ -95,7 +93,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO selectUser(long userId) {
-        return userRepository.selectUser(userId);
+
+//        return userRepository.selectUser(userId);
+        UserDTO userDTO = userRepository.selectUser(userId);
+        if (userDTO == null) {
+            throw new CustomerException(404, "Customer not found for ID: " + userId);
+        }
+        return userDTO;
     }
 
     @Override

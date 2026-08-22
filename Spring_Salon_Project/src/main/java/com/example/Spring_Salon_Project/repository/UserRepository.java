@@ -43,8 +43,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 //            "WHERE (:username IS NULL OR LOWER(u.userName) LIKE LOWER(CONCAT('%', :username, '%')))")
 
 
-
-
     @Query("""
             SELECT new com.example.Spring_Salon_Project.dto.UserDTO(
                 u.userId,

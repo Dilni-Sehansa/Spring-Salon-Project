@@ -21,9 +21,7 @@ public class Customer {
     private Long customerId;
 
     @Column(nullable = false)
-    private String firstName;
-
-    private String lastName;
+    private String customerName;
 
     @Column(nullable = false)
     private String phone;

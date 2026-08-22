@@ -27,7 +27,7 @@ public class UserController {
     @PostMapping(value = "/user_saved", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonResponse saveUser(@RequestBody UserDTO userDTO){
         UserDTO saveDto = userService.saveUser(userDTO);
-        return new CommonResponse(OPERATION_SUCCESS,saveDto, SUCCESS_MESSAGE);
+        return new CommonResponse(0, saveDto,"User Saved Successfully");
     }
 
     @GetMapping(value = "/users",produces = MediaType.APPLICATION_JSON_VALUE)
