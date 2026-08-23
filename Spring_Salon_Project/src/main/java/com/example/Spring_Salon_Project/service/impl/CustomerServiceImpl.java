@@ -47,7 +47,7 @@ public class CustomerServiceImpl implements CustomerService {
             return new CustomerDTO(save.getCustomerId(), save.getCustomerName(), save.getPhone(), save.getCustomerStatus(),savedUserId);
 
         } catch (Exception e) {
-            log.info("Error saving customer: {}", e.getMessage());
+            log.error("Error saving customer: {}", e.getMessage());
             throw e;
         }
     }
@@ -100,7 +100,7 @@ public class CustomerServiceImpl implements CustomerService {
             return new CustomerDTO(customer.getCustomerId(),customer.getCustomerName(),customer.getPhone(),customer.getCustomerStatus(),(customer.getUser() != null) ? customer.getUser().getUserId() : null);
 
         }catch (Exception e){
-            log.info("Error getting customer");
+            log.error("Error getting customer");
             throw e;
         }
     }
@@ -144,7 +144,7 @@ public class CustomerServiceImpl implements CustomerService {
             customer.setCustomerStatus(CustomerStatus.INACTIVE);
             customerRepository.save(customer);
         }catch (Exception e){
-            log.info("Error deleting customer");
+            log.error("Error deleting customer");
             throw e;
         }
 
