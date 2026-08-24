@@ -25,30 +25,31 @@ public class UserServiceImpl implements UserService {
     public UserDTO saveUser(UserDTO userDTO) {
         log.info("Execute method saveUser");
 
-        try{
-
+        try {
             User user = new User();
             user.setUserName(userDTO.getUserName());
             user.setUserRole(userDTO.getUserRole());
             user.setEmail(userDTO.getEmail());
-//            user.setPassword(userDTO.getPassword());
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-            user.setUserStatus(userDTO.getUserStatus());
+
+            if (userDTO.getUserStatus() != null) {
+                user.setUserStatus(userDTO.getUserStatus());
+            } else {
+                user.setUserStatus(UserStatus.ACTIVE);
+            }
 
             User save = userRepository.save(user);
 
             log.info("User saved successfully");
 
-//            return new UserDTO(save.getUserId(),save.getUserName(),save.getUserRole(),save.getPassword());
-            return new UserDTO(save.getUserId(),save.getUserName(),save.getUserRole(),null,save.getUserStatus(),user.getEmail());
+            return new UserDTO(save.getUserId(), save.getUserName(), save.getUserRole(),
+                    null, save.getUserStatus(), user.getEmail());
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info("Error saving user");
             throw e;
         }
-
     }
-
     @Override
     public UserDTO getUserDetails(String userName, String password) {
         log.info("Execute method getUserDetails");

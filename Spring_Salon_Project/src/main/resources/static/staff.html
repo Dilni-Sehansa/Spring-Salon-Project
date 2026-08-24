@@ -629,20 +629,27 @@
         <h1>Glow<span>.</span></h1>
     </div>
     <nav class="sidebar-nav">
-        <a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a>
-        <a href="users.html"><i class="fas fa-users-cog"></i> Users</a>
-        <a href="customers.html"><i class="fas fa-users"></i> Customers</a>
-        <a href="#"><i class="fas fa-calendar-check"></i> Appointments</a>
-        <a href="#"><i class="fas fa-concierge-bell"></i> Services</a>
-        <a href="#" class="active"><i class="fas fa-user-md"></i> Staff</a>
-        <a href="#"><i class="fas fa-box"></i> Products</a>
-        <a href="#"><i class="fas fa-credit-card"></i> Payments</a>
-        <a href="#"><i class="fas fa-tags"></i> Promotions</a>
-        <a href="#"><i class="fas fa-star"></i> Reviews</a>
-        <a href="#"><i class="fas fa-clock"></i> Schedules</a>
+        <a href="dashboard.html" class="active"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="customer.html"><i class="fas fa-users"></i> Customers</a>
+        <a href="staffAvailability.html"><i class="fas fa-concierge-bell"></i> staff Availability</a>
+        <a href="staff.html"><i class="fas fa-user-md"></i> Staff</a>
+        <a href="category.html"><i class="fas fa-box"></i> Category</a>
+        <a href="appointment.html"><i class="fas fa-calendar-check"></i> Appointments</a>
+        <a href="service.html"><i class="fas fa-credit-card"></i> Service</a>
+        <a href="appointmentService.html"><i class="fas fa-tags"></i> AppointmentService</a>
+        <a href="payment.html"><i class="fas fa-star"></i>Payment</a>
+        <a href="review.html"><i class="fas fa-clock"></i> Review</a>
+        <a href="notification.html"><i class="fas fa-clock"></i>  Notification</a>
+        <a href="promotion.html"><i class="fas fa-clock"></i> Promotion</a>
+        <a href="appointmentPromotion.html"><i class="fas fa-clock"></i> AppointmentPromotion</a>
+        <a href="appointmentProduct.html"><i class="fas fa-clock"></i> AppointmentProduct</a>
+        <a href="auditLog.html"><i class="fas fa-clock"></i> AuditLog</a>
+        <a href="supplier.html"><i class="fas fa-clock"></i> Supplier</a>
+        <a href="supplierOrder.html"><i class="fas fa-clock"></i> SupplierOrder</a>
+        <a href="product.html"><i class="fas fa-clock"></i> Product</a>
     </nav>
     <div class="sidebar-footer">
-        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+        <a href="user.html"><i class="fas fa-cog"></i> User</a>
         <a href="login.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 </aside>
@@ -662,9 +669,9 @@
         </div>
         <select id="statusFilter">
             <option value="all">All Status</option>
-            <option value="ACTIVE">Active</option>
+            <option value="AVAILABLE">Available</option>
             <option value="INACTIVE">Inactive</option>
-            <option value="BLOCKED">Blocked</option>
+            <option value="ON_LEAVE">On Leave</option>
         </select>
     </div>
 
@@ -722,9 +729,10 @@
             <div class="input-group">
                 <label>Status</label>
                 <select id="staffStatus">
-                    <option value="ACTIVE">Active</option>
+                    <option value="all">All Status</option>
+                    <option value="AVAILABLE">Available</option>
                     <option value="INACTIVE">Inactive</option>
-                    <option value="BLOCKED">Blocked</option>
+                    <option value="ON_LEAVE">On Leave</option>
                 </select>
             </div>
             <div class="btn-row">
@@ -741,6 +749,275 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js">
 </script>
 <script>
+
+    let allStaff = [];
+
+    $(document).ready(function (){
+        loadAllStaff();
+        loadAllStaffDropdown();
+
+        $('#addStaffBtn').on('click', function (){
+            $('#staffForm')[0].reset();
+            $('#staffId').val('');
+            $('#modalTitle').text('Add New Staff');
+            $('#staffModal').addClass('show');
+        });
+
+        $('#modalCancel, #modalClose').on('click', function (){
+            $('#staffModal').removeClass('show');
+        });
+
+        $('#staffForm').on('submit' , function (e){
+            e.preventDefault();
+            let staffId = $('#staffId').val();
+            if(staffId){
+                updateStaff();
+            }else{
+                saveStaff();
+            }
+        });
+
+        $('#searchInput').on('keyup', searchStaff);
+        $('#statusFilter').on('change', searchStaff);
+    });
+
+    function showToast(message, type = 'success'){
+        const toast = $('#toast');
+        toast.text(message).removeClass('success error').addClass(`${type} show`);
+        setTimeout(() => {
+            toast.removeClass('show');
+        }, 3000);
+    }
+
+    function loadAllStaffDropdown(){
+        $.ajax({
+            url: "http://localhost:8080/v1/user/users",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                let users = response.body || response.data || response || [];
+                let options = '<option value="">— Select User —</option>';
+                users.forEach(u => {
+                    options += `<option value="${u.userId}">${u.userName || 'User'} (ID: ${u.userId})</option>`;
+                });
+                $('#userId').html(options);
+            },
+            error: function (xhr){
+                console.error("Error loading users dropdown", xhr);
+            }
+        });
+    }
+
+    function loadAllStaff(){
+        $.ajax({
+            url: "http://localhost:8080/v1/staff/staff",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                allStaff = response.body || response.data || response || [];
+                renderTable(allStaff);
+            },
+            error: function (xhr){
+                console.error("Error loading staff", xhr);
+                showToast("Failed to load staff", "error");
+            }
+        })
+    }
+
+    function renderTable(staffList) {
+        let html = "";
+        if (!staffList || staffList.length === 0) {
+            html = `<tr><td colspan="7" style="text-align:center; color:#b7a89c; padding:20px;">No staff found</td></tr>`;
+        } else {
+            for (const s of staffList) {
+                let currentStatus = (s.staffStatus || 'AVAILABLE').toString().toUpperCase();
+                let statusClass = currentStatus === 'INACTIVE' ? 'inactive' : 'active';
+                let linkedUser = s.userId ? `#${s.userId}` : '<i>None</i>';
+
+                html += `<tr>
+                    <td>#${s.staffId}</td>
+                    <td>${linkedUser}</td>
+                    <td><b>${s.specialization || ''}</b></td>
+                    <td>${s.bio || '-'}</td>
+                    <td>${s.experienceYears || 0} Yrs</td>
+                    <td><span class="status-dot ${statusClass}"></span> ${currentStatus}</td>
+                    <td style="text-align:right;">
+                        <button type="button" class="action-btn" onclick="selectStaff(${s.staffId})"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="action-btn delete" onclick="deleteStaff(${s.staffId})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+        }
+
+        $('#staffTableBody').html(html);
+        $('#rowCount').text(staffList ? staffList.length : 0);
+    }
+
+    function saveStaff(){
+        let specialization = $('#specialization').val().trim();
+        let bio = $('#bio').val().trim();
+        // let experienceYears = $('#experienceYears').val();
+        let experienceYears = $('#experienceYears').val() ? parseInt($('#experienceYears').val()) : 0;
+        let userId = $('#userId').val() ? parseInt($('#userId').val()) : null;
+
+        let staffStatus = $('#staffStatus').val().toUpperCase();
+
+        const staffDTO = {
+            "specialization": specialization,
+            "bio": bio,
+            "experienceYears": experienceYears,
+            "userId": userId,
+            "staffStatus": staffStatus
+        };
+
+        console.log("Sending DTO:", staffDTO);
+
+        $.ajax({
+            url: "http://localhost:8080/v1/staff/staff-saved",
+            type: "POST",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            data: JSON.stringify(staffDTO),
+            success: function (response){
+                alert("staff save successfully!");
+                $('#staffModal').removeClass('show');
+                loadAllStaff();
+            },
+            error: function (xhr){
+                alert("Error saving staff")
+            }
+        });
+    }
+
+    function updateStaff(){
+        let staffId = $('#staffId').val()
+        let specialization= $('#specialization').val().trim();
+        let bio = $('#bio').val().trim();
+        // let experienceYears = $('#experienceYears').val();
+        let experienceYears = $('#experienceYears').val() ? parseInt($('#experienceYears').val()) : 0;
+        let userId = $('#userId').val() ? parseInt($('#userId').val()) : null;
+        let staffStatus = $('#staffStatus').val().toUpperCase();
+
+        const staffDTO = {
+            "staffId": staffId,
+            "specialization": specialization,
+            "bio": bio,
+            "experienceYears": experienceYears,
+            "userId": userId,
+            "staffStatus": staffStatus
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/v1/staff/update-staff",
+            type: "PUT",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            data: JSON.stringify(staffDTO),
+            success: function (response){
+                alert(response.message || "Staff update successfully!");
+                $('#staffModal').removeClass('show');
+                loadAllStaff();
+            },
+            error: function (xhr){
+                alert("Error updating staff!");
+            }
+        });
+    }
+
+    function selectStaff(staffId){
+        $.ajax({
+            url: "http://localhost:8080/v1/staff/select-staff/"+ staffId,
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                let s = response.body || response.data ||  response;
+                $('#staffId').val(s.staffId);
+                $('#specialization').val(s.specialization);
+                $('#bio').val(s.bio);
+                $('#experienceYears').val(s.experienceYears);
+                $('#userId').val(s.userId || '');
+
+                let currentStatus = (s.staffStatus || 'ACTIVE').toString().toUpperCase();
+                $('#staffStatus').val(currentStatus);
+
+                $('#modalTitle').text('Edit Staff');
+                $('#staffModal').addClass('show');
+            },
+            error: function (xhr){
+                showToast("Error fetching staff details!")
+            }
+        });
+    }
+
+    function deleteStaff(staffId){
+        if(confirm("Are you sure, you want to delete this staff?")){
+            $.ajax({
+                url: "http://localhost:8080/v1/staff/" + staffId,
+                type: "DELETE",
+                contentType: "application/json",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+                },
+                success: function (response){
+                    alert("Staff delete successfully!");
+                    loadAllStaff();
+                },
+                error: function (xhr){
+                    alert("Error deleting staff!!")
+                }
+            });
+        }
+    }
+
+    function searchStaff() {
+        let searchValue = $('#searchInput').val().toLowerCase().trim();
+        let selectedStatus = $('#statusFilter').val().toUpperCase();
+
+        $.ajax({
+            url: "http://localhost:8080/v1/staff/staff",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response) {
+                let staff = response.body || response.data || response || [];
+
+                let filtered = staff.filter(s => {
+                    let specialization = (s.specialization || '').toLowerCase();
+                    let bio = (s.bio || '').toLowerCase();
+                    let experienceYears = String(s.experienceYears || '').toLowerCase();
+                    let currentStatus = (s.staffStatus || 'AVAILABLE').toString().toUpperCase();
+
+                    let matchesSearch = specialization.includes(searchValue) ||
+                        bio.includes(searchValue) ||
+                        experienceYears.includes(searchValue);
+
+                    let matchesStatus = (selectedStatus === 'ALL') || (currentStatus === selectedStatus);
+
+                    return matchesSearch && matchesStatus;
+                });
+
+                renderTable(filtered);
+            },
+            error: function (xhr) {
+                console.error("Error filtering staff", xhr);
+            }
+        });
+    }
 
 </script>
 </body>

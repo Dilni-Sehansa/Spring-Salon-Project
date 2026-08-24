@@ -1,6 +1,6 @@
 package com.example.Spring_Salon_Project.entity;
 
-import com.example.Spring_Salon_Project.enumiration.CategoryStatus;
+import com.example.Spring_Salon_Project.enumiration.SupplierStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,19 +12,24 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "categories")
-public class Category {
+@Table(name = "suppliers")
+public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryId;
+    private Long supplierId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
-    private String description;
+    @Column(nullable = false)
+    private String phone;
+
+    private String email;
+
+    private String address;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CategoryStatus categoryStatus;
+    private SupplierStatus supplierStatus;
 
 }
