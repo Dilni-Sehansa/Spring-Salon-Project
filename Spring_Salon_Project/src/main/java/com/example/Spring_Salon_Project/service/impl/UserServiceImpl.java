@@ -50,6 +50,7 @@ public class UserServiceImpl implements UserService {
             throw e;
         }
     }
+
     @Override
     public UserDTO getUserDetails(String userName, String password) {
         log.info("Execute method getUserDetails");

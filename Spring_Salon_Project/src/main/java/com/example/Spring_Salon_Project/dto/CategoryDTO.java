@@ -1,6 +1,6 @@
 package com.example.Spring_Salon_Project.dto;
 
-import jakarta.persistence.Column;
+import com.example.Spring_Salon_Project.enumiration.CategoryStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +12,7 @@ import lombok.Setter;
 @Setter
 public class CategoryDTO {
     private Long categoryId;
-    private String name;
+    private String categoryName;
     private String description;
+    private CategoryStatus categoryStatus;
 }
