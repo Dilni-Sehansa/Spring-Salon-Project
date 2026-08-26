@@ -1,10 +1,1030 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glow · Category Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        /* ── Reset & base ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffeef0 100%);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Floating petals ── */
+        .petal {
+            position: fixed;
+            border-radius: 50% 0 50% 50%;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+            animation: petalFloat 14s infinite ease-in-out;
+            background: #ff6f91;
+        }
+        .petal:nth-child(1) {
+            width: 40px;
+            height: 40px;
+            top: 5%;
+            left: 3%;
+            animation-delay: 0s;
+        }
+        .petal:nth-child(2) {
+            width: 25px;
+            height: 25px;
+            top: 20%;
+            right: 5%;
+            animation-delay: 3s;
+            background: #ffb6c1;
+        }
+        .petal:nth-child(3) {
+            width: 50px;
+            height: 50px;
+            bottom: 10%;
+            left: 8%;
+            animation-delay: 6s;
+        }
+        .petal:nth-child(4) {
+            width: 30px;
+            height: 30px;
+            bottom: 25%;
+            right: 6%;
+            animation-delay: 9s;
+            background: #ffb6c1;
+        }
+
+        @keyframes petalFloat {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            33% {
+                transform: translateY(-35px) rotate(25deg) scale(1.05);
+            }
+            66% {
+                transform: translateY(20px) rotate(-15deg) scale(0.95);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 260px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 32px 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 2px 0 30px rgba(0, 0, 0, 0.03);
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid rgba(255, 111, 145, 0.10);
+        }
+        .sidebar-brand i {
+            font-size: 2rem;
+            color: #ff6f91;
+            background: rgba(255, 111, 145, 0.10);
+            padding: 12px;
+            border-radius: 18px;
+        }
+        .sidebar-brand h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d2d2d;
+        }
+        .sidebar-brand h1 span {
+            color: #ff6f91;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #5a4a44;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+        .sidebar-nav a i {
+            width: 22px;
+            font-size: 1.1rem;
+            color: #b3886a;
+            transition: color 0.25s;
+        }
+        .sidebar-nav a:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+        .sidebar-nav a:hover i {
+            color: #ff6f91;
+        }
+        .sidebar-nav a.active {
+            background: #ff6f91;
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(255, 111, 145, 0.25);
+        }
+        .sidebar-nav a.active i {
+            color: #fff;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 16px;
+            border-radius: 14px;
+            color: #5a4a44;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.25s;
+        }
+        .sidebar-footer a i {
+            width: 22px;
+            color: #b3886a;
+        }
+        .sidebar-footer a:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+
+        /* ── Main content ── */
+        .main {
+            flex: 1;
+            padding: 32px 40px;
+            overflow-y: auto;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .main-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2d2d2d;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .main-header h2 i {
+            color: #ff6f91;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #ff6f91;
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(255, 111, 145, 0.3);
+        }
+        .btn-primary:hover {
+            background: #ff527b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 111, 145, 0.35);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            color: #2d2d2d;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-secondary:hover {
+            background: #fff;
+            border-color: #ff6f91;
+        }
+
+        .btn-danger-outline {
+            background: transparent;
+            border: 1px solid #eb5757;
+            color: #eb5757;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-danger-outline:hover {
+            background: #eb5757;
+            color: #fff;
+        }
+
+        /* ── Filters & Search ── */
+        .filter-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-bar .search-wrapper {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+        .filter-bar .search-wrapper input {
+            width: 100%;
+            padding: 12px 20px 12px 44px;
+            border-radius: 50px;
+            border: 2px solid #f5f0f0;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(6px);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .filter-bar .search-wrapper input:focus {
+            border-color: #ff6f91;
+            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.08);
+            background: #fff;
+        }
+        .filter-bar .search-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b7a89c;
+        }
+
+        .filter-bar select {
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: 2px solid #f5f0f0;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(6px);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+        .filter-bar select:focus {
+            border-color: #ff6f91;
+            background: #fff;
+        }
+
+        /* ── Card / Table ── */
+        .card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 24px 28px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.02);
+            overflow-x: auto;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 500px;
+        }
+        table th {
+            text-align: left;
+            padding: 14px 12px;
+            font-weight: 600;
+            color: #5a4a44;
+            border-bottom: 2px solid rgba(255, 111, 145, 0.10);
+            white-space: nowrap;
+        }
+        table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            color: #2d2d2d;
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-badge.active {
+            background: #6fcf97;
+            color: #fff;
+        }
+        .status-badge.inactive {
+            background: #f2c94a;
+            color: #fff;
+        }
+        .status-badge.blocked {
+            background: #eb5757;
+            color: #fff;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #b7a89c;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .action-btn:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+        .action-btn.delete:hover {
+            color: #eb5757;
+            background: rgba(235, 87, 87, 0.08);
+        }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 40px;
+            max-width: 520px;
+            width: 100%;
+            padding: 36px 40px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.12);
+            animation: modalSlide 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d2d2d;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #b7a89c;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .modal-close:hover {
+            color: #2d2d2d;
+        }
+
+        .modal .input-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .modal .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4d4038;
+            margin-bottom: 6px;
+        }
+        .modal .input-group input,
+        .modal .input-group select,
+        .modal .input-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 50px;
+            border: 2px solid #f5f0f0;
+            background: #fcf9f9;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        .modal .input-group textarea {
+            border-radius: 20px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .modal .input-group input:focus,
+        .modal .input-group select:focus,
+        .modal .input-group textarea:focus {
+            border-color: #ff6f91;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.08);
+        }
+
+        .modal .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .modal .btn-row .btn-primary,
+        .modal .btn-row .btn-secondary {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2d2d2d;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.success {
+            background: #6fcf97;
+        }
+        .toast.error {
+            background: #eb5757;
+        }
+
+        /* ── Empty state ── */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #b7a89c;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+        .empty-state p {
+            font-size: 1rem;
+        }
+
+        /* ── Responsive tweaks ── */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 72px;
+                padding: 20px 10px;
+            }
+            .sidebar-brand h1,
+            .sidebar-nav a span,
+            .sidebar-footer a span {
+                display: none;
+            }
+            .sidebar-brand i {
+                padding: 10px;
+                font-size: 1.5rem;
+            }
+            .sidebar-nav a,
+            .sidebar-footer a {
+                justify-content: center;
+                padding: 12px;
+            }
+            .sidebar-nav a i,
+            .sidebar-footer a i {
+                margin: 0;
+                font-size: 1.2rem;
+            }
+            .main {
+                padding: 20px;
+            }
+            .main-header h2 {
+                font-size: 1.3rem;
+            }
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
 </head>
 <body>
 
+<!-- Floating petals -->
+<div class="petal"></div>
+<div class="petal"></div>
+<div class="petal"></div>
+<div class="petal"></div>
+
+<!-- ─── SIDEBAR ─── -->
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-spa"></i>
+        <h1>Glow<span>.</span></h1>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+        <a href="customer.html"><i class="fas fa-users"></i><span>Customers</span></a>
+        <a href="staffAvailability.html"><i class="fas fa-concierge-bell"></i><span>Staff Availability</span></a>
+        <a href="staff.html"><i class="fas fa-user-md"></i><span>Staff</span></a>
+        <a href="category.html" class="active"><i class="fas fa-box"></i><span>Category</span></a>
+        <a href="appointment.html"><i class="fas fa-calendar-check"></i><span>Appointments</span></a>
+        <a href="service.html"><i class="fas fa-credit-card"></i><span>Service</span></a>
+        <a href="appointmentService.html"><i class="fas fa-tags"></i><span>AppointmentService</span></a>
+        <a href="payment.html"><i class="fas fa-star"></i><span>Payment</span></a>
+        <a href="review.html"><i class="fas fa-clock"></i><span>Review</span></a>
+        <a href="notification.html"><i class="fas fa-bell"></i><span>Notification</span></a>
+        <a href="promotion.html"><i class="fas fa-tags"></i><span>Promotion</span></a>
+        <a href="appointmentPromotion.html"><i class="fas fa-tag"></i><span>Appt. Promotion</span></a>
+        <a href="appointmentProduct.html"><i class="fas fa-cube"></i><span>Appt. Product</span></a>
+        <a href="auditLog.html"><i class="fas fa-history"></i><span>Audit Log</span></a>
+        <a href="supplier.html"><i class="fas fa-truck"></i><span>Supplier</span></a>
+        <a href="supplierOrder.html"><i class="fas fa-clipboard-list"></i><span>Supplier Order</span></a>
+        <a href="product.html"><i class="fas fa-cubes"></i><span>Product</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="user.html"><i class="fas fa-cog"></i><span>User</span></a>
+        <a href="login.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </div>
+</aside>
+
+<!-- ─── MAIN CONTENT ─── -->
+<main class="main">
+    <!-- Header -->
+    <div class="main-header">
+        <h2><i class="fas fa-box"></i> Category Management</h2>
+        <div class="header-actions">
+            <button class="btn-primary" id="addCategoryBtn"><i class="fas fa-plus"></i> Add New Category</button>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by category name..." />
+        </div>
+        <select id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+            <option value="BLOCKED">Blocked</option>
+        </select>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card">
+        <div class="table-wrap">
+            <table id="categoryTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Category Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+                </thead>
+                <tbody id="categoryTableBody">
+                <!-- rows rendered by JS -->
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 16px; text-align: center; color: #b7a89c; font-size: 0.8rem;">
+            Showing <span id="rowCount">0</span> categories
+        </div>
+    </div>
+</main>
+
+<!-- ─── MODAL ─── -->
+<div class="modal-overlay" id="categoryModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">Add New Category</h3>
+            <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="categoryForm">
+            <input type="hidden" id="categoryId" value="" />
+            <div class="input-group">
+                <label>Category Name</label>
+                <input type="text" id="categoryName" placeholder="e.g. Hair Care" required />
+            </div>
+            <div class="input-group">
+                <label>Description</label>
+                <textarea id="description" placeholder="Brief description of the category…"></textarea>
+            </div>
+            <div class="input-group">
+                <label>Status</label>
+                <select id="categoryStatus">
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                    <option value="BLOCKED">Blocked</option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button type="button" class="btn-secondary" id="modalCancel">Cancel</button>
+                <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save Category</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+
+<!-- ─── JQUERY ─── -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js">
+</script>
+
+<script>
+
+    let allCategory = [];
+    $(document).ready(function (){
+        loadAllCategory();
+
+        $('#addCategoryBtn').on('click', function () {
+            $('#categoryForm')[0].reset();
+            $('#categoryId').val('');
+                $('#modalTitle').text('Add New Category');
+            $('#categoryModal').addClass('show');
+        });
+
+        $('#modalCancel, #modalClose').on('click', function () {
+            $('#categoryModal').removeClass('show');
+        });
+
+        $('#categoryForm').on('submit',function (e){
+            e.preventDefault();
+            let categoryId = $('#categoryId').val();
+            if (categoryId){
+                updateCategory();
+            }else{
+                saveCategory();
+            }
+        });
+
+        $('#searchInput').on('keyup', searchCategory);
+        $('#statusFilter').on('change', searchCategory);
+    });
+
+    function showToast(message, type = 'success') {
+        const toast = $('#toast');
+        toast.text(message).removeClass('success error').addClass(`${type} show`);
+        setTimeout(() => {
+            toast.removeClass('show');
+        }, 3000);
+    }
+
+    function loadAllCategory(){
+        $.ajax({
+            url: "http://localhost:8080/v1/category/category",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                allCategory = response.body || response.data || response || [];
+                renderTable(allCategory);
+            },
+            error: function (xhr){
+                console.error("Error loading category", xhr);
+                showToast("Failed to load category", "error");
+            }
+        });
+    }
+
+    // function renderTable(categoryList) {
+    //     let html = "";
+    //     if (!categoryList || categoryList.length === 0) {
+    //         html = `<tr><td colspan="6" style="text-align:center; color:#b7a89c; padding:20px;">No Category found</td></tr>`;
+    //     } else {
+    //         for (const c of categoryList) {
+    //             let currentStatus = (c.categoryStatus || 'ACTIVE').toString().toUpperCase();
+    //             let statusClass = currentStatus === 'ACTIVE' ? 'active' : 'inactive';
+    //
+    //             html += `<tr>
+    //                 <td>#${c.categoryId}</td>
+    //                 <td><b>${c.categoryName}</b></td>
+    //                 <td>${c.description}</td>
+    //                 <td><span class="status-dot ${statusClass}"></span> ${currentStatus}</td>
+    //                 <td style="text-align:right;">
+    //                     <button type="button" class="action-btn" onclick="selectCategory(${c.categoryId})"><i class="fas fa-edit"></i></button>
+    //                     <button type="button" class="action-btn delete" onclick="deleteCategory(${c.categoryId})"><i class="fas fa-trash"></i></button>
+    //                 </td>
+    //             </tr>`;
+    //         }
+    //     }
+    //
+    //     $('#categoryTableBody').html(html);
+    //     $('#rowCount').text(categoryList ? categoryList.length : 0);
+    // }
+
+    function saveCategory(){
+        let categoryName = $('#categoryName').val().trim();
+        let description = $('#description').val().trim();
+
+        let categoryStatus = $('#categoryStatus').val().toUpperCase();
+
+        const categoryDTO = {
+            "categoryName": categoryName,
+            "description": description,
+            "categoryStatus": categoryStatus
+        };
+
+        console.log("Sending DTO:", categoryDTO);
+
+        $.ajax({
+            url: "http://localhost:8080/v1/category/category-saved",
+            type: "POST",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            data: JSON.stringify(categoryDTO),
+            success: function (response){
+                showToast("category save successfully!");
+                $('#categoryModal').removeClass('show');
+                loadAllCategory();
+            },
+            error: function (xhr){
+                let errorMsg = xhr.responseJSON ? xhr.responseJSON.message : "Error saving category!";
+                showToast(errorMsg, "error");
+            }
+        });
+    }
+
+    function updateCategory(){
+        let categoryId = $('#categoryId').val()
+        let categoryName = $('#categoryName').val().trim();
+        let description = $('#description').val().trim();
+        let categoryStatus = $('#categoryStatus').val().toUpperCase();
+
+        const categoryDTO = {
+            "categoryId": categoryId,
+            "categoryName": categoryName,
+            "description": description,
+            "categoryStatus": categoryStatus
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/v1/category/update-category",
+            type: "PUT",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            data: JSON.stringify(categoryDTO),
+            success: function (response){
+                showToast(response.message || "Category update successfully!");
+                $('#categoryModal').removeClass('show');
+                loadAllCategory();
+            },
+            error: function (xhr){
+                showToast("Error updating category!", "error");
+            }
+        });
+    }
+
+    function selectCategory(categoryId){
+        $.ajax({
+            url: "http://localhost:8080/v1/category/select-category/"+ categoryId,
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                let c = response.body || response.data ||  response;
+                $('#categoryId').val(c.categoryId);
+                $('#categoryName').val(c.categoryName);
+                $('#description').val(c.description);
+
+                let currentStatus = (c.categoryStatus || 'ACTIVE').toString().toUpperCase();
+                $('#categoryStatus').val(currentStatus);
+
+                $('#modalTitle').text('Edit Category');
+                $('#categoryModal').addClass('show');
+            },
+            error: function (xhr){
+                showToast("Error fetching Category details!", "error");            }
+        });
+    }
+
+    function deleteCategory(categoryId){
+        if(confirm("Are you sure, you want to delete this category?")){
+            $.ajax({
+                url: "http://localhost:8080/v1/category/" + categoryId,
+                type: "DELETE",
+                contentType: "application/json",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+                },
+                success: function (response){
+                    showToast("Category delete successfully!");
+                    loadAllCategory();
+                },
+                error: function (xhr){
+                    showToast("Error deleting category!", "error");
+                }
+            });
+        }
+    }
+
+    function changeStatus(categoryId) {
+        $.ajax({
+            url: "http://localhost:8080/v1/category/change-status/" + categoryId,
+            type: "PATCH",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response) {
+                showToast("Category status changed!", "success");
+                loadAllCategory();
+            },
+            error: function (xhr) {
+                showToast("Error changing category status!", "error");
+            }
+        });
+    }
+
+    // function searchCategory(){
+    //     let searchValue = $('#searchInput').val().toLowerCase().trim();
+    //     let selectedStatus = $('#statusFilter').val().toUpperCase();
+    //
+    //     let filtered = allCategory.filter(c => {
+    //         let name = (c.categoryName || '').toLowerCase();
+    //         let description = (c.description || '').toLowerCase();
+    //         let currentStatus = (c.categoryStatus || 'ACTIVE').toString().toUpperCase();
+    //
+    //         let matchesSearch = name.includes(searchValue) || description.includes(searchValue);
+    //         let matchesStatus = (selectedStatus === 'ALL') || (currentStatus === selectedStatus);
+    //
+    //         return matchesSearch && matchesStatus;
+    //     });
+    //
+    //     renderTable(filtered);
+    // }
+
+    function renderTable(categoryList) {
+        let html = "";
+
+        let list = Array.isArray(categoryList)
+            ? categoryList
+            : (categoryList && (categoryList.body || categoryList.data || categoryList.content)) || [];
+
+        if (!list || list.length === 0) {
+            html = `<tr><td colspan="6" style="text-align:center; color:#b7a89c; padding:20px;">No Category found</td></tr>`;
+        } else {
+            for (const c of list) {
+                let currentStatus = (c.categoryStatus || 'ACTIVE').toString().toUpperCase();
+                let statusClass = currentStatus === 'ACTIVE' ? 'active' : 'inactive';
+
+                html += `<tr>
+                    <td>#${c.categoryId}</td>
+                    <td><b>${c.categoryName}</b></td>
+                    <td>${c.description}</td>
+                    <td><span class="status-dot ${statusClass}"></span> ${currentStatus}</td>
+                    <td style="text-align:right;">
+                        <button type="button" class="action-btn" onclick="selectCategory(${c.categoryId})"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="action-btn delete" onclick="deleteCategory(${c.categoryId})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+        }
+
+        $('#categoryTableBody').html(html);
+        $('#rowCount').text(list ? list.length : 0);
+    }
+
+    function searchCategory(){
+        let searchValue = $('#searchInput').val().trim();
+        let selectedStatus = $('#statusFilter').val();
+
+        $.ajax({
+            url: `http://localhost:8080/v1/category/search?name=${searchValue}&status=${selectedStatus}`,
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                let list = response.body || response.data || response || [];
+                renderTable(list);
+            },
+            error: function (xhr){
+                console.error("Error searching category", xhr);
+            }
+        });
+    }
+</script>
 </body>
 </html>

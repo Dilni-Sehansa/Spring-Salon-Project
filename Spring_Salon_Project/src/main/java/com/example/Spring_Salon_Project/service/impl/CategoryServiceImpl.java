@@ -24,10 +24,27 @@ public class CategoryServiceImpl implements CategoryService {
        log.info("Execute method saveCategory");
 
        try{
+
+//           if(categoryRepository.existsByCategoryName(categoryDTO.getCategoryName())){
+//               throw new CustomerException(400, "Category name already exists!");
+//           }
+
+           Optional<Category> existingCategory = categoryRepository.findByCategoryName(categoryDTO.getCategoryName());
+
+           if (existingCategory.isPresent()) {
+               Category category = existingCategory.get();
+
+               if (category.getCategoryStatus() == CategoryStatus.INACTIVE) {
+                   throw new CustomerException(400, "This category already exists (previously saved/deleted). Please restore or activate it instead of creating a new one!");
+               } else {
+                   throw new CustomerException(400, "Category name already exists and is currently active!");
+               }
+           }
            Category category = new Category();
            category.setCategoryName(categoryDTO.getCategoryName());
            category.setDescription(categoryDTO.getDescription());
-           category.setCategoryStatus(categoryDTO.getCategoryStatus());
+//           category.setCategoryStatus(categoryDTO.getCategoryStatus());
+           category.setCategoryStatus(categoryDTO.getCategoryStatus() != null ? categoryDTO.getCategoryStatus() : CategoryStatus.ACTIVE);
 
            Category save = categoryRepository.save(category);
            log.info("Category saved successfully");
@@ -51,8 +68,20 @@ public class CategoryServiceImpl implements CategoryService {
                 throw new CustomerException(404, "Sorry, category not found");
 
             Category category = updateUser.get();
-            category.setCategoryName(categoryDTO.getCategoryName());
-            category.setDescription(categoryDTO.getDescription());
+//            category.setCategoryName(categoryDTO.getCategoryName());
+//            category.setDescription(categoryDTO.getDescription());
+
+            if (categoryDTO.getCategoryName() != null && !categoryDTO.getCategoryName().equalsIgnoreCase(category.getCategoryName())) {
+                Optional<Category> existingCategory = categoryRepository.findByCategoryName(categoryDTO.getCategoryName());
+                if (existingCategory.isPresent()) {
+                    throw new CustomerException(400, "Category name already exists!");
+                }
+                category.setCategoryName(categoryDTO.getCategoryName());
+            }
+
+            if (categoryDTO.getDescription() != null) {
+                category.setDescription(categoryDTO.getDescription());
+            }
 
             if (categoryDTO.getCategoryStatus() != null) {
                 category.setCategoryStatus(categoryDTO.getCategoryStatus());
@@ -126,4 +155,38 @@ public class CategoryServiceImpl implements CategoryService {
             throw e;
         }
     }
+
+    @Override
+    public void changeCategoryStatus(long categoryId) {
+        log.info("Execute method changeCategoryStatus for categoryId: {}", categoryId);
+
+        try {
+            Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
+
+            if (optionalCategory.isPresent()) {
+                Category category = optionalCategory.get();
+
+                if (category.getCategoryStatus() == CategoryStatus.ACTIVE) {
+                    category.setCategoryStatus(CategoryStatus.INACTIVE);
+                } else {
+                    category.setCategoryStatus(CategoryStatus.ACTIVE);
+                }
+
+                categoryRepository.save(category);
+                log.info("Category status updated successfully");
+            } else {
+                throw new CustomerException(404, "Category not found");
+            }
+        } catch (Exception e) {
+            log.error("Error in method changeCategoryStatus: {}", e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    public List<CategoryDTO> filterCategory(String categoryName, CategoryStatus categoryStatus) {
+        return categoryRepository.filterCategory(categoryName, categoryStatus);
+    }
+
+
 }

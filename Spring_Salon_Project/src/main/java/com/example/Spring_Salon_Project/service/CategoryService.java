@@ -1,6 +1,8 @@
 package com.example.Spring_Salon_Project.service;
 
 import com.example.Spring_Salon_Project.dto.CategoryDTO;
+import com.example.Spring_Salon_Project.enumiration.CategoryStatus;
+
 import java.util.List;
 
 public interface CategoryService {
@@ -18,5 +20,7 @@ public interface CategoryService {
 
     void deleteCategory(long categoryId);
 
+    void changeCategoryStatus(long categoryId);
 
+    List<CategoryDTO> filterCategory(String categoryName, CategoryStatus categoryStatus);
 }
