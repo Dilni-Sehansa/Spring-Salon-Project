@@ -24,6 +24,6 @@ public class AppointmentService {
 
     @ManyToOne
     @JoinColumn(name = "service_id")
-    private Service service;
+    private SaloonService service;
 
 }
