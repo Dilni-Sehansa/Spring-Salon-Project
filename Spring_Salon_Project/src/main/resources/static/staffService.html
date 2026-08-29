@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Glow · Service Management</title>
+    <title>Glow · Staff Service Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
@@ -65,18 +65,10 @@
         }
 
         @keyframes petalFloat {
-            0% {
-                transform: translateY(0) rotate(0deg) scale(1);
-            }
-            33% {
-                transform: translateY(-35px) rotate(25deg) scale(1.05);
-            }
-            66% {
-                transform: translateY(20px) rotate(-15deg) scale(0.95);
-            }
-            100% {
-                transform: translateY(0) rotate(0deg) scale(1);
-            }
+            0% { transform: translateY(0) rotate(0deg) scale(1); }
+            33% { transform: translateY(-35px) rotate(25deg) scale(1.05); }
+            66% { transform: translateY(20px) rotate(-15deg) scale(0.95); }
+            100% { transform: translateY(0) rotate(0deg) scale(1); }
         }
 
         /* ── Sidebar ── */
@@ -274,26 +266,7 @@
             border-color: #ff6f91;
         }
 
-        .btn-danger-outline {
-            background: transparent;
-            border: 1px solid #eb5757;
-            color: #eb5757;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: 500;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-danger-outline:hover {
-            background: #eb5757;
-            color: #fff;
-        }
-
-        /* ── Filters & Search ── */
+        /* ── Filters ── */
         .filter-bar {
             display: flex;
             gap: 16px;
@@ -375,7 +348,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9rem;
-            min-width: 800px;
+            min-width: 600px;
         }
 
         table th {
@@ -449,12 +422,7 @@
             background: rgba(111, 207, 151, 0.08);
         }
 
-        .price-cell {
-            font-weight: 600;
-            color: #2d2d2d;
-        }
-
-        .category-tag {
+        .staff-tag {
             display: inline-block;
             padding: 2px 12px;
             background: rgba(255, 111, 145, 0.08);
@@ -473,9 +441,6 @@
             font-size: 3rem;
             margin-bottom: 12px;
             opacity: 0.4;
-        }
-        .empty-state p {
-            font-size: 1rem;
         }
 
         /* ── Modal ── */
@@ -507,14 +472,8 @@
         }
 
         @keyframes modalSlide {
-            0% {
-                opacity: 0;
-                transform: translateY(30px) scale(0.96);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            0% { opacity: 0; transform: translateY(30px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .modal-header {
@@ -552,8 +511,7 @@
             margin-bottom: 6px;
         }
         .modal .input-group input,
-        .modal .input-group select,
-        .modal .input-group textarea {
+        .modal .input-group select {
             width: 100%;
             padding: 12px 16px;
             border-radius: 50px;
@@ -565,25 +523,11 @@
             transition: all 0.3s;
             box-sizing: border-box;
         }
-        .modal .input-group textarea {
-            border-radius: 16px;
-            resize: vertical;
-            min-height: 70px;
-        }
         .modal .input-group input:focus,
-        .modal .input-group select:focus,
-        .modal .input-group textarea:focus {
+        .modal .input-group select:focus {
             border-color: #ff6f91;
             background: #fff;
             box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.08);
-        }
-
-        .modal .input-row {
-            display: flex;
-            gap: 16px;
-        }
-        .modal .input-row .input-group {
-            flex: 1;
         }
 
         .modal .btn-row {
@@ -626,7 +570,29 @@
             background: #eb5757;
         }
 
-        /* ── Responsive tweaks ── */
+        /* ── Skeleton ── */
+        .skeleton {
+            animation: shimmer 1.2s ease-in-out infinite;
+            background: linear-gradient(90deg, #f0ecec 25%, #e8e3e3 50%, #f0ecec 75%);
+            background-size: 200% 100%;
+            border-radius: 6px;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton-row td {
+            padding: 10px 12px;
+        }
+        .skeleton-row .skeleton {
+            height: 18px;
+            width: 100%;
+        }
+        .skeleton-row .skeleton.xs {
+            width: 40%;
+        }
+
+        /* ── Responsive ── */
         @media (max-width: 768px) {
             .sidebar {
                 width: 72px;
@@ -653,18 +619,11 @@
                 justify-content: center;
                 padding: 10px;
             }
-            .sidebar-footer a i {
-                margin: 0;
-            }
             .main {
                 padding: 16px;
             }
             .modal {
                 padding: 24px;
-            }
-            .modal .input-row {
-                flex-direction: column;
-                gap: 0;
             }
             .main-header h2 {
                 font-size: 1.4rem;
@@ -677,8 +636,6 @@
                 min-width: unset;
             }
         }
-
-        /* Scrollbar styling */
         .main::-webkit-scrollbar {
             width: 4px;
         }
@@ -689,9 +646,6 @@
             background: rgba(255, 111, 145, 0.25);
             border-radius: 10px;
         }
-        .main::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 111, 145, 0.4);
-        }
     </style>
 </head>
 <body>
@@ -701,6 +655,7 @@
 <div class="petal"></div>
 <div class="petal"></div>
 
+<!-- ─── SIDEBAR ─── -->
 <aside class="sidebar">
     <div class="sidebar-brand">
         <i class="fas fa-spa"></i>
@@ -740,18 +695,19 @@
     </div>
 </aside>
 
+<!-- ─── MAIN ─── -->
 <main class="main">
     <div class="main-header">
-        <h2><i class="fas fa-credit-card"></i> Service Management</h2>
+        <h2><i class="fas fa-user-cog"></i> Staff Service Management</h2>
         <div class="header-actions">
-            <button class="btn-primary" id="addServiceBtn"><i class="fas fa-plus"></i> Add New Service</button>
+            <button class="btn-primary" id="addStaffServiceBtn"><i class="fas fa-plus"></i> Assign Service</button>
         </div>
     </div>
 
     <div class="filter-bar">
         <div class="search-wrapper">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Search by service name..." />
+            <input type="text" id="searchInput" placeholder="Search by staff or service name..." />
         </div>
         <select id="statusFilter">
             <option value="all">All Status</option>
@@ -762,69 +718,57 @@
 
     <div class="card">
         <div class="table-wrap">
-            <table id="serviceTable">
+            <table id="staffServiceTable">
                 <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Service Name</th>
-                    <th>Description</th>
-                    <th>Price</th>
-                    <th>Duration</th>
-                    <th>Category</th>
+                    <th>Staff</th>
+                    <th>Service</th>
                     <th>Status</th>
                     <th style="text-align:right;">Actions</th>
                 </tr>
                 </thead>
-                <tbody id="serviceTableBody">
+                <tbody id="staffServiceTableBody">
+                <!-- Skeleton loading -->
+                <tr class="skeleton-row"><td><div class="skeleton xs"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton xs"></div></td><td style="text-align:right;"><div class="skeleton xs" style="display:inline-block;"></div></td></tr>
+                <tr class="skeleton-row"><td><div class="skeleton xs"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton xs"></div></td><td style="text-align:right;"><div class="skeleton xs" style="display:inline-block;"></div></td></tr>
+                <tr class="skeleton-row"><td><div class="skeleton xs"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton xs"></div></td><td style="text-align:right;"><div class="skeleton xs" style="display:inline-block;"></div></td></tr>
                 </tbody>
             </table>
         </div>
         <div style="margin-top: 16px; text-align: center; color: #b7a89c; font-size: 0.8rem;">
-            Showing <span id="rowCount">0</span> services
+            Showing <span id="rowCount">0</span> assignments
         </div>
     </div>
 </main>
 
-<div class="modal-overlay" id="serviceModal">
+<!-- ─── MODAL ─── -->
+<div class="modal-overlay" id="staffServiceModal">
     <div class="modal">
         <div class="modal-header">
-            <h3 id="modalTitle">Add New Service</h3>
+            <h3 id="modalTitle">Assign Service to Staff</h3>
             <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
         </div>
-        <form id="serviceForm">
-            <input type="hidden" id="serviceId" value="" />
+        <form id="staffServiceForm">
+            <input type="hidden" id="staffServiceId" value="" />
 
             <div class="input-group">
-                <label>Service Name *</label>
-                <input type="text" id="serviceName" placeholder="e.g. Haircut & Styling" required />
+                <label>Staff *</label>
+                <select id="staffId" required>
+                    <option value="">— Select Staff —</option>
+                </select>
             </div>
 
             <div class="input-group">
-                <label>Description</label>
-                <textarea id="description" placeholder="Brief description of the service…"></textarea>
-            </div>
-
-            <div class="input-row">
-                <div class="input-group">
-                    <label>Price (LKR) *</label>
-                    <input type="number" id="price" placeholder="2500.00" step="0.01" min="0" required />
-                </div>
-                <div class="input-group">
-                    <label>Duration (minutes) *</label>
-                    <input type="number" id="durationMinutes" placeholder="45" min="1" required />
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Category</label>
-                <select id="categoryId">
-                    <option value="">— Select Category —</option>
+                <label>Service *</label>
+                <select id="serviceId" required>
+                    <option value="">— Select Service —</option>
                 </select>
             </div>
 
             <div class="input-group">
                 <label>Status</label>
-                <select id="serviceStatus">
+                <select id="staffServiceStatus">
                     <option value="ACTIVE">Active</option>
                     <option value="INACTIVE">Inactive</option>
                 </select>
@@ -832,320 +776,18 @@
 
             <div class="btn-row">
                 <button type="button" class="btn-secondary" id="modalCancel">Cancel</button>
-                <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save Service</button>
+                <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save Assignment</button>
             </div>
         </form>
     </div>
 </div>
 
+<!-- ─── TOAST ─── -->
 <div class="toast" id="toast"></div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js">
-</script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
-    let allServices = [];
-    $(document).ready(function (){
-        loadAllService();
-        loadAllCategoryDropdown();
 
-        $('#addServiceBtn').on('click', function () {
-            $('#serviceForm')[0].reset();
-            $('#serviceId').val('');
-            $('#modalTitle').text('Add New Service');
-            $('#serviceModal').addClass('show');
-        });
-
-        $('#modalCancel, #modalClose').on('click', function () {
-            $('#serviceModal').removeClass('show');
-        });
-
-        $('#serviceForm').on('submit',function (e){
-            e.preventDefault();
-            let serviceId = $('#serviceId').val();
-            if (serviceId){
-                updateService();
-            }else{
-                saveService();
-            }
-        });
-
-        $('#searchInput').on('keyup', searchService);
-        $('#statusFilter').on('change', searchService);
-    });
-
-    function showToast(message, type = 'success') {
-        const toast = $('#toast');
-        toast.text(message).removeClass('success error').addClass(`${type} show`);
-        setTimeout(() => {
-            toast.removeClass('show');
-        }, 3000);
-    }
-
-    function loadAllCategoryDropdown() {
-        $.ajax({
-            url: "http://localhost:8080/v1/category/category",
-            type: "GET",
-            contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
-            success: function (response) {
-                let services = response.body || response.data || response || [];
-                let options = '<option value="">select category</option>';
-
-                let uniqueCategories = [];
-                services.forEach(c => {
-                    if (c.categoryId && !uniqueCategories.some(item => item.categoryId === c.categoryId)) {
-                        uniqueCategories.push({ categoryId: c.categoryId, categoryName: c.categoryName || ('Category ' + c.categoryId) });
-                    }
-                });
-
-                uniqueCategories.forEach(c => {
-                    options += `<option value="${c.categoryId}">${c.categoryName}</option>`;
-                });
-
-                $('#categoryId').html(options);
-            },
-            error: function (xhr) {
-                console.error("Error loading category dropdown", xhr);
-            }
-        });
-    }
-
-    function loadAllService(){
-        $.ajax({
-            url: "http://localhost:8080/v1/service/service",
-            type: "GET",
-            contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
-            success: function (response){
-                allServices = response.body || response.data || response || [];
-                renderTable(allServices);
-
-            },
-            error: function (xhr){
-                console.error("Error loading services", xhr);
-                showToast("Failed to load services", "error");
-            }
-        });
-    }
-
-    function renderTable(serviceList) {
-        let html = "";
-        if (!serviceList || serviceList.length === 0) {
-            html =
-                `<tr><td colspan="8" style="text-align:center; color:#b7a89c; padding:20px;">No services found</td></tr>`;
-        } else {
-            for (const s of serviceList) {
-                let currentStatus = (s.serviceStatus || 'ACTIVE').toString().toUpperCase();
-                let statusClass = currentStatus === 'ACTIVE' ? 'active' : 'inactive';
-                let categoryName = s.categoryName || 'Uncategorized';
-                let description = s.description || '—';
-                let price = s.price !== undefined && s.price !== null ? parseFloat(s.price).toFixed(2) : '0.00';
-                let duration = s.durationMinutes || '—';
-
-                html += `<tr>
-                        <td>#${s.serviceId}</td>
-                        <td><b>${s.serviceName || '—'}</b></td>
-                        <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${description}">${description}</td>
-                        <td class="price-cell">LKR ${price}</td>
-                        <td>${duration} min</td>
-                        <td><span class="category-tag">${categoryName}</span></td>
-                        <td><span class="status-dot ${statusClass}"></span> ${currentStatus}</td>
-                        <td style="text-align:right; white-space:nowrap;">
-                            <button type="button" class="action-btn status-toggle" onclick="toggleStatus(${s.serviceId})" title="Toggle status"><i class="fas fa-sync-alt"></i></button>
-                            <button type="button" class="action-btn" onclick="selectService(${s.serviceId})"><i class="fas fa-edit"></i></button>
-                            <button type="button" class="action-btn delete" onclick="deleteService(${s.serviceId})"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>`;
-            }
-        }
-
-        $('#serviceTableBody').html(html);
-        $('#rowCount').text(serviceList ? serviceList.length : 0);
-    }
-
-    function saveService(){
-        let serviceName = $('#serviceName').val().trim();
-        let description = $('#description').val().trim();
-        let price = parseFloat($('#price').val());
-        let durationMinutes = parseInt($('#durationMinutes').val());
-        let categoryId = $('#categoryId').val() ? parseInt($('#categoryId').val()) : null;
-        let serviceStatus = $('#serviceStatus').val();
-
-        const serviceDTO = {
-            "serviceName": serviceName,
-            "description": description,
-            "price": price,
-            "durationMinutes": durationMinutes,
-            "categoryId": categoryId,
-            "serviceStatus": serviceStatus
-
-        };
-
-        console.log("Sending DTO:", serviceDTO);
-
-        $.ajax({
-            url: "http://localhost:8080/v1/service/service-saved",
-            type: "POST",
-            contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
-            data: JSON.stringify(serviceDTO),
-            success: function (response){
-                showToast(response.message || "Service saved successfully!", "success");
-                $('#serviceModal').removeClass('show');
-                loadAllService();
-            },
-            error: function (xhr){
-                alert("Error saving Service")
-            }
-        });
-    }
-
-    function updateService(){
-        let serviceId = parseInt($('#serviceId').val());
-        let serviceName = $('#serviceName').val().trim();
-        let description = $('#description').val().trim();
-        let price = parseFloat($('#price').val());
-        let durationMinutes = parseInt($('#durationMinutes').val());
-        let categoryId = $('#categoryId').val() ? parseInt($('#categoryId').val()) : null;
-        let serviceStatus = $('#serviceStatus').val().toUpperCase();
-
-        const serviceDTO = {
-            "serviceId": serviceId,
-            "serviceName": serviceName,
-            "description": description,
-            "price": price,
-            "durationMinutes": durationMinutes,
-            "categoryId": categoryId,
-            "serviceStatus": serviceStatus
-        };
-
-        $.ajax({
-            url: "http://localhost:8080/v1/service/update-service",
-            type: "PUT",
-            contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
-            data: JSON.stringify(serviceDTO),
-            success: function (response){
-                alert(response.message || "Service update successfully!");
-                $('#serviceModal').removeClass('show');
-                loadAllService();
-            },
-            error: function (xhr){
-                showToast("Error updating Service!", "error");
-            }
-        });
-    }
-
-    function selectService(serviceId){
-        $.ajax({
-            url: "http://localhost:8080/v1/service/select-service/"+ serviceId,
-            type: "GET",
-            contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
-            success: function (response){
-                let s = response.body || response.data ||  response;
-                $('#serviceId').val(s.serviceId);
-                $('#serviceName').val(s.serviceName);
-                $('#description').val(s.description);
-                $('#price').val(s.price);
-                $('#durationMinutes').val(s.durationMinutes);
-                $('#categoryId').val(s.categoryId);
-
-                let currentStatus = (s.serviceStatus || 'ACTIVE').toString().toUpperCase();
-                $('#serviceStatus').val(currentStatus);
-
-                $('#modalTitle').text('Edit Service');
-                $('#serviceModal').addClass('show');
-            },
-            error: function (xhr){
-                showToast("Error fetching service details!", "error");
-            }
-        });
-    }
-
-    function deleteService(serviceId){
-        if(confirm("Are you sure, you want to delete this service?")){
-            $.ajax({
-                url: "http://localhost:8080/v1/service/" + serviceId,
-                type: "DELETE",
-                contentType: "application/json",
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-                },
-                success: function (response){
-                    alert("Service delete successfully!");
-                    loadAllService();
-                },
-                error: function (xhr){
-                    alert("Error deleting service!")
-                }
-            });
-        }
-    }
-
-    function searchService(){
-        let searchValue = $('#searchInput').val().toLowerCase().trim();
-        let selectedStatus = $('#statusFilter').val().toUpperCase();
-
-        $.ajax({
-            url: "http://localhost:8080/v1/service/service",
-            type: "GET",
-            contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
-            success: function (response){
-                let service = response.body || response.data || response || [];
-
-                let filtered = service.filter(s => {
-                    let serviceName = (s.serviceName || '').toLowerCase();
-                    let price = (s.price !== null && s.price !== undefined) ? s.price.toString().toLowerCase() : '';
-                    let durationMinutes = (s.durationMinutes !== null && s.durationMinutes !== undefined) ? s.durationMinutes.toString().toLowerCase() : '';
-                    let categoryId = (s.categoryId !== null && s.categoryId !== undefined) ? s.categoryId.toString().toLowerCase() : '';
-                    let categoryName = (s.categoryName || '').toLowerCase();
-                    let currentStatus = (s.serviceStatus || 'ACTIVE').toString().toUpperCase();
-
-                    let matchesSearch = serviceName.includes(searchValue) || price.includes(searchValue) || durationMinutes.includes(searchValue) || categoryId.includes(searchValue) || categoryName.includes(searchValue) || currentStatus.includes(searchValue);
-                    let matchesStatus = (selectedStatus === 'ALL') || (currentStatus === selectedStatus);
-
-                    return matchesSearch && matchesStatus;
-                });
-
-                renderTable(filtered);
-            },
-            error: function (xhr){
-                console.error("Error filtering Service", xhr)
-            }
-        });
-    }
-
-    function toggleStatus(serviceId) {
-        $.ajax({
-            url: "http://localhost:8080/v1/service/change-status/" + serviceId,
-            type: "PATCH",
-            contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
-            success: function (response) {
-                showToast(response.message || "Status changed successfully!", "success");
-                loadAllService();
-            },
-            error: function (xhr) {
-                showToast("Error changing status!", "error");
-            }
-        });
-    }
 </script>
 </body>
 </html>

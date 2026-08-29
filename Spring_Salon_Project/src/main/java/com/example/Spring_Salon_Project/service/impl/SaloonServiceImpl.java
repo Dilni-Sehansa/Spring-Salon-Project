@@ -110,6 +110,8 @@ public class SaloonServiceImpl implements SaloonServiceService {
             saloonService.setServiceStatus(ServiceStatus.INACTIVE);
             saloonServiceRepository.save(saloonService);
 
+            log.info("Service marked as INACTIVE successfully");
+
         }catch (Exception e){
             log.error("Error deleting SaloonService: {}", e.getMessage());
             throw e;

@@ -1,7 +1,6 @@
 package com.example.Spring_Salon_Project.entity;
 
 import com.example.Spring_Salon_Project.enumiration.PaymentMethod;
-import com.example.Spring_Salon_Project.enumiration.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,23 +14,17 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "payments")
-public class Payment {
+public class AdvancePayment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long paymentId;
+    private Long advancePaymentId;
 
     @OneToOne
     @JoinColumn(name = "appointment_id", nullable = false)
     private Appointment appointment;
 
     @Column(nullable = false)
-    private Double totalAmount;
-
-    private Double discount;
-
-    @Column(nullable = false)
-    private Double finalAmount;
+    private Double advanceAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -39,6 +32,4 @@ public class Payment {
 
     @Column(nullable = false)
     private LocalDateTime paymentDate;
-
-
 }

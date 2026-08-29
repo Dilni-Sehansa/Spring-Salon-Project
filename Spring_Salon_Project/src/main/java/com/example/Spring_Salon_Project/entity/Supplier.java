@@ -19,7 +19,10 @@ public class Supplier {
     private Long supplierId;
 
     @Column(nullable = false)
-    private String name;
+    private String supplierName;
+
+    @Column(nullable = false)
+    private String contactPerson;
 
     @Column(nullable = false)
     private String phone;
@@ -27,9 +30,5 @@ public class Supplier {
     private String email;
 
     private String address;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SupplierStatus supplierStatus;
 
 }

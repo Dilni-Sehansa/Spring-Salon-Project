@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "appointmentServices")
-public class AppointmentService {
+public class AppointmentDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long appointmentServiceId;

@@ -1,33 +1,37 @@
 package com.example.Spring_Salon_Project.entity;
 
-import com.example.Spring_Salon_Project.enumiration.CustomerStatus;
-import com.example.Spring_Salon_Project.enumiration.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-@Table(name = "staff_services")
-public class StaffService {
+public class StaffCommission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long staffServiceId;
+    private Long commissionId;
 
     @ManyToOne
     @JoinColumn(name = "staff_id", nullable = false)
     private Staff staff;
 
     @ManyToOne
-    @JoinColumn(name = "service_id", nullable = false)
-    private SaloonService saloonService;
+    @JoinColumn(name = "appointment_detail_id", nullable = false)
+    private AppointmentDetail appointmentDetail;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status staffServiceStatus;
+    private Double commissionRate;
+
+    @Column(nullable = false)
+    private Double commissionAmount;
+
+    @Column(nullable = false)
+    private LocalDate commissionDate;
 }

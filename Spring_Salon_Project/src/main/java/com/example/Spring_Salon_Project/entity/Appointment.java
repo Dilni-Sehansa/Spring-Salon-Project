@@ -18,18 +18,21 @@ public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long appointmentId;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
+    @Column(nullable = false)
     private LocalDate appointmentDate;
+
+    @Column(nullable = false)
     private LocalTime appointmentTime;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private AppointmentStatus appointmentStatus;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
-
-    @ManyToOne
-    @JoinColumn(name = "promotion_id")
-    private Promotion promotion;
-
+    @Column(nullable = false)
+    private Double totalAmount;
 }
