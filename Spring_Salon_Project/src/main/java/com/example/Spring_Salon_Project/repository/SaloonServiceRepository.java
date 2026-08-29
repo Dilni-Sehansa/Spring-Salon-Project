@@ -66,5 +66,20 @@ public interface SaloonServiceRepository extends JpaRepository<SaloonService,Lon
             @Param("serviceStatus") ServiceStatus serviceStatus
     );
 
+    @Query("""
+         SELECT new com.example.Spring_Salon_Project.dto.SaloonServiceDTO(
+              s.serviceId,
+              s.serviceName,
+              s.description,
+              s.price,
+              s.durationMinutes,
+              c.categoryId,
+              c.categoryName,
+              s.serviceStatus
+         )
+         FROM SaloonService s LEFT JOIN s.category c WHERE c.categoryId = :categoryId
+         """)
+    Optional<SaloonServiceDTO> getServiceByCategoryId(@Param("categoryId") long categoryId);
+
 
 }

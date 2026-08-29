@@ -58,6 +58,11 @@ public class SaloonServiceController {
         saloonServiceService.updateSaloonService(saloonServiceDTO);
         return new CommonResponse(0,"Service Updated Successfully");
     }
+    @GetMapping(value = "/category/{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CommonResponse getServiceByCategoryId(@PathVariable long categoryId) {
+        SaloonServiceDTO saloonServiceDTO = saloonServiceService.getServiceByCategoryId(categoryId);
+        return new CommonResponse(0, saloonServiceDTO, "Category Loaded Successfully");
+    }
 
     @GetMapping(value = "/details/{serviceName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonResponse getServiceDetails(@PathVariable String serviceName) {

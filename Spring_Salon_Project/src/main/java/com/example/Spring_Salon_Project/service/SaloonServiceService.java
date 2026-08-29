@@ -23,4 +23,6 @@ public interface SaloonServiceService {
 
     void changeSaloonStatus(long serviceId);
 
+    SaloonServiceDTO getServiceByCategoryId(long categoryId);
+
 }

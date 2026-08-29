@@ -60,6 +60,9 @@ public class SecurityConfig {
                         .requestMatchers("/v1/staff/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/v1/category/**").permitAll()
                         .requestMatchers("/v1/category/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers(HttpMethod.GET, "/v1/service/**").permitAll()
+                        .requestMatchers("/v1/service/**").hasAnyRole("ADMIN","STAFF")
+
 
                         .anyRequest().authenticated()
                 )

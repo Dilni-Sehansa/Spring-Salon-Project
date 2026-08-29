@@ -696,13 +696,11 @@
 </head>
 <body>
 
-<!-- Floating petals -->
 <div class="petal"></div>
 <div class="petal"></div>
 <div class="petal"></div>
 <div class="petal"></div>
 
-<!-- ── Sidebar ── -->
 <aside class="sidebar">
     <div class="sidebar-brand">
         <i class="fas fa-spa"></i>
@@ -734,7 +732,6 @@
     </div>
 </aside>
 
-<!-- ── Main ── -->
 <main class="main">
     <div class="main-header">
         <h2><i class="fas fa-credit-card"></i> Service Management</h2>
@@ -780,7 +777,6 @@
     </div>
 </main>
 
-<!-- ── Modal ── -->
 <div class="modal-overlay" id="serviceModal">
     <div class="modal">
         <div class="modal-header">
@@ -838,9 +834,310 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js">
 </script>
-
 <script>
+    let allServices = [];
+    $(document).ready(function (){
+        loadAllService();
+        loadAllCategoryDropdown();
 
+        $('#addServiceBtn').on('click', function () {
+            $('#serviceForm')[0].reset();
+            $('#serviceId').val('');
+            $('#modalTitle').text('Add New Service');
+            $('#serviceModal').addClass('show');
+        });
+
+        $('#modalCancel, #modalClose').on('click', function () {
+            $('#serviceModal').removeClass('show');
+        });
+
+        $('#serviceForm').on('submit',function (e){
+            e.preventDefault();
+            let serviceId = $('#serviceId').val();
+            if (serviceId){
+                updateService();
+            }else{
+                saveService();
+            }
+        });
+
+        $('#searchInput').on('keyup', searchService);
+        $('#statusFilter').on('change', searchService);
+    });
+
+    function showToast(message, type = 'success') {
+        const toast = $('#toast');
+        toast.text(message).removeClass('success error').addClass(`${type} show`);
+        setTimeout(() => {
+            toast.removeClass('show');
+        }, 3000);
+    }
+
+    function loadAllCategoryDropdown() {
+        $.ajax({
+            url: "http://localhost:8080/v1/category/category",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response) {
+                let services = response.body || response.data || response || [];
+                let options = '<option value="">select category</option>';
+
+                let uniqueCategories = [];
+                services.forEach(c => {
+                    if (c.categoryId && !uniqueCategories.some(item => item.categoryId === c.categoryId)) {
+                        uniqueCategories.push({ categoryId: c.categoryId, categoryName: c.categoryName || ('Category ' + c.categoryId) });
+                    }
+                });
+
+                uniqueCategories.forEach(c => {
+                    options += `<option value="${c.categoryId}">${c.categoryName}</option>`;
+                });
+
+                $('#categoryId').html(options);
+            },
+            error: function (xhr) {
+                console.error("Error loading category dropdown", xhr);
+            }
+        });
+    }
+
+    function loadAllService(){
+        $.ajax({
+            url: "http://localhost:8080/v1/service/service",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                allServices = response.body || response.data || response || [];
+                renderTable(allServices);
+
+            },
+            error: function (xhr){
+                console.error("Error loading services", xhr);
+                showToast("Failed to load services", "error");
+            }
+        });
+    }
+
+    function renderTable(serviceList) {
+        let html = "";
+        if (!serviceList || serviceList.length === 0) {
+            html =
+                `<tr><td colspan="8" style="text-align:center; color:#b7a89c; padding:20px;">No services found</td></tr>`;
+        } else {
+            for (const s of serviceList) {
+                let currentStatus = (s.serviceStatus || 'ACTIVE').toString().toUpperCase();
+                let statusClass = currentStatus === 'ACTIVE' ? 'active' : 'inactive';
+                let categoryName = s.categoryName || 'Uncategorized';
+                let description = s.description || '—';
+                let price = s.price !== undefined && s.price !== null ? parseFloat(s.price).toFixed(2) : '0.00';
+                let duration = s.durationMinutes || '—';
+
+                html += `<tr>
+                        <td>#${s.serviceId}</td>
+                        <td><b>${s.serviceName || '—'}</b></td>
+                        <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${description}">${description}</td>
+                        <td class="price-cell">LKR ${price}</td>
+                        <td>${duration} min</td>
+                        <td><span class="category-tag">${categoryName}</span></td>
+                        <td><span class="status-dot ${statusClass}"></span> ${currentStatus}</td>
+                        <td style="text-align:right; white-space:nowrap;">
+                            <button type="button" class="action-btn status-toggle" onclick="toggleStatus(${s.serviceId})" title="Toggle status"><i class="fas fa-sync-alt"></i></button>
+                            <button type="button" class="action-btn" onclick="selectService(${s.serviceId})"><i class="fas fa-edit"></i></button>
+                            <button type="button" class="action-btn delete" onclick="deleteService(${s.serviceId})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+            }
+        }
+
+        $('#serviceTableBody').html(html);
+        $('#rowCount').text(serviceList ? serviceList.length : 0);
+    }
+
+    function saveService(){
+        let serviceName = $('#serviceName').val().trim();
+        let description = $('#description').val().trim();
+        let price = parseFloat($('#price').val());
+        let durationMinutes = parseInt($('#durationMinutes').val());
+        let categoryId = $('#categoryId').val() ? parseInt($('#categoryId').val()) : null;
+        let serviceStatus = $('#serviceStatus').val();
+
+        const serviceDTO = {
+            "serviceName": serviceName,
+            "description": description,
+            "price": price,
+            "durationMinutes": durationMinutes,
+            "categoryId": categoryId,
+            "serviceStatus": serviceStatus
+
+        };
+
+        console.log("Sending DTO:", serviceDTO);
+
+        $.ajax({
+            url: "http://localhost:8080/v1/service/service-saved",
+            type: "POST",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            data: JSON.stringify(serviceDTO),
+            success: function (response){
+                showToast(response.message || "Service saved successfully!", "success");
+                $('#serviceModal').removeClass('show');
+                loadAllService();
+            },
+            error: function (xhr){
+                alert("Error saving Service")
+            }
+        });
+    }
+
+    function updateService(){
+        let serviceId = parseInt($('#serviceId').val());
+        let serviceName = $('#serviceName').val().trim();
+        let description = $('#description').val().trim();
+        let price = parseFloat($('#price').val());
+        let durationMinutes = parseInt($('#durationMinutes').val());
+        let categoryId = $('#categoryId').val() ? parseInt($('#categoryId').val()) : null;
+        let serviceStatus = $('#serviceStatus').val().toUpperCase();
+
+        const serviceDTO = {
+            "serviceId": serviceId,
+            "serviceName": serviceName,
+            "description": description,
+            "price": price,
+            "durationMinutes": durationMinutes,
+            "categoryId": categoryId,
+            "serviceStatus": serviceStatus
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/v1/service/update-service",
+            type: "PUT",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            data: JSON.stringify(serviceDTO),
+            success: function (response){
+                alert(response.message || "Service update successfully!");
+                $('#serviceModal').removeClass('show');
+                loadAllService();
+            },
+            error: function (xhr){
+                showToast("Error updating Service!", "error");
+            }
+        });
+    }
+
+    function selectService(serviceId){
+        $.ajax({
+            url: "http://localhost:8080/v1/service/select-service/"+ serviceId,
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                let s = response.body || response.data ||  response;
+                $('#serviceId').val(s.serviceId);
+                $('#serviceName').val(s.serviceName);
+                $('#description').val(s.description);
+                $('#price').val(s.price);
+                $('#durationMinutes').val(s.durationMinutes);
+                $('#categoryId').val(s.categoryId);
+
+                let currentStatus = (s.serviceStatus || 'ACTIVE').toString().toUpperCase();
+                $('#serviceStatus').val(currentStatus);
+
+                $('#modalTitle').text('Edit Service');
+                $('#serviceModal').addClass('show');
+            },
+            error: function (xhr){
+                showToast("Error fetching service details!", "error");
+            }
+        });
+    }
+
+    function deleteService(serviceId){
+        if(confirm("Are you sure, you want to delete this service?")){
+            $.ajax({
+                url: "http://localhost:8080/v1/service/" + serviceId,
+                type: "DELETE",
+                contentType: "application/json",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+                },
+                success: function (response){
+                    alert("Service delete successfully!");
+                    loadAllService();
+                },
+                error: function (xhr){
+                    alert("Error deleting service!")
+                }
+            });
+        }
+    }
+
+    function searchService(){
+        let searchValue = $('#searchInput').val().toLowerCase().trim();
+        let selectedStatus = $('#statusFilter').val().toUpperCase();
+
+        $.ajax({
+            url: "http://localhost:8080/v1/service/service",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                let service = response.body || response.data || response || [];
+
+                let filtered = service.filter(s => {
+                    let serviceName = (s.serviceName || '').toLowerCase();
+                    let price = (s.price !== null && s.price !== undefined) ? s.price.toString().toLowerCase() : '';
+                    let durationMinutes = (s.durationMinutes !== null && s.durationMinutes !== undefined) ? s.durationMinutes.toString().toLowerCase() : '';
+                    let categoryId = (s.categoryId !== null && s.categoryId !== undefined) ? s.categoryId.toString().toLowerCase() : '';
+                    let categoryName = (s.categoryName || '').toLowerCase();
+                    let currentStatus = (s.serviceStatus || 'ACTIVE').toString().toUpperCase();
+
+                    let matchesSearch = serviceName.includes(searchValue) || price.includes(searchValue) || durationMinutes.includes(searchValue) || categoryId.includes(searchValue) || categoryName.includes(searchValue) || currentStatus.includes(searchValue);
+                    let matchesStatus = (selectedStatus === 'ALL') || (currentStatus === selectedStatus);
+
+                    return matchesSearch && matchesStatus;
+                });
+
+                renderTable(filtered);
+            },
+            error: function (xhr){
+                console.error("Error filtering Service", xhr)
+            }
+        });
+    }
+
+    function toggleStatus(serviceId) {
+        $.ajax({
+            url: "http://localhost:8080/v1/service/change-status/" + serviceId,
+            type: "PATCH",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response) {
+                showToast(response.message || "Status changed successfully!", "success");
+                loadAllService();
+            },
+            error: function (xhr) {
+                showToast("Error changing status!", "error");
+            }
+        });
+    }
 </script>
 </body>
 </html>

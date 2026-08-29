@@ -174,6 +174,18 @@ public class SaloonServiceImpl implements SaloonServiceService {
         saloonServiceRepository.save(saloonService);
         log.info("SaloonService status changed successfully");
     }
+
+    @Override
+    public SaloonServiceDTO getServiceByCategoryId(long categoryId) {
+        log.info("Execute method getServiceByCategoryId for categoryId: {}", categoryId);
+
+        Optional<SaloonServiceDTO> saloonServiceDTO = saloonServiceRepository.getServiceByCategoryId(categoryId);
+
+        if (saloonServiceDTO.isEmpty()) {
+            throw new CustomerException(404, "Services not found for Category ID: " + categoryId);
+        }
+        return saloonServiceDTO.get();
+    }
 }
 
 /*
