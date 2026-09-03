@@ -62,6 +62,8 @@ public class SecurityConfig {
                         .requestMatchers("/v1/category/**").hasAnyRole("ADMIN", "STAFF")
                         .requestMatchers(HttpMethod.GET, "/v1/service/**").permitAll()
                         .requestMatchers("/v1/service/**").hasAnyRole("ADMIN","STAFF")
+                        .requestMatchers(HttpMethod.GET, "/v1/staffService/**").permitAll()
+                        .requestMatchers("/v1/staffService/**").hasAnyRole("ADMIN","STAFF")
 
 
                         .anyRequest().authenticated()

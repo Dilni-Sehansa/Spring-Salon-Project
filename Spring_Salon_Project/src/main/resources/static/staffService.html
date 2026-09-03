@@ -673,7 +673,7 @@
         <a href="customer.html"><i class="fas fa-users"></i> <span>Customers</span></a>
         <a href="staff.html"><i class="fas fa-user-tie"></i> <span>Staff</span></a>
         <a href="staffSchedule.html"><i class="fas fa-clock"></i> <span>Staff Schedule</span></a>
-        <a href="staffService.html"><i class="fas fa-concierge-bell"></i> <span>Staff Service</span></a>
+        <a href="staffService.html" class="active"><i class="fas fa-concierge-bell"></i> <span>Staff Service</span></a>
         <a href="supplier.html"><i class="fas fa-truck"></i> <span>Supplier</span></a>
 
         <!-- Services & Products -->
@@ -687,7 +687,7 @@
         <a href="staffCommission.html"><i class="fas fa-percentage"></i> <span>Staff Commission</span></a>
 
         <!-- Engagement -->
-        <a href="feedback.html" class="active"><i class="fas fa-comment-alt"></i> <span>Feedback</span></a>
+        <a href="feedback.html"><i class="fas fa-comment-alt"></i> <span>Feedback</span></a>
     </nav>
     <div class="sidebar-footer">
         <a href="user.html"><i class="fas fa-cog"></i> <span>User</span></a>
@@ -787,7 +787,331 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
+   let allStaffService = [];
+
+   $(document).ready(function (){
+
+       loadAllStaffService();
+       loadAllStaffServiceDropdown();
+       loadStaffDropdown();
+
+       $('#addStaffServiceBtn').on('click',function (){
+
+           $('#staffServiceForm')[0].reset();
+           $('#staffServiceId').val('');
+           $('#modalTitle').text('Add New StaffService');
+           $('#staffServiceModal').addClass('show');
+       });
+
+       $('#modalCancel, #modalClose').on('click',function (){
+           $('#staffServiceModal').removeClass('show');
+       });
+
+       $('#staffServiceForm').on('submit',function (e){
+           e.preventDefault();
+           let staffServiceId = $('#staffServiceId').val();
+           if(staffServiceId){
+               updateStaffService();
+           }else{
+               saveStaffService();
+           }
+       });
+
+       $('#searchInput').on('keyup', searchStaffService);
+       $('#statusFilter').on('change', searchStaffService);
+   });
+
+   function showToast(message, type = 'success') {
+       const toast = $('#toast');
+       toast.text(message).removeClass('success error').addClass(`${type} show`);
+       setTimeout(() => {
+           toast.removeClass('show');
+       }, 3000);
+   }
+
+   function loadAllStaffServiceDropdown() {
+       $.ajax({
+           url: "http://localhost:8080/v1/service/service",
+           type: "GET",
+           contentType: "application/json",
+           headers: {
+               'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+           },
+           success: function (response) {
+               let serviceList = response.body || response.data || response || [];
+               let options = '<option value="">— Select Service —</option>';
+               serviceList.forEach(srv => {
+                   options += `<option value="${srv.serviceId}">${srv.serviceName}</option>`;
+               });
+               $('#serviceId').html(options);
+           }
+       });
+   }
+
+   function loadStaffDropdown() {
+       $.ajax({
+           url: "http://localhost:8080/v1/user/users",
+           type: "GET",
+           contentType: "application/json",
+           headers: {
+               'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+           },
+           success: function (userResponse) {
+               let users = userResponse.body || userResponse.data || userResponse || [];
+               let userMap = {};
+               users.forEach(u => {
+                   userMap[u.userId] = u.userName;
+               });
+               $.ajax({
+                   url: "http://localhost:8080/v1/staff/staff",
+                   type: "GET",
+                   contentType: "application/json",
+                   headers: {
+                       'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+                   },
+                   success: function (response) {
+                       let staffList = response.body || response.data || response || [];
+                       let options = '<option value="">— Select Staff —</option>';
+
+                       staffList.forEach(stf => {
+                           let uName = userMap[stf.userId] || 'User #' + stf.userId;
+                           let spec = stf.specialization ? ` (${stf.specialization})` : '';
+                           options += `<option value="${stf.staffId}">${uName}${spec} - ID: ${stf.staffId}</option>`;
+                       });
+
+                       $('#staffId').html(options);
+                   },
+                   error: function(xhr) {
+                       console.error("Error loading staff dropdown", xhr);
+                   }
+               });
+           },
+           error: function(xhr) {
+               console.error("Error loading users for staff dropdown", xhr);
+           }
+       });
+   }
+
+   function loadAllStaffService(){
+       $.ajax({
+           url: "http://localhost:8080/v1/staffService/staff-service",
+           type: "GET",
+           contentType: "application/json",
+           headers: {
+               'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+           },
+           success: function (response){
+               allStaffService = response.body || response.data || response || [];
+               renderTable(allStaffService);
+           },
+           error: function (xhr){
+               console.error("Error loading staffService", xhr);
+               showToast("Failed to load staff services", "error");
+           }
+       });
+   }
+
+   function renderTable(dataList) {
+       let tbody = $('#staffServiceTableBody');
+       tbody.empty();
+
+       if (!dataList || dataList.length === 0) {
+           tbody.html(`
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <i class="fas fa-folder-open"></i>
+                            <p>No staff service assignments found.</p>
+                        </div>
+                    </td>
+                </tr>
+            `);
+           $('#rowCount').text(0);
+           return;
+       }
+
+       dataList.forEach(item => {
+           let statusBadge = item.staffServiceStatus === 'ACTIVE'
+               ? `<span class="status-badge active"><span class="status-dot active"></span>Active</span>`
+               : `<span class="status-badge inactive"><span class="status-dot inactive"></span>Inactive</span>`;
+
+           let displayName = item.staffName || ('Staff #' + item.staffId);
+
+           let row = `
+                <tr>
+                    <td>#${item.staffServiceId}</td>
+                    <td><strong>${displayName}</strong> <span class="staff-tag">ID: ${item.staffId}</span></td>
+                    <td>${item.serviceName || 'N/A'}</td>
+                    <td>${statusBadge}</td>
+                    <td style="text-align:right;">
+                        <button class="action-btn" onclick="selectStaffService(${item.staffServiceId})" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn status-toggle" onclick="changeStatus(${item.staffServiceId})" title="Change Status"><i class="fas fa-sync-alt"></i></button>
+                        <button class="action-btn delete" onclick="deleteStaffService(${item.staffServiceId})" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>
+            `;
+           tbody.append(row);
+       });
+
+       $('#rowCount').text(dataList.length);
+   }
+
+   function saveStaffService(){
+       let  staffId= $('#staffId').val() ? parseInt($('#staffId').val()) : null;
+       let  serviceId = $('#serviceId').val() ? parseInt($('#serviceId').val()) : null;
+
+       let status = $('#staffServiceStatus').val().toUpperCase();
+
+       const staffServiceDTO = {
+           "staffId": staffId,
+           "serviceId": serviceId,
+           "staffServiceStatus": status
+       };
+
+       console.log("Sending DTO:", staffServiceDTO);
+
+       $.ajax({
+           url: "http://localhost:8080/v1/staffService/staff-service-saved",
+           type: "POST",
+           contentType: "application/json",
+           headers: {
+               'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+           },
+           data: JSON.stringify(staffServiceDTO),
+           success: function (response){
+               alert("Staff Service save successfully!");
+               $('#staffServiceModal').removeClass('show');
+               loadAllStaffService();
+           },
+           error: function (xhr){
+               alert("Error saving Staff Service")
+           }
+       });
+   }
+
+   function updateStaffService() {
+       let staffServiceId = $('#staffServiceId').val() ? parseInt($('#staffServiceId').val()) : null;
+       let staffId = $('#staffId').val() ? parseInt($('#staffId').val()) : null;
+       let serviceId = $('#serviceId').val() ? parseInt($('#serviceId').val()) : null;
+       let status = $('#staffServiceStatus').val().toUpperCase();
+
+       const staffServiceDTO = {
+           "staffServiceId": staffServiceId,
+           "staffId": staffId,
+           "serviceId": serviceId,
+           "staffServiceStatus": status
+       };
+
+       $.ajax({
+           url: "http://localhost:8080/v1/staffService/update-staff-service",
+           type: "PUT",
+           contentType: "application/json",
+           headers: {
+               'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+           },
+           data: JSON.stringify(staffServiceDTO),
+           success: function (response) {
+               showToast("Staff Service updated successfully!");
+               $('#staffServiceModal').removeClass('show');
+               loadAllStaffService();
+           },
+           error: function (xhr) {
+               showToast("Error updating staff service!", "error");
+           }
+       });
+   }
+
+   function selectStaffService(staffServiceId){
+       $.ajax({
+           url: "http://localhost:8080/v1/staffService/select-staff-service/"+ staffServiceId,
+           type: "GET",
+           contentType: "application/json",
+           headers: {
+               'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+           },
+           success: function (response){
+               let c = response.body || response.data || response;
+               $('#staffServiceId').val(c.staffServiceId);
+               $('#staffId').val(c.staffId);
+               $('#serviceId').val(c.serviceId);
+
+               let currentStatus = (c.staffServiceStatus || 'ACTIVE').toString().toUpperCase();
+               $('#staffServiceStatus').val(currentStatus);
+
+               $('#modalTitle').text('Edit Staff Service');
+               $('#staffServiceModal').addClass('show');
+           },
+           error: function (xhr){
+               showToast("Error fetching Staff Service details!", "error");
+           }
+       });
+   }
+
+   function deleteStaffService(staffServiceId){
+       if(confirm("Are you sure, you want to delete this staff service?")){
+           $.ajax({
+               url: "http://localhost:8080/v1/staffService/" + staffServiceId,
+               type: "DELETE",
+               contentType: "application/json",
+               headers: {
+                   'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+               },
+               success: function (response){
+                   alert("Staff Service delete successfully!");
+                   loadAllStaffService();
+               },
+               error: function (xhr){
+                   alert("Error deleting staff services!")
+               }
+           });
+       }
+   }
+
+   function changeStatus(staffServiceId) {
+       $.ajax({
+           url: "http://localhost:8080/v1/staffService/change-status/" + staffServiceId,
+           type: "PATCH",
+           contentType: "application/json",
+           headers: {
+               'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+           },
+           success: function (response) {
+               showToast("Status changed successfully!");
+               loadAllStaffService();
+           },
+           error: function (xhr) {
+               showToast("Error changing status!", "error");
+           }
+       });
+   }
+
+   function searchStaffService(){
+       let searchValue = $('#searchInput').val().toLowerCase().trim();
+       let selectedStatus = $('#statusFilter').val().toUpperCase();
+
+       let filtered = allStaffService.filter(s => {
+           let staffId = String(s.staffId || '').toLowerCase();
+           let staffName = (s.staffName || '').toLowerCase();
+           let serviceId = String(s.serviceId || '').toLowerCase();
+           let serviceName = (s.serviceName || '').toLowerCase();
+           let currentStatus = (s.staffServiceStatus || 'ACTIVE').toString().toUpperCase();
+
+           let matchesSearch = staffId.includes(searchValue) || staffName.includes(searchValue) || serviceId.includes(searchValue) || serviceName.includes(searchValue);
+           let matchesStatus = (selectedStatus === 'ALL') || (currentStatus === selectedStatus);
+
+           return matchesSearch && matchesStatus;
+       });
+
+       renderTable(filtered);
+   }
 
 </script>
 </body>
 </html>
+
+<!--private Long staffServiceId;-->
+<!--private Long staffId;-->
+<!--private String staffName;-->
+<!--private Long serviceId;-->
+<!--private String serviceName;-->
+<!--private Status staffServiceStatus;-->
