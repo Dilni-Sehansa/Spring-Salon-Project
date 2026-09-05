@@ -929,10 +929,13 @@
             },
             success: function(userResponse) {
                 let users = userResponse.body || userResponse.data || userResponse || [];
+
+                let activeUsers = users.filter(u => u.userStatus === 'ACTIVE' || u.status === 'ACTIVE');
                 let userMap = {};
-                users.forEach(function(u) {
+                activeUsers.forEach(function(u) {
                     userMap[u.userId] = u.userName;
                 });
+
                 $.ajax({
                     url: "http://localhost:8080/v1/staff/staff",
                     type: "GET",
@@ -944,11 +947,11 @@
                         let staffList = response.body || response.data || response || [];
                         let options = '<option value="">— Select Staff —</option>';
                         staffList.forEach(function(stf) {
-                            let uName = userMap[stf.userId] || 'User #' + stf.userId;
-                            let spec = stf.specialization ? ' (' + stf.specialization + ')' :
-                                '';
-                            options += '<option value="' + stf.staffId + '">' + uName + spec +
-                                ' - ID: ' + stf.staffId + '</option>';
+                            if (userMap[stf.userId]) {
+                                let uName = userMap[stf.userId];
+                                let spec = stf.specialization ? ' (' + stf.specialization + ')' : '';
+                                options += `<option value="${stf.staffId}">${uName}${spec} - ID: ${stf.staffId}</option>`;
+                            }
                         });
                         $('#staffId').html(options);
                     },

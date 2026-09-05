@@ -778,9 +778,6 @@
         $('#searchInput, #statusFilter, #dateFilter').on('input change', function(){
             searchStatus();
         });
-
-
-
     });
 
     function showToast(message, type = 'success') {
@@ -803,8 +800,19 @@
                 let customerList = response.body || response.data || response || [];
                 let options = '<option value="">— Select Customer —</option>';
 
-                customerList.forEach(c => {
-                    options += `<option value="${c.customerId}">${c.customerName}</option>`;
+                if (!Array.isArray(customerList)) {
+                    customerList = [];
+                }
+
+                let activeCustomers = customerList.filter(c => {
+                    let status = (c.customerStatus || 'ACTIVE').toString().toUpperCase();
+                    return status === 'ACTIVE';
+                });
+
+                activeCustomers.forEach(c => {
+                    let cId = c.customerId || c.id;
+                    let cName = c.customerName || c.name || `Customer #${cId}`;
+                    options += `<option value="${cId}">${cName}</option>`;
                 });
                 $('#customerId').html(options);
             },
@@ -986,6 +994,7 @@
             });
         }
     }
+
     function openStatusModal(appointmentId, currentStatus){
         $('#changeStatusAppointmentId').val(appointmentId);
         $('#newStatusSelect').val(currentStatus);
@@ -1010,6 +1019,7 @@
             }
         });
     }
+
     function searchStatus(){
         let searchVal = $('#searchInput').val().toLowerCase().trim();
         let selectStatus = $('#statusFilter').val().toUpperCase();

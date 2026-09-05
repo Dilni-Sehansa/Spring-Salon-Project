@@ -798,7 +798,12 @@
             success: function (response) {
                 let users = response.body || response.data || response || [];
                 let options = '<option value="">select user</option>';
-                users.forEach(u => {
+
+                let activeUsers = users.filter(u => {
+                    let status = (u.userStatus || u.status || 'ACTIVE').toString().toUpperCase();
+                    return status === 'ACTIVE';
+                });
+                activeUsers.forEach(u => {
                     options += `<option value="${u.userId}">${u.userName} (ID: ${u.userId})</option>`;
                 });
                 $('#userId').html(options);

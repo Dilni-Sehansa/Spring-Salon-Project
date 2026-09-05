@@ -895,13 +895,19 @@
 
                 let uniqueCategories = [];
                 services.forEach(c => {
-                    if (c.categoryId && !uniqueCategories.some(item => item.categoryId === c.categoryId)) {
+
+                    let status = (c.categoryStatus || c.status || '').toString().toUpperCase();
+                    let isActive = status === 'ACTIVE' || c.isActive === true || status === '';
+
+                    if (isActive && c.categoryId && !uniqueCategories.some(item => item.categoryId === c.categoryId)) {
                         uniqueCategories.push({ categoryId: c.categoryId, categoryName: c.categoryName || ('Category ' + c.categoryId) });
                     }
                 });
 
+
                 uniqueCategories.forEach(c => {
                     options += `<option value="${c.categoryId}">${c.categoryName}</option>`;
+
                 });
 
                 $('#categoryId').html(options);

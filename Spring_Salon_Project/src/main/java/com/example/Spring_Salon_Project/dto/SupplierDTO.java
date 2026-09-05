@@ -12,7 +12,8 @@ import lombok.Setter;
 @Setter
 public class SupplierDTO {
     private Long supplierId;
-    private String name;
+    private String supplierName;
+    private String contactPerson;
     private String phone;
     private String email;
     private String address;

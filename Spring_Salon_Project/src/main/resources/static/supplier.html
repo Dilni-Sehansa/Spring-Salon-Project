@@ -1,10 +1,679 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glow · Supplier Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffeef0 100%);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Floating petals ── */
+        .petal {
+            position: fixed;
+            border-radius: 50% 0 50% 50%;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+            animation: petalFloat 14s infinite ease-in-out;
+            background: #ff6f91;
+        }
+        .petal:nth-child(1) {
+            width: 40px;
+            height: 40px;
+            top: 5%;
+            left: 3%;
+            animation-delay: 0s;
+        }
+        .petal:nth-child(2) {
+            width: 25px;
+            height: 25px;
+            top: 20%;
+            right: 5%;
+            animation-delay: 3s;
+            background: #ffb6c1;
+        }
+        .petal:nth-child(3) {
+            width: 50px;
+            height: 50px;
+            bottom: 10%;
+            left: 8%;
+            animation-delay: 6s;
+        }
+        .petal:nth-child(4) {
+            width: 30px;
+            height: 30px;
+            bottom: 25%;
+            right: 6%;
+            animation-delay: 9s;
+            background: #ffb6c1;
+        }
+
+        @keyframes petalFloat {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            33% {
+                transform: translateY(-35px) rotate(25deg) scale(1.05);
+            }
+            66% {
+                transform: translateY(20px) rotate(-15deg) scale(0.95);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 260px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 32px 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 2px 0 30px rgba(0, 0, 0, 0.03);
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid rgba(255, 111, 145, 0.10);
+        }
+
+        .sidebar-brand i {
+            font-size: 2rem;
+            color: #ff6f91;
+            background: rgba(255, 111, 145, 0.10);
+            padding: 12px;
+            border-radius: 18px;
+        }
+
+        .sidebar-brand h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d2d2d;
+        }
+        .sidebar-brand h1 span {
+            color: #ff6f91;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #5a4a44;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .sidebar-nav a i {
+            width: 22px;
+            font-size: 1.1rem;
+            color: #b3886a;
+            transition: color 0.25s;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+        .sidebar-nav a:hover i {
+            color: #ff6f91;
+        }
+
+        .sidebar-nav a.active {
+            background: #ff6f91;
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(255, 111, 145, 0.25);
+        }
+        .sidebar-nav a.active i {
+            color: #fff;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 16px;
+            border-radius: 14px;
+            color: #5a4a44;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.25s;
+        }
+        .sidebar-footer a i {
+            width: 22px;
+            color: #b3886a;
+        }
+        .sidebar-footer a:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+
+        /* ── Main content ── */
+        .main {
+            flex: 1;
+            padding: 32px 40px;
+            overflow-y: auto;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .main-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2d2d2d;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .main-header h2 i {
+            color: #ff6f91;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #ff6f91;
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(255, 111, 145, 0.3);
+        }
+        .btn-primary:hover {
+            background: #ff527b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 111, 145, 0.35);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            color: #2d2d2d;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-secondary:hover {
+            background: #fff;
+            border-color: #ff6f91;
+        }
+
+        .btn-danger-outline {
+            background: transparent;
+            border: 1px solid #eb5757;
+            color: #eb5757;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-danger-outline:hover {
+            background: #eb5757;
+            color: #fff;
+        }
+
+        /* ── Filters & Search ── */
+        .filter-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-bar .search-wrapper {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .filter-bar .search-wrapper input {
+            width: 100%;
+            padding: 12px 20px 12px 44px;
+            border-radius: 50px;
+            border: 2px solid #f5f0f0;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(6px);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .filter-bar .search-wrapper input:focus {
+            border-color: #ff6f91;
+            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.08);
+            background: #fff;
+        }
+        .filter-bar .search-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b7a89c;
+        }
+
+        .filter-bar select {
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: 2px solid #f5f0f0;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(6px);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+        .filter-bar select:focus {
+            border-color: #ff6f91;
+            background: #fff;
+        }
+
+        /* ── Table ── */
+        .card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 24px 28px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.02);
+            overflow-x: auto;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 700px;
+        }
+
+        table th {
+            text-align: left;
+            padding: 14px 12px;
+            font-weight: 600;
+            color: #5a4a44;
+            border-bottom: 2px solid rgba(255, 111, 145, 0.10);
+            white-space: nowrap;
+        }
+
+        table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            color: #2d2d2d;
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-badge.active {
+            background: #6fcf97;
+            color: #fff;
+        }
+        .status-badge.inactive {
+            background: #f2c94a;
+            color: #fff;
+        }
+        .status-badge.blocked {
+            background: #eb5757;
+            color: #fff;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .status-dot.ACTIVE {
+            background: #6fcf97;
+        }
+        .status-dot.INACTIVE {
+            background: #f2c94a;
+        }
+        .status-dot.BLOCKED {
+            background: #eb5757;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #b7a89c;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .action-btn:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+        .action-btn.delete:hover {
+            color: #eb5757;
+            background: rgba(235, 87, 87, 0.08);
+        }
+        .action-btn.status-toggle:hover {
+            color: #6fcf97;
+            background: rgba(111, 207, 151, 0.08);
+        }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 40px;
+            max-width: 520px;
+            width: 100%;
+            padding: 36px 40px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.12);
+            animation: modalSlide 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d2d2d;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #b7a89c;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .modal-close:hover {
+            color: #2d2d2d;
+        }
+
+        .modal .input-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .modal .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4d4038;
+            margin-bottom: 6px;
+        }
+        .modal .input-group input,
+        .modal .input-group select,
+        .modal .input-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 50px;
+            border: 2px solid #f5f0f0;
+            background: #fcf9f9;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        .modal .input-group textarea {
+            border-radius: 18px;
+            resize: vertical;
+            min-height: 60px;
+        }
+        .modal .input-group input:focus,
+        .modal .input-group select:focus,
+        .modal .input-group textarea:focus {
+            border-color: #ff6f91;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.08);
+        }
+
+        .modal .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .modal .btn-row .btn-primary,
+        .modal .btn-row .btn-secondary {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2d2d2d;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.success {
+            background: #6fcf97;
+        }
+        .toast.error {
+            background: #eb5757;
+        }
+
+        /* ── Empty state ── */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #b7a89c;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+        .empty-state p {
+            font-size: 1rem;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 72px;
+                padding: 16px 8px;
+            }
+            .sidebar-brand h1,
+            .sidebar-nav a span,
+            .sidebar-footer a span {
+                display: none;
+            }
+            .sidebar-brand i {
+                font-size: 1.6rem;
+                padding: 8px;
+            }
+            .sidebar-nav a {
+                justify-content: center;
+                padding: 10px;
+            }
+            .sidebar-nav a i {
+                margin: 0;
+                font-size: 1.2rem;
+            }
+            .sidebar-footer a {
+                justify-content: center;
+                padding: 10px;
+            }
+            .main {
+                padding: 16px;
+            }
+            .modal {
+                padding: 24px;
+            }
+            .main-header h2 {
+                font-size: 1.4rem;
+            }
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-bar .search-wrapper {
+                min-width: unset;
+            }
+        }
+
+        .main::-webkit-scrollbar {
+            width: 4px;
+        }
+        .main::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .main::-webkit-scrollbar-thumb {
+            background: rgba(255, 111, 145, 0.25);
+            border-radius: 10px;
+        }
+
+        /* Status modal smaller */
+        #statusModal .modal {
+            max-width: 400px;
+        }
+    </style>
 </head>
 <body>
+
+<!-- Floating petals -->
 <div class="petal"></div>
 <div class="petal"></div>
 <div class="petal"></div>
@@ -29,7 +698,7 @@
         <a href="staff.html"><i class="fas fa-user-tie"></i> <span>Staff</span></a>
         <a href="staffSchedule.html"><i class="fas fa-clock"></i> <span>Staff Schedule</span></a>
         <a href="staffService.html"><i class="fas fa-concierge-bell"></i> <span>Staff Service</span></a>
-        <a href="supplier.html"><i class="fas fa-truck"></i> <span>Supplier</span></a>
+        <a href="supplier.html" class="active"><i class="fas fa-truck"></i> <span>Supplier</span></a>
 
         <!-- Services & Products -->
         <a href="category.html"><i class="fas fa-list"></i> <span>Category</span></a>
@@ -42,12 +711,436 @@
         <a href="staffCommission.html"><i class="fas fa-percentage"></i> <span>Staff Commission</span></a>
 
         <!-- Engagement -->
-        <a href="feedback.html" class="active"><i class="fas fa-comment-alt"></i> <span>Feedback</span></a>
+        <a href="feedback.html"><i class="fas fa-comment-alt"></i> <span>Feedback</span></a>
     </nav>
     <div class="sidebar-footer">
-        <a href="user.html"><i class="fas fa-cog"></i><span>User</span></a>
-        <a href="login.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+        <a href="user.html"><i class="fas fa-cog"></i> <span>User</span></a>
+        <a href="login.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </div>
 </aside>
+
+<!-- ─── MAIN CONTENT ─── -->
+<main class="main">
+    <!-- Header -->
+    <div class="main-header">
+        <h2><i class="fas fa-truck"></i> Supplier Management</h2>
+        <div class="header-actions">
+            <button class="btn-primary" id="addSupplierBtn"><i class="fas fa-plus"></i> Add New Supplier</button>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by name, contact, phone or email..." />
+        </div>
+        <select id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+            <option value="BLOCKED">Blocked</option>
+        </select>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card">
+        <div class="table-wrap">
+            <table id="supplierTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Supplier Name</th>
+                    <th>Contact Person</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+                </thead>
+                <tbody id="supplierTableBody">
+                <!-- Rows rendered by JS -->
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 16px; text-align: center; color: #b7a89c; font-size: 0.8rem;">
+            Showing <span id="rowCount">0</span> suppliers
+        </div>
+    </div>
+</main>
+
+<!-- ─── MAIN MODAL (Add / Edit) ─── -->
+<div class="modal-overlay" id="supplierModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">Add New Supplier</h3>
+            <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="supplierForm">
+            <input type="hidden" id="supplierId" value="" />
+            <div class="input-group">
+                <label>Supplier Name *</label>
+                <input type="text" id="supplierName" placeholder="e.g. Beauty Supplies Ltd." required />
+            </div>
+            <div class="input-group">
+                <label>Contact Person *</label>
+                <input type="text" id="contactPerson" placeholder="e.g. John Doe" required />
+            </div>
+            <div class="input-group">
+                <label>Phone *</label>
+                <input type="text" id="phone" placeholder="e.g. +94 77 123 4567" required />
+            </div>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="e.g. info@beautysupplies.com" />
+            </div>
+            <div class="input-group">
+                <label>Address</label>
+                <textarea id="address" placeholder="Street, City, Country…"></textarea>
+            </div>
+            <div class="input-group">
+                <label>Status</label>
+                <select id="supplierStatus">
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                    <option value="BLOCKED">Blocked</option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button type="button" class="btn-secondary" id="modalCancel">Cancel</button>
+                <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save Supplier</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ─── STATUS MODAL ─── -->
+<div class="modal-overlay" id="statusModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Change Supplier Status</h3>
+            <button class="modal-close" id="statusModalClose"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="statusForm">
+            <input type="hidden" id="changeStatusSupplierId" value="" />
+            <div class="input-group">
+                <label>Select New Status *</label>
+                <select id="newSupplierStatus" required>
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                    <option value="BLOCKED">Blocked</option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button type="button" class="btn-secondary" id="statusModalCancel">Cancel</button>
+                <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Update Status</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+
+<!-- ─── JQUERY ─── -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js">
+</script>
+
+<script>
+    let allSupplier = [];
+    $(document).ready(function (){
+        loadAllSuppliers();
+
+        $('#addSupplierBtn').on('click',function (){
+            $('#supplierForm')[0].reset();
+            $('#supplierId').val('');
+            $('#modalTitle').text('Add New Supplier');
+            $('#supplierModal').addClass('show');
+        });
+
+        $('#modalClose , #modalCancel').on('click',function (){
+            $('#supplierModal').removeClass('show');
+        })
+
+        $('#statusModalClose, #statusModalCancel').on('click', function(){
+            $('#statusModal').removeClass('show');
+        });
+
+        $('#statusForm').on('submit', function(e){
+            e.preventDefault();
+            let id = $('#changeStatusSupplierId').val();
+            let newStatus = $('#newSupplierStatus').val();
+            if(id && newStatus){
+                changeStatus(id, newStatus);
+            }
+        });
+
+        $('#supplierForm').on('submit',function (e){
+            e.preventDefault();
+            let supplierId = $('#supplierId').val();
+            if(supplierId){
+                updateSupplier();
+            }else{
+                saveSupplier();
+            }
+        });
+
+        $('#searchInput, #statusFilter').on('input change', function(){
+            searchStatus();
+        });
+    });
+
+    function showToast(message, type = 'success') {
+        const toast = $('#toast');
+        toast.text(message).removeClass('success error').addClass(`${type} show`);
+        setTimeout(() => {
+            toast.removeClass('show');
+        }, 3000);
+    }
+
+    function loadAllSuppliers(){
+        $.ajax({
+            url: "http://localhost:8080/v1/supplier/supplier",
+            type: "GET",
+            contentType : "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                allSupplier = response.body || response.data || response || [];
+                renderTable(allSupplier);
+            },
+            error: function (xhr){
+                console.error("Error loading supplier", xhr);
+                showToast("Failed to load supplier", "error");
+            }
+        });
+    }
+
+    function renderTable(supplierList) {
+        let tbody = $('#supplierTableBody');
+        tbody.empty();
+
+        let list = Array.isArray(supplierList) ? supplierList : [];
+
+        if (!list || list.length === 0) {
+            tbody.html(`
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fas fa-truck"></i>
+                                    <p>No suppliers found.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `);
+            $('#rowCount').text(0);
+            return;
+        }
+
+        list.forEach(function(s) {
+            let status = (s.supplierStatus || 'ACTIVE').toString().toUpperCase();
+            let statusClass = status.toLowerCase();
+
+            let row = `
+                        <tr>
+                            <td>#${s.supplierId}</td>
+                            <td><strong>${s.supplierName || '-'}</strong></td>
+                            <td>${s.contactPerson || '-'}</td>
+                            <td>${s.phone || '-'}</td>
+                            <td>${s.email || '-'}</td>
+                            <td>
+                                <span class="status-dot ${status}"></span>
+                                <span class="status-badge ${statusClass}">${status}</span>
+                            </td>
+                            <td style="text-align:right;">
+                                <button class="action-btn status-toggle" onclick="openStatusModal(${s.supplierId}, '${status}')" title="Change Status"><i class="fas fa-sync-alt"></i></button>
+                                <button class="action-btn" onclick="selectSupplier(${s.supplierId})" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn delete" onclick="deleteSupplier(${s.supplierId})" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        </tr>
+                    `;
+            tbody.append(row);
+        });
+
+        $('#rowCount').text(list.length);
+    }
+
+    function saveSupplier(){
+        let supplierName = $('#supplierName').val().trim();
+        let contactPerson = $('#contactPerson').val().trim();
+        let phone = $('#phone').val().trim();
+        let email = $('#email').val().trim();
+        let address = $('#address').val().trim();
+        let supplierStatus = $('#supplierStatus').val().toUpperCase();
+
+        const supplierDTO = {
+            "supplierName": supplierName,
+            "contactPerson": contactPerson,
+            "phone": phone,
+            "email": email,
+            "address": address,
+            "supplierStatus" : supplierStatus
+
+        };
+
+        console.log("Sending DTO: ",supplierDTO );
+
+        $.ajax({
+            url: "http://localhost:8080/v1/supplier/supplier-saved",
+            type: "POST",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            data: JSON.stringify(supplierDTO),
+            success: function (response){
+                showToast("Supplier saved successfully!");
+                $('#supplierModal').removeClass('show');
+                loadAllSuppliers();
+            },
+            error: function (xhr){
+                console.error("Error saving supplier", xhr);
+                showToast("Failed to save supplier", "error");
+            }
+        });
+    }
+
+    function updateSupplier() {
+        let supplierId = $('#supplierId').val() ? parseInt($('#supplierId').val()) : null;
+        let supplierName = $('#supplierName').val().trim();
+        let contactPerson = $('#contactPerson').val().trim();
+        let phone = $('#phone').val().trim();
+        let email = $('#email').val().trim();
+        let address = $('#address').val().trim();
+        let supplierStatus = $('#supplierStatus').val().toUpperCase();
+
+        const supplierDTO = {
+            "supplierId": supplierId,
+            "supplierName": supplierName,
+            "contactPerson": contactPerson,
+            "phone": phone,
+            "email": email,
+            "address": address,
+            "supplierStatus": supplierStatus
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/v1/supplier/update-supplier",
+            type: "PUT",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            data: JSON.stringify(supplierDTO),
+            success: function (response){
+                showToast("Supplier updated successfully!");
+                $('#supplierModal').removeClass('show');
+                loadAllSuppliers();
+            },
+            error: function (xhr){
+                console.error("Error updating supplier", xhr);
+                showToast("Failed to update supplier", "error");
+            }
+        });
+    }
+
+    function selectSupplier(supplierId){
+        $.ajax({
+            url: "http://localhost:8080/v1/supplier/" + supplierId,
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response){
+                let a = response.body || response.data || response;
+                $('#supplierId').val(a.supplierId);
+                $('#supplierName').val(a.supplierName);
+                $('#contactPerson').val(a.contactPerson);
+                $('#phone').val(a.phone);
+                $('#email').val(a.email);
+                $('#address').val(a.address);
+                let currentStatus = (a.supplierStatus || 'ACTIVE').toString().toUpperCase();
+                $('#supplierStatus').val(currentStatus);
+                $('#modalTitle').text("Edit Supplier");
+                $('#supplierModal').addClass('show');
+            },
+            error: function (xhr){
+                console.error("Error selecting supplier", xhr);
+                showToast("Failed to select supplier", "error");
+            }
+        });
+    }
+
+    function deleteSupplier(supplierId){
+        if(confirm("Are you sure you want to delete this supplier?")){
+            $.ajax({
+                url: "http://localhost:8080/v1/supplier/" + supplierId,
+                type: "DELETE",
+                contentType: "application/json",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+                },
+                success: function (response){
+                    showToast("Supplier deleted successfully!");
+                    loadAllSuppliers();
+                },
+                error: function (xhr){
+                    showToast("Failed to delete Supplier. Please try again.", "error");
+                }
+            });
+        }
+    }
+
+    function openStatusModal(supplierId, currentStatus){
+        $('#changeStatusSupplierId').val(supplierId);
+        $('#newSupplierStatus').val(currentStatus);
+        $('#statusModal').addClass('show');
+    }
+
+    function changeStatus(supplierId, newSupplierStatus){
+        $.ajax({
+            url: `http://localhost:8080/v1/supplier/update-status/${supplierId}?status=${newSupplierStatus}`,
+            type: "PATCH",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+
+            success: function (response){
+                showToast("Status changed successfully!");
+                $('#statusModal').removeClass('show');
+                loadAllSuppliers();
+            },
+            error: function (xhr){
+                showToast("Error changing status!","error");
+            }
+        });
+    }
+
+    function searchStatus(){
+        let searchVal = $('#searchInput').val().toLowerCase().trim();
+        let selectStatus = $('#statusFilter').val().toUpperCase();
+
+        let filtered = allSupplier.filter(s => {
+            let supplierId = String(s.supplierId || '').toLowerCase();
+            let supplierName = (s.supplierName || '').toLowerCase();
+            let currentStatus = (s.supplierStatus || 'ACTIVE').toString().toUpperCase();
+            let contactPerson = (s.contactPerson || '').toLowerCase();
+            let address = (s.address || '').toLowerCase();
+            let phone = (s.phone || '').toLowerCase();
+            let email = (s.email || '').toLowerCase();
+
+            let matchesSearch = supplierId.includes(searchVal) || !searchVal || supplierName.includes(searchVal) || contactPerson.includes(searchVal) || address.includes(searchVal) || phone.includes(searchVal) || email.includes(searchVal);
+            let matchesStatus = selectStatus === 'ALL' || currentStatus === selectStatus;
+
+            return matchesSearch && matchesStatus;
+        });
+
+        renderTable(filtered);
+    }
+
+</script>
 </body>
 </html>

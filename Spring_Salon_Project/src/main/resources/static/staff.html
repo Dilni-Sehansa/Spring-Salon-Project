@@ -808,8 +808,17 @@
             success: function (response){
                 let users = response.body || response.data || response || [];
                 let options = '<option value="">— Select User —</option>';
-                users.forEach(u => {
-                    options += `<option value="${u.userId}">${u.userName || 'User'} (ID: ${u.userId})</option>`;
+
+                if (!Array.isArray(users)) {
+                    users = [];
+                }
+
+                let activeUsers = users.filter(u => u.userStatus === 'ACTIVE' || u.status === 'ACTIVE');
+
+                activeUsers.forEach(u => {
+                    let userId = u.userId || u.id;
+                    let userName = u.userName || u.name || u.email || 'User';
+                    options += `<option value="${u.userId}">${u.userName}(ID: ${u.userId})</option>`;
                 });
                 $('#userId').html(options);
             },
