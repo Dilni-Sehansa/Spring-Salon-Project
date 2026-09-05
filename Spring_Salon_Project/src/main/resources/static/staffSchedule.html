@@ -1,10 +1,693 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glow · Staff Schedule Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        /* ── Reset & base ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffeef0 100%);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Floating petals ── */
+        .petal {
+            position: fixed;
+            border-radius: 50% 0 50% 50%;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+            animation: petalFloat 14s infinite ease-in-out;
+            background: #ff6f91;
+        }
+        .petal:nth-child(1) {
+            width: 40px;
+            height: 40px;
+            top: 5%;
+            left: 3%;
+            animation-delay: 0s;
+        }
+        .petal:nth-child(2) {
+            width: 25px;
+            height: 25px;
+            top: 20%;
+            right: 5%;
+            animation-delay: 3s;
+            background: #ffb6c1;
+        }
+        .petal:nth-child(3) {
+            width: 50px;
+            height: 50px;
+            bottom: 10%;
+            left: 8%;
+            animation-delay: 6s;
+        }
+        .petal:nth-child(4) {
+            width: 30px;
+            height: 30px;
+            bottom: 25%;
+            right: 6%;
+            animation-delay: 9s;
+            background: #ffb6c1;
+        }
+
+        @keyframes petalFloat {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            33% {
+                transform: translateY(-35px) rotate(25deg) scale(1.05);
+            }
+            66% {
+                transform: translateY(20px) rotate(-15deg) scale(0.95);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 260px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 32px 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 2px 0 30px rgba(0, 0, 0, 0.03);
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid rgba(255, 111, 145, 0.10);
+        }
+
+        .sidebar-brand i {
+            font-size: 2rem;
+            color: #ff6f91;
+            background: rgba(255, 111, 145, 0.10);
+            padding: 12px;
+            border-radius: 18px;
+        }
+
+        .sidebar-brand h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d2d2d;
+        }
+        .sidebar-brand h1 span {
+            color: #ff6f91;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            color: #5a4a44;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .sidebar-nav a i {
+            width: 22px;
+            font-size: 1.1rem;
+            color: #b3886a;
+            transition: color 0.25s;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+        .sidebar-nav a:hover i {
+            color: #ff6f91;
+        }
+
+        .sidebar-nav a.active {
+            background: #ff6f91;
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(255, 111, 145, 0.25);
+        }
+        .sidebar-nav a.active i {
+            color: #fff;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 16px;
+            border-radius: 14px;
+            color: #5a4a44;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.25s;
+        }
+        .sidebar-footer a i {
+            width: 22px;
+            color: #b3886a;
+        }
+        .sidebar-footer a:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+
+        /* ── Main content ── */
+        .main {
+            flex: 1;
+            padding: 32px 40px;
+            overflow-y: auto;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .main-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2d2d2d;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .main-header h2 i {
+            color: #ff6f91;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #ff6f91;
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(255, 111, 145, 0.3);
+        }
+        .btn-primary:hover {
+            background: #ff527b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 111, 145, 0.35);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            color: #2d2d2d;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-secondary:hover {
+            background: #fff;
+            border-color: #ff6f91;
+        }
+
+        /* ── Filters ── */
+        .filter-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-bar .search-wrapper {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .filter-bar .search-wrapper input {
+            width: 100%;
+            padding: 12px 20px 12px 44px;
+            border-radius: 50px;
+            border: 2px solid #f5f0f0;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(6px);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .filter-bar .search-wrapper input:focus {
+            border-color: #ff6f91;
+            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.08);
+            background: #fff;
+        }
+        .filter-bar .search-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b7a89c;
+        }
+
+        .filter-bar select {
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: 2px solid #f5f0f0;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(6px);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+        .filter-bar select:focus {
+            border-color: #ff6f91;
+            background: #fff;
+        }
+
+        /* ── Table ── */
+        .card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 24px 28px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.02);
+            overflow-x: auto;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 700px;
+        }
+
+        table th {
+            text-align: left;
+            padding: 14px 12px;
+            font-weight: 600;
+            color: #5a4a44;
+            border-bottom: 2px solid rgba(255, 111, 145, 0.10);
+            white-space: nowrap;
+        }
+
+        table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            color: #2d2d2d;
+            vertical-align: middle;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .status-dot.available {
+            background: #6fcf97;
+        }
+        .status-dot.on-leave {
+            background: #f2c94a;
+        }
+        .status-dot.off-day {
+            background: #eb5757;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .status-badge.available {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-badge.on-leave {
+            background: #fff8e1;
+            color: #b76e00;
+        }
+        .status-badge.off-day {
+            background: #fbe9e7;
+            color: #c62828;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #b7a89c;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .action-btn:hover {
+            background: rgba(255, 111, 145, 0.08);
+            color: #ff6f91;
+        }
+        .action-btn.delete:hover {
+            color: #eb5757;
+            background: rgba(235, 87, 87, 0.08);
+        }
+        .action-btn.status-toggle:hover {
+            color: #6fcf97;
+            background: rgba(111, 207, 151, 0.08);
+        }
+
+        .staff-tag {
+            display: inline-block;
+            padding: 2px 12px;
+            background: rgba(255, 111, 145, 0.08);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            color: #ff6f91;
+            font-weight: 500;
+        }
+
+        .day-badge {
+            display: inline-block;
+            padding: 2px 14px;
+            background: rgba(45, 45, 45, 0.06);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #5a4a44;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #b7a89c;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 40px;
+            max-width: 560px;
+            width: 100%;
+            padding: 36px 40px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.12);
+            animation: modalSlide 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d2d2d;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #b7a89c;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .modal-close:hover {
+            color: #2d2d2d;
+        }
+
+        .modal .input-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .modal .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4d4038;
+            margin-bottom: 6px;
+        }
+        .modal .input-group input,
+        .modal .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 50px;
+            border: 2px solid #f5f0f0;
+            background: #fcf9f9;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        .modal .input-group input:focus,
+        .modal .input-group select:focus {
+            border-color: #ff6f91;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.08);
+        }
+        .modal .input-group input[type="time"] {
+            padding: 12px 16px;
+        }
+
+        .modal .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .modal .btn-row .btn-primary,
+        .modal .btn-row .btn-secondary {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2d2d2d;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.success {
+            background: #6fcf97;
+        }
+        .toast.error {
+            background: #eb5757;
+        }
+
+        /* ── Skeleton ── */
+        .skeleton {
+            animation: shimmer 1.2s ease-in-out infinite;
+            background: linear-gradient(90deg, #f0ecec 25%, #e8e3e3 50%, #f0ecec 75%);
+            background-size: 200% 100%;
+            border-radius: 6px;
+        }
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+        .skeleton-row td {
+            padding: 10px 12px;
+        }
+        .skeleton-row .skeleton {
+            height: 18px;
+            width: 100%;
+        }
+        .skeleton-row .skeleton.xs {
+            width: 40%;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 72px;
+                padding: 16px 8px;
+            }
+            .sidebar-brand h1,
+            .sidebar-nav a span,
+            .sidebar-footer a span {
+                display: none;
+            }
+            .sidebar-brand i {
+                font-size: 1.6rem;
+                padding: 8px;
+            }
+            .sidebar-nav a {
+                justify-content: center;
+                padding: 10px;
+            }
+            .sidebar-nav a i {
+                margin: 0;
+                font-size: 1.2rem;
+            }
+            .sidebar-footer a {
+                justify-content: center;
+                padding: 10px;
+            }
+            .main {
+                padding: 16px;
+            }
+            .modal {
+                padding: 24px;
+            }
+            .main-header h2 {
+                font-size: 1.4rem;
+            }
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-bar .search-wrapper {
+                min-width: unset;
+            }
+        }
+        .main::-webkit-scrollbar {
+            width: 4px;
+        }
+        .main::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .main::-webkit-scrollbar-thumb {
+            background: rgba(255, 111, 145, 0.25);
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
+
 <div class="petal"></div>
 <div class="petal"></div>
 <div class="petal"></div>
@@ -27,7 +710,7 @@
         <!-- People Management -->
         <a href="customer.html"><i class="fas fa-users"></i> <span>Customers</span></a>
         <a href="staff.html"><i class="fas fa-user-tie"></i> <span>Staff</span></a>
-        <a href="staffSchedule.html"><i class="fas fa-clock"></i> <span>Staff Schedule</span></a>
+        <a href="staffSchedule.html" class="active"><i class="fas fa-clock"></i> <span>Staff Schedule</span></a>
         <a href="staffService.html"><i class="fas fa-concierge-bell"></i> <span>Staff Service</span></a>
         <a href="supplier.html"><i class="fas fa-truck"></i> <span>Supplier</span></a>
 
@@ -42,12 +725,516 @@
         <a href="staffCommission.html"><i class="fas fa-percentage"></i> <span>Staff Commission</span></a>
 
         <!-- Engagement -->
-        <a href="feedback.html" class="active"><i class="fas fa-comment-alt"></i> <span>Feedback</span></a>
+        <a href="feedback.html"><i class="fas fa-comment-alt"></i> <span>Feedback</span></a>
     </nav>
     <div class="sidebar-footer">
-        <a href="user.html"><i class="fas fa-cog"></i><span>User</span></a>
-        <a href="login.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+        <a href="user.html"><i class="fas fa-cog"></i> <span>User</span></a>
+        <a href="login.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </div>
 </aside>
+
+<!-- ─── MAIN ─── -->
+<main class="main">
+    <div class="main-header">
+        <h2><i class="fas fa-clock"></i> Staff Schedule Management</h2>
+        <div class="header-actions">
+            <button class="btn-primary" id="addScheduleBtn"><i class="fas fa-plus"></i> Add Schedule</button>
+        </div>
+    </div>
+
+    <div class="filter-bar">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by staff name or day..." />
+        </div>
+        <select id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="AVAILABLE">Available</option>
+            <option value="ON_LEAVE">On Leave</option>
+            <option value="OFF_DAY">Off Day</option>
+        </select>
+    </div>
+
+    <div class="card">
+        <div class="table-wrap">
+            <table id="scheduleTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Staff</th>
+                    <th>Day</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+                </thead>
+                <tbody id="scheduleTableBody">
+                <!-- Skeleton loading -->
+                <tr class="skeleton-row"><td><div class="skeleton xs"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton xs"></div></td><td><div class="skeleton xs"></div></td><td><div class="skeleton xs"></div></td><td><div class="skeleton xs"></div></td><td style="text-align:right;"><div class="skeleton xs" style="display:inline-block;"></div></td></tr>
+                <tr class="skeleton-row"><td><div class="skeleton xs"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton xs"></div></td><td><div class="skeleton xs"></div></td><td><div class="skeleton xs"></div></td><td><div class="skeleton xs"></div></td><td style="text-align:right;"><div class="skeleton xs" style="display:inline-block;"></div></td></tr>
+                <tr class="skeleton-row"><td><div class="skeleton xs"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton xs"></div></td><td><div class="skeleton xs"></div></td><td><div class="skeleton xs"></div></td><td><div class="skeleton xs"></div></td><td style="text-align:right;"><div class="skeleton xs" style="display:inline-block;"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 16px; text-align: center; color: #b7a89c; font-size: 0.8rem;">
+            Showing <span id="rowCount">0</span> schedules
+        </div>
+    </div>
+</main>
+
+<!-- ─── MODAL ─── -->
+<div class="modal-overlay" id="scheduleModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">Add Staff Schedule</h3>
+            <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="scheduleForm">
+            <input type="hidden" id="scheduleId" value="" />
+
+            <div class="input-group">
+                <label>Staff *</label>
+                <select id="staffId" required>
+                    <option value="">— Select Staff —</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Day of Week *</label>
+                <select id="dayOfWeek" required>
+                    <option value="">— Select Day —</option>
+                    <option value="MONDAY">Monday</option>
+                    <option value="TUESDAY">Tuesday</option>
+                    <option value="WEDNESDAY">Wednesday</option>
+                    <option value="THURSDAY">Thursday</option>
+                    <option value="FRIDAY">Friday</option>
+                    <option value="SATURDAY">Saturday</option>
+                    <option value="SUNDAY">Sunday</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Start Time *</label>
+                <input type="time" id="startTime" required />
+            </div>
+
+            <div class="input-group">
+                <label>End Time *</label>
+                <input type="time" id="endTime" required />
+            </div>
+
+            <div class="input-group">
+                <label>Status</label>
+                <select id="scheduleStatus">
+                    <option value="AVAILABLE">Available</option>
+                    <option value="ON_LEAVE">On Leave</option>
+                    <option value="OFF_DAY">Off Day</option>
+                </select>
+            </div>
+
+            <div class="btn-row">
+                <button type="button" class="btn-secondary" id="modalCancel">Cancel</button>
+                <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save Schedule</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="statusModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Change Schedule Status</h3>
+            <button class="modal-close" id="statusModalClose"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="statusForm">
+            <input type="hidden" id="changeStatusScheduleId" value="" />
+            <div class="input-group">
+                <label>Select New Status *</label>
+                <select id="newScheduleStatus" required>
+                    <option value="AVAILABLE">Available</option>
+                    <option value="ON_LEAVE">On Leave</option>
+                    <option value="OFF_DAY">Off Day</option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button type="button" class="btn-secondary" id="statusModalCancel">Cancel</button>
+                <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Update Status</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    let allSchedules = [];
+
+    $(document).ready(function() {
+
+        loadAllSchedules();
+        loadStaffDropdown();
+
+        $('#addScheduleBtn').on('click', function() {
+            $('#scheduleForm')[0].reset();
+            $('#scheduleId').val('');
+            $('#modalTitle').text('Add Staff Schedule');
+            $('#scheduleModal').addClass('show');
+        });
+
+        $('#modalCancel, #modalClose').on('click', function() {
+            $('#scheduleModal').removeClass('show');
+        });
+
+        $('#statusModalCancel, #statusModalClose').on('click', function() {
+            $('#statusModal').removeClass('show');
+        });
+
+        $('#scheduleForm').on('submit', function(e) {
+            e.preventDefault();
+            let scheduleId = $('#scheduleId').val();
+            if (scheduleId) {
+                updateSchedule();
+            } else {
+                saveSchedule();
+            }
+        });
+        $('#statusForm').on('submit', function(e) {
+            e.preventDefault();
+            submitStatusChange();
+        });
+
+        $('#searchInput').on('keyup', searchSchedules);
+        $('#statusFilter').on('change', searchSchedules);
+    });
+
+    function showToast(message, type) {
+        type = type || 'success';
+        const toast = $('#toast');
+        toast.text(message).removeClass('success error').addClass(type + ' show');
+        setTimeout(function() {
+            toast.removeClass('show');
+        }, 3000);
+    }
+
+    function loadStaffDropdown() {
+        $.ajax({
+            url: "http://localhost:8080/v1/user/users",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function(userResponse) {
+                let users = userResponse.body || userResponse.data || userResponse || [];
+                let userMap = {};
+                users.forEach(function(u) {
+                    userMap[u.userId] = u.userName;
+                });
+                $.ajax({
+                    url: "http://localhost:8080/v1/staff/staff",
+                    type: "GET",
+                    contentType: "application/json",
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+                    },
+                    success: function(response) {
+                        let staffList = response.body || response.data || response || [];
+                        let options = '<option value="">— Select Staff —</option>';
+                        staffList.forEach(function(stf) {
+                            let uName = userMap[stf.userId] || 'User #' + stf.userId;
+                            let spec = stf.specialization ? ' (' + stf.specialization + ')' :
+                                '';
+                            options += '<option value="' + stf.staffId + '">' + uName + spec +
+                                ' - ID: ' + stf.staffId + '</option>';
+                        });
+                        $('#staffId').html(options);
+                    },
+                    error: function(xhr) {
+                        console.error("Error loading staff dropdown", xhr);
+                    }
+                });
+            },
+            error: function(xhr) {
+                console.error("Error loading users for staff dropdown", xhr);
+            }
+        });
+    }
+
+    function loadAllSchedules() {
+        $.ajax({
+            url: "http://localhost:8080/v1/staffSchedule/staff-schedule",
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function(response) {
+                allSchedules = response.data || response.body || response || [];
+                renderTable(allSchedules);
+            },
+            error: function(xhr) {
+                console.error("Error loading schedules", xhr);
+                showToast("Failed to load staff schedules", "error");
+            }
+        });
+    }
+
+    function renderTable(dataList) {
+        let tbody = $('#scheduleTableBody');
+        tbody.empty();
+
+        if (!dataList || dataList.length === 0) {
+            tbody.html(`
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fas fa-folder-open"></i>
+                                    <p>No staff schedules found.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `);
+            $('#rowCount').text(0);
+            return;
+        }
+
+        dataList.forEach(function(item) {
+            let status = (item.scheduleStatus || 'AVAILABLE').toUpperCase();
+            let statusBadge = '';
+            let dotClass = '';
+            if (status === 'AVAILABLE') {
+                statusBadge = '<span class="status-badge available"><span class="status-dot available"></span>Available</span>';
+                dotClass = 'available';
+            } else if (status === 'ON_LEAVE') {
+                statusBadge = '<span class="status-badge on-leave"><span class="status-dot on-leave"></span>On Leave</span>';
+                dotClass = 'on-leave';
+            } else {
+                statusBadge = '<span class="status-badge off-day"><span class="status-dot off-day"></span>Off Day</span>';
+                dotClass = 'off-day';
+            }
+
+            let displayName = item.staffName || ('Staff #' + item.staffId);
+            let dayDisplay = (item.dayOfWeek || '').charAt(0).toUpperCase() +
+                (item.dayOfWeek || '').slice(1).toLowerCase();
+
+            let row = `
+                        <tr>
+                            <td>#${item.scheduleId}</td>
+                            <td><strong>${displayName}</strong> <span class="staff-tag">ID: ${item.staffId}</span></td>
+                            <td><span class="day-badge">${dayDisplay}</span></td>
+                            <td>${item.startTime || '--:--'}</td>
+                            <td>${item.endTime || '--:--'}</td>
+                            <td>${statusBadge}</td>
+                            <td style="text-align:right;">
+                                <button class="action-btn" onclick="selectSchedule(${item.scheduleId})" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn status-toggle" onclick="changeStatus(${item.scheduleId})" title="Change Status"><i class="fas fa-sync-alt"></i></button>
+                                <button class="action-btn delete" onclick="deleteSchedule(${item.scheduleId})" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        </tr>
+                    `;
+            tbody.append(row);
+        });
+
+        $('#rowCount').text(dataList.length);
+    }
+
+    function saveSchedule() {
+        let staffId = $('#staffId').val() ? parseInt($('#staffId').val()) : null;
+        let dayOfWeek = $('#dayOfWeek').val();
+        let startTime = $('#startTime').val();
+        let endTime = $('#endTime').val();
+        let status = $('#scheduleStatus').val().toUpperCase();
+
+        if (!staffId || !dayOfWeek || !startTime || !endTime) {
+            showToast("Please fill in all required fields", "error");
+            return;
+        }
+
+        let formattedStartTime = startTime.length === 5 ? startTime + ':00' : startTime;
+        let formattedEndTime = endTime.length === 5 ? endTime + ':00' : endTime;
+
+        const dto = {
+            "staffId": staffId,
+            "dayOfWeek": dayOfWeek,
+            "startTime": formattedStartTime,
+            "endTime": formattedEndTime,
+            "scheduleStatus": status
+        };
+
+        console.log("Saving schedule:", dto);
+
+        $.ajax({
+            url: "http://localhost:8080/v1/staffSchedule/staff-schedule-saved",
+            type: "POST",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            data: JSON.stringify(dto),
+            success: function(response) {
+                showToast("Staff schedule saved successfully!");
+                $('#scheduleModal').removeClass('show');
+                loadAllSchedules();
+            },
+            error: function(xhr) {
+                console.error("Save error:", xhr);
+                let msg = xhr.responseJSON?.message || "Error saving schedule";
+                showToast(msg, "error");
+            }
+        });
+    }
+
+    function updateSchedule() {
+        let scheduleId = $('#scheduleId').val() ? parseInt($('#scheduleId').val()) : null;
+        let staffId = $('#staffId').val() ? parseInt($('#staffId').val()) : null;
+        let dayOfWeek = $('#dayOfWeek').val();
+        let startTime = $('#startTime').val();
+        let endTime = $('#endTime').val();
+        let status = $('#scheduleStatus').val().toUpperCase();
+
+        if (!scheduleId || !staffId || !dayOfWeek || !startTime || !endTime) {
+            showToast("Please fill in all required fields", "error");
+            return;
+        }
+        let formattedStartTime = startTime.length === 5 ? startTime + ':00' : startTime;
+        let formattedEndTime = endTime.length === 5 ? endTime + ':00' : endTime;
+
+        const dto = {
+            "scheduleId": scheduleId,
+            "staffId": staffId,
+            "dayOfWeek": dayOfWeek,
+            "startTime": formattedStartTime,
+            "endTime": formattedEndTime,
+            "scheduleStatus": status
+        };
+
+        console.log("Updating schedule:", dto);
+
+        $.ajax({
+            url: "http://localhost:8080/v1/staffSchedule/update-staff-schedule",
+            type: "PUT",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            data: JSON.stringify(dto),
+            success: function(response) {
+                showToast("Staff schedule updated successfully!");
+                $('#scheduleModal').removeClass('show');
+                loadAllSchedules();
+            },
+            error: function(xhr) {
+                console.error("Update error:", xhr);
+                let msg = xhr.responseJSON?.message || "Error updating schedule";
+                showToast(msg, "error");
+            }
+        });
+    }
+
+    function selectSchedule(scheduleId) {
+        $.ajax({
+            url: "http://localhost:8080/v1/staffSchedule/select-staff-schedule/" + scheduleId,
+            type: "GET",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function(response) {
+                let c = response.body || response.data || response;
+                $('#scheduleId').val(c.scheduleId);
+                $('#staffId').val(c.staffId);
+                $('#dayOfWeek').val(c.dayOfWeek);
+
+                let st = (c.startTime || '').toString();
+                let et = (c.endTime || '').toString();
+                if (st.length > 5) st = st.substring(0, 5);
+                if (et.length > 5) et = et.substring(0, 5);
+                $('#startTime').val(st);
+                $('#endTime').val(et);
+
+                let currentStatus = (c.scheduleStatus || 'AVAILABLE').toString().toUpperCase();
+                $('#scheduleStatus').val(currentStatus);
+
+                $('#modalTitle').text('Edit Staff Schedule');
+                $('#scheduleModal').addClass('show');
+            },
+            error: function(xhr) {
+                console.error("Fetch error:", xhr);
+                showToast("Error fetching schedule details!", "error");
+            }
+        });
+    }
+
+    function deleteSchedule(scheduleId) {
+        if (confirm("Are you sure you want to delete this staff schedule?")) {
+            $.ajax({
+                url: "http://localhost:8080/v1/staffSchedule/" + scheduleId,
+                type: "DELETE",
+                contentType: "application/json",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+                },
+                success: function(response) {
+                    showToast("Staff schedule deleted successfully!");
+                    loadAllSchedules();
+                },
+                error: function(xhr) {
+                    console.error("Delete error:", xhr);
+                    let msg = xhr.responseJSON?.message || "Error deleting schedule";
+                    showToast(msg, "error");
+                }
+            });
+        }
+    }
+    function changeStatus(scheduleId, currentStatus) {
+        $('#changeStatusScheduleId').val(scheduleId);
+        $('#newScheduleStatus').val(currentStatus);
+        $('#statusModal').addClass('show');
+    }
+    function submitStatusChange() {
+        let scheduleId = $('#changeStatusScheduleId').val();
+        let selectedStatus = $('#newScheduleStatus').val();
+
+        $.ajax({
+            url: "http://localhost:8080/v1/staffSchedule/change-status/" + scheduleId + "?staffScheduleStatus=" + selectedStatus,
+            type: "PATCH",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function(response) {
+                showToast("Status changed successfully!");
+                $('#statusModal').removeClass('show');
+                loadAllSchedules();
+            },
+            error: function(xhr) {
+                console.error("Status change error:", xhr);
+                let msg = xhr.responseJSON?.message || "Error changing status";
+                showToast(msg, "error");
+            }
+        });
+    }
+
+    function searchSchedules() {
+        let searchValue = $('#searchInput').val().toLowerCase().trim();
+        let selectedStatus = $('#statusFilter').val().toUpperCase();
+
+        let filtered = allSchedules.filter(function(s) {
+            let staffName = (s.staffName || '').toLowerCase();
+            let day = (s.dayOfWeek || '').toLowerCase();
+            let currentStatus = (s.scheduleStatus || 'AVAILABLE').toString().toUpperCase();
+
+            let matchesSearch = staffName.includes(searchValue) || day.includes(searchValue);
+            let matchesStatus = (selectedStatus === 'ALL') || (currentStatus === selectedStatus);
+
+            return matchesSearch && matchesStatus;
+        });
+
+        renderTable(filtered);
+    }
+</script>
 </body>
 </html>

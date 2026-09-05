@@ -1,5 +1,6 @@
 package com.example.Spring_Salon_Project.entity;
 
+import com.example.Spring_Salon_Project.enumiration.StaffScheduleStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Entity
+@Table(name = "staff_schedules")
 public class StaffSchedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +35,7 @@ public class StaffSchedule {
     @Column(nullable = false)
     private LocalTime endTime;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Boolean isAvailable;
+    private StaffScheduleStatus scheduleStatus;
 }
