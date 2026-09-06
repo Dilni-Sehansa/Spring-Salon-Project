@@ -52,19 +52,27 @@ public class SecurityConfig {
 //                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/","/login.html", "/singIn.html", "/dashboard.html", "/user.html").permitAll()
+                        .requestMatchers("/", "/*.html", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
+                        .requestMatchers("/login.html", "/singIn.html", "/dashboard.html", "/user.html").permitAll()
+
                         .requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/user/user_saved").permitAll()
                         .requestMatchers("/v1/user/**").authenticated()
 
                         .requestMatchers("/v1/customer/**").authenticated()
                         .requestMatchers("/v1/staff/**").authenticated()
+
                         .requestMatchers(HttpMethod.GET, "/v1/category/**").permitAll()
                         .requestMatchers("/v1/category/**").hasAnyRole("ADMIN", "STAFF")
+
                         .requestMatchers(HttpMethod.GET, "/v1/service/**").permitAll()
-                        .requestMatchers("/v1/service/**").hasAnyRole("ADMIN","STAFF")
+                        .requestMatchers("/v1/service/**").hasAnyRole("ADMIN", "STAFF")
+
                         .requestMatchers(HttpMethod.GET, "/v1/staffService/**").permitAll()
-                        .requestMatchers("/v1/staffService/**").hasAnyRole("ADMIN","STAFF")
+                        .requestMatchers("/v1/staffService/**").hasAnyRole("ADMIN", "STAFF")
+
+//                        .requestMatchers(HttpMethod.GET, "/v1/product/**").permitAll()
+                        .requestMatchers("/v1/product/**").hasAnyRole("ADMIN", "STAFF")
 
                         .requestMatchers(HttpMethod.POST, "/v1/appointment/**").hasAnyRole("CUSTOMER", "ADMIN", "STAFF")
                         .requestMatchers(HttpMethod.GET, "/v1/appointment/**").hasAnyRole("CUSTOMER", "ADMIN", "STAFF")
