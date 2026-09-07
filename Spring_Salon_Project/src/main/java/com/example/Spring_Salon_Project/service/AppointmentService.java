@@ -1,6 +1,7 @@
 package com.example.Spring_Salon_Project.service;
 
 import com.example.Spring_Salon_Project.dto.AppointmentDTO;
+import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,6 +15,6 @@ public interface AppointmentService {
     List<AppointmentDTO> getAppointmentsByCustomerId(Long customerId);
     List<AppointmentDTO> getAppointmentsByDate(LocalDate date);
     List<AppointmentDTO> getAppointmentsByStatus(String status);
-    void updateAppointmentStatus(Long appointmentId, String status);
+    void updateAppointmentStatus(Long appointmentId, AppointmentStatus status);
 
 }

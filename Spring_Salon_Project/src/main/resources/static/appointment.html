@@ -7,76 +7,40 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* ── Reset & Base ── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #fff5f5 0%, #ffeef0 100%);
+            background:
+                    radial-gradient(circle at 15% 10%, rgba(255, 182, 193, 0.35), transparent 45%),
+                    radial-gradient(circle at 85% 90%, rgba(255, 111, 145, 0.20), transparent 50%),
+                    linear-gradient(135deg, #fff6f7 0%, #ffeef1 100%);
             min-height: 100vh;
             display: flex;
             overflow: hidden;
             position: relative;
         }
-
+        /* ── Floating Petals ── */
         .petal {
             position: fixed;
             border-radius: 50% 0 50% 50%;
-            opacity: 0.2;
+            opacity: 0.22;
             pointer-events: none;
             z-index: 0;
             animation: petalFloat 14s infinite ease-in-out;
             background: #ff6f91;
         }
-        .petal:nth-child(1) {
-            width: 40px;
-            height: 40px;
-            top: 5%;
-            left: 3%;
-            animation-delay: 0s;
-        }
-        .petal:nth-child(2) {
-            width: 25px;
-            height: 25px;
-            top: 20%;
-            right: 5%;
-            animation-delay: 3s;
-            background: #ffb6c1;
-        }
-        .petal:nth-child(3) {
-            width: 50px;
-            height: 50px;
-            bottom: 10%;
-            left: 8%;
-            animation-delay: 6s;
-        }
-        .petal:nth-child(4) {
-            width: 30px;
-            height: 30px;
-            bottom: 25%;
-            right: 6%;
-            animation-delay: 9s;
-            background: #ffb6c1;
-        }
-
+        .petal:nth-child(1) { width: 40px; height: 40px; top: 5%; left: 3%; animation-delay: 0s; }
+        .petal:nth-child(2) { width: 25px; height: 25px; top: 20%; right: 5%; animation-delay: 3s; background: #ffb6c1; }
+        .petal:nth-child(3) { width: 50px; height: 50px; bottom: 10%; left: 8%; animation-delay: 6s; }
+        .petal:nth-child(4) { width: 30px; height: 30px; bottom: 25%; right: 6%; animation-delay: 9s; background: #ffb6c1; }
         @keyframes petalFloat {
-            0% {
-                transform: translateY(0) rotate(0deg) scale(1);
-            }
-            33% {
-                transform: translateY(-35px) rotate(25deg) scale(1.05);
-            }
-            66% {
-                transform: translateY(20px) rotate(-15deg) scale(0.95);
-            }
-            100% {
-                transform: translateY(0) rotate(0deg) scale(1);
-            }
+            0% { transform: translateY(0) rotate(0deg) scale(1); }
+            33% { transform: translateY(-35px) rotate(25deg) scale(1.05); }
+            66% { transform: translateY(20px) rotate(-15deg) scale(0.95); }
+            100% { transform: translateY(0) rotate(0deg) scale(1); }
         }
-
+        /* ── Sidebar ── */
         .sidebar {
             width: 260px;
             background: rgba(255, 255, 255, 0.75);
@@ -93,7 +57,6 @@
             box-shadow: 2px 0 30px rgba(0, 0, 0, 0.03);
             overflow-y: auto;
         }
-
         .sidebar-brand {
             display: flex;
             align-items: center;
@@ -102,7 +65,6 @@
             padding-bottom: 24px;
             border-bottom: 2px solid rgba(255, 111, 145, 0.10);
         }
-
         .sidebar-brand i {
             font-size: 2rem;
             color: #ff6f91;
@@ -110,23 +72,18 @@
             padding: 12px;
             border-radius: 18px;
         }
-
         .sidebar-brand h1 {
             font-size: 1.8rem;
             font-weight: 700;
             color: #2d2d2d;
         }
-        .sidebar-brand h1 span {
-            color: #ff6f91;
-        }
-
+        .sidebar-brand h1 span { color: #ff6f91; }
         .sidebar-nav {
             flex: 1;
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
-
         .sidebar-nav a {
             display: flex;
             align-items: center;
@@ -139,31 +96,23 @@
             text-decoration: none;
             transition: all 0.25s ease;
         }
-
         .sidebar-nav a i {
             width: 22px;
             font-size: 1.1rem;
             color: #b3886a;
             transition: color 0.25s;
         }
-
         .sidebar-nav a:hover {
             background: rgba(255, 111, 145, 0.08);
             color: #ff6f91;
         }
-        .sidebar-nav a:hover i {
-            color: #ff6f91;
-        }
-
+        .sidebar-nav a:hover i { color: #ff6f91; }
         .sidebar-nav a.active {
             background: #ff6f91;
             color: #fff;
             box-shadow: 0 6px 18px rgba(255, 111, 145, 0.25);
         }
-        .sidebar-nav a.active i {
-            color: #fff;
-        }
-
+        .sidebar-nav a.active i { color: #fff; }
         .sidebar-footer {
             margin-top: auto;
             padding-top: 20px;
@@ -172,7 +121,6 @@
             flex-direction: column;
             gap: 8px;
         }
-
         .sidebar-footer a {
             display: flex;
             align-items: center;
@@ -184,15 +132,13 @@
             text-decoration: none;
             transition: all 0.25s;
         }
-        .sidebar-footer a i {
-            width: 22px;
-            color: #b3886a;
-        }
+        .sidebar-footer a i { width: 22px; color: #b3886a; }
         .sidebar-footer a:hover {
             background: rgba(255, 111, 145, 0.08);
             color: #ff6f91;
         }
 
+        /* ── Main Content ── */
         .main {
             flex: 1;
             padding: 32px 40px;
@@ -201,7 +147,6 @@
             position: relative;
             z-index: 1;
         }
-
         .main-header {
             display: flex;
             justify-content: space-between;
@@ -210,31 +155,34 @@
             flex-wrap: wrap;
             gap: 16px;
         }
-
         .main-header h2 {
-            font-size: 1.8rem;
-            font-weight: 600;
+            font-size: 1.85rem;
+            font-weight: 700;
             color: #2d2d2d;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
+            letter-spacing: -0.3px;
         }
         .main-header h2 i {
-            color: #ff6f91;
+            color: #fff;
+            background: linear-gradient(135deg, #ff6f91, #ff9bb3);
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            box-shadow: 0 8px 20px rgba(255, 111, 145, 0.3);
         }
-
         .header-actions {
             display: flex;
             gap: 12px;
             align-items: center;
             flex-wrap: wrap;
         }
-
         .btn-primary {
-            background: #ff6f91;
+            background: linear-gradient(135deg, #ff6f91, #ff8ba6);
             color: #fff;
             border: none;
-            padding: 10px 24px;
+            padding: 12px 28px;
             border-radius: 50px;
             font-weight: 600;
             font-size: 0.95rem;
@@ -243,19 +191,18 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 14px rgba(255, 111, 145, 0.3);
+            box-shadow: 0 6px 18px rgba(255, 111, 145, 0.32);
+            white-space: nowrap;
         }
         .btn-primary:hover {
-            background: #ff527b;
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(255, 111, 145, 0.35);
+            box-shadow: 0 10px 26px rgba(255, 111, 145, 0.4);
         }
-
         .btn-secondary {
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 50px;
             font-weight: 500;
             color: #2d2d2d;
@@ -264,75 +211,57 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.95rem;
         }
         .btn-secondary:hover {
             background: #fff;
             border-color: #ff6f91;
         }
 
-        .btn-danger-outline {
-            background: transparent;
-            border: 1px solid #eb5757;
-            color: #eb5757;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: 500;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-danger-outline:hover {
-            background: #eb5757;
-            color: #fff;
-        }
-
+        /* ── Filters & Search ── */
         .filter-bar {
             display: flex;
             gap: 16px;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
             flex-wrap: wrap;
             align-items: center;
         }
-
         .filter-bar .search-wrapper {
             flex: 1;
-            min-width: 200px;
+            min-width: 250px;
             position: relative;
         }
-
         .filter-bar .search-wrapper input {
             width: 100%;
-            padding: 12px 20px 12px 44px;
+            padding: 14px 20px 14px 46px;
             border-radius: 50px;
-            border: 2px solid #f5f0f0;
-            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid rgba(255, 111, 145, 0.12);
+            background: rgba(255, 255, 255, 0.65);
             backdrop-filter: blur(6px);
             font-family: inherit;
             font-size: 0.95rem;
             outline: none;
             transition: all 0.3s;
+            box-shadow: 0 4px 14px rgba(255, 111, 145, 0.06);
         }
         .filter-bar .search-wrapper input:focus {
             border-color: #ff6f91;
-            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.08);
+            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.1);
             background: #fff;
         }
         .filter-bar .search-wrapper i {
             position: absolute;
-            left: 16px;
+            left: 18px;
             top: 50%;
             transform: translateY(-50%);
-            color: #b7a89c;
+            color: #ff8ba6;
         }
-
-        .filter-bar select {
-            padding: 12px 20px;
+        .filter-bar select,
+        .filter-bar input[type="date"] {
+            padding: 14px 20px;
             border-radius: 50px;
-            border: 2px solid #f5f0f0;
-            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid rgba(255, 111, 145, 0.12);
+            background: rgba(255, 255, 255, 0.65);
             backdrop-filter: blur(6px);
             font-family: inherit;
             font-size: 0.9rem;
@@ -345,33 +274,34 @@
             background-repeat: no-repeat;
             background-position: right 16px center;
             padding-right: 40px;
+            min-width: 160px;
+            box-shadow: 0 4px 14px rgba(255, 111, 145, 0.06);
         }
-        .filter-bar select:focus {
+        .filter-bar select:focus,
+        .filter-bar input[type="date"]:focus {
             border-color: #ff6f91;
             background: #fff;
+            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.1);
         }
 
+        /* ── Card / Table ── */
         .card {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-radius: 28px;
             padding: 24px 28px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 40px rgba(255, 111, 145, 0.08);
             overflow-x: auto;
         }
-
-        .table-wrap {
-            overflow-x: auto;
-        }
-
+        .table-wrap { overflow-x: auto; }
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9rem;
             min-width: 700px;
         }
-
         table th {
             text-align: left;
             padding: 14px 12px;
@@ -380,7 +310,6 @@
             border-bottom: 2px solid rgba(255, 111, 145, 0.10);
             white-space: nowrap;
         }
-
         table td {
             padding: 14px 12px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.03);
@@ -388,34 +317,34 @@
             vertical-align: middle;
         }
 
+        /* ── Status Badge ── */
         .status-badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 4px 14px;
             border-radius: 50px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.3px;
+            cursor: default;
         }
-        .status-badge.pending {
-            background: #f2c94a;
-            color: #fff;
+        /* ── වෙනස් කළ කොටස: status colors එකට ගැලපෙන පරිදි red color එක inactive/cancelled වලට ── */
+        .status-badge.pending { background: #f2c94a; color: #fff; }
+        .status-badge.confirmed { background: #6fcf97; color: #fff; }
+        .status-badge.completed { background: #2d9cdb; color: #fff; }
+        .status-badge.cancelled { background: #eb5757; color: #fff; }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
         }
-        .status-badge.confirmed {
-            background: #6fcf97;
-            color: #fff;
-        }
-        .status-badge.completed {
-            background: #2d9cdb;
-            color: #fff;
-        }
-        .action-btn.status-toggle:hover {
-            color: #6fcf97;
-            background: rgba(111, 207, 151, 0.08);
-        }
-        .status-badge.cancelled {
-            background: #eb5757;
-            color: #fff;
-        }
+        .status-dot.pending { background: #f2c94a; }
+        .status-dot.confirmed { background: #6fcf97; }
+        .status-dot.completed { background: #2d9cdb; }
+        .status-dot.cancelled { background: #eb5757; }
 
         .action-btn {
             background: transparent;
@@ -435,7 +364,12 @@
             color: #eb5757;
             background: rgba(235, 87, 87, 0.08);
         }
+        .action-btn.status-toggle:hover {
+            color: #6fcf97;
+            background: rgba(111, 207, 151, 0.08);
+        }
 
+        /* ── Modal ── */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -447,10 +381,7 @@
             justify-content: center;
             padding: 20px;
         }
-        .modal-overlay.show {
-            display: flex;
-        }
-
+        .modal-overlay.show { display: flex; }
         .modal {
             background: #fff;
             border-radius: 40px;
@@ -462,18 +393,10 @@
             max-height: 90vh;
             overflow-y: auto;
         }
-
         @keyframes modalSlide {
-            0% {
-                opacity: 0;
-                transform: translateY(30px) scale(0.96);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            0% { opacity: 0; transform: translateY(30px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -493,10 +416,7 @@
             cursor: pointer;
             transition: color 0.2s;
         }
-        .modal-close:hover {
-            color: #2d2d2d;
-        }
-
+        .modal-close:hover { color: #2d2d2d; }
         .modal .input-group {
             margin-bottom: 16px;
             text-align: left;
@@ -527,7 +447,15 @@
             background: #fff;
             box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.08);
         }
-
+        .modal .input-group select[multiple] {
+            border-radius: 16px;
+            min-height: 120px;
+            padding: 8px 12px;
+        }
+        .modal .input-group small {
+            color: #8c7b75;
+            font-size: 0.75rem;
+        }
         .modal .btn-row {
             display: flex;
             gap: 12px;
@@ -539,7 +467,7 @@
             justify-content: center;
         }
 
-
+        /* ── Toast ── */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -557,38 +485,40 @@
             transition: all 0.4s ease;
             pointer-events: none;
         }
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .toast.success {
-            background: #6fcf97;
-        }
-        .toast.error {
-            background: #eb5757;
-        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: #6fcf97; }
+        .toast.error { background: #eb5757; }
 
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; padding: 16px 8px; }
+            .sidebar-brand h1, .sidebar-nav a span, .sidebar-footer a span { display: none; }
+            .sidebar-brand i { font-size: 1.6rem; padding: 8px; }
+            .sidebar-nav a { justify-content: center; padding: 10px; }
+            .sidebar-nav a i { margin: 0; font-size: 1.2rem; }
+            .sidebar-footer a { justify-content: center; padding: 10px; }
+            .main { padding: 16px; }
+            .modal { padding: 24px; }
+            .main-header h2 { font-size: 1.4rem; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .filter-bar .search-wrapper { min-width: unset; }
+            .filter-bar select, .filter-bar input[type="date"] { min-width: unset; }
+        }
+        .main::-webkit-scrollbar { width: 4px; }
+        .main::-webkit-scrollbar-track { background: transparent; }
+        .main::-webkit-scrollbar-thumb { background: rgba(255, 111, 145, 0.25); border-radius: 10px; }
+        #statusModal .modal { max-width: 400px; }
         .empty-state {
             text-align: center;
             padding: 40px 20px;
             color: #b7a89c;
         }
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 12px;
-            opacity: 0.4;
-        }
-        .empty-state p {
-            font-size: 1rem;
-        }
+        .empty-state i { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+        .empty-state p { font-size: 1rem; }
     </style>
 </head>
 <body>
-
-<div class="petal"></div>
-<div class="petal"></div>
-<div class="petal"></div>
-<div class="petal"></div>
+<div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div>
 
 <aside class="sidebar">
     <div class="sidebar-brand">
@@ -638,7 +568,7 @@
             <option value="COMPLETED">Completed</option>
             <option value="CANCELLED">Cancelled</option>
         </select>
-        <input type="date" id="dateFilter" style="padding:12px 20px; border-radius:50px; border:2px solid #f5f0f0; background:rgba(255,255,255,0.6); font-family:inherit; outline:none;" />
+        <input type="date" id="dateFilter" />
     </div>
 
     <div class="card">
@@ -655,11 +585,10 @@
                     <th style="text-align:right;">Actions</th>
                 </tr>
                 </thead>
-                <tbody id="appointmentTableBody">
-                </tbody>
+                <tbody id="appointmentTableBody"></tbody>
             </table>
         </div>
-        <div style="margin-top: 16px; text-align: center; color: #b7a89c; font-size: 0.8rem;">
+        <div style="margin-top:16px; text-align:center; color:#b7a89c; font-size:0.8rem;">
             Showing <span id="rowCount">0</span> appointments
         </div>
     </div>
@@ -676,9 +605,7 @@
             <input type="hidden" id="appointmentId" value="" />
             <div class="input-group">
                 <label>Customer</label>
-                <select id="customerId" required>
-                    <option value="">— Select Customer —</option>
-                </select>
+                <select id="customerId" required><option value="">— Select Customer —</option></select>
             </div>
             <div class="input-group">
                 <label>Date</label>
@@ -687,6 +614,11 @@
             <div class="input-group">
                 <label>Time</label>
                 <input type="time" id="appointmentTime" required />
+            </div>
+            <div class="input-group">
+                <label>Services *</label>
+                <select id="serviceIds" multiple size="5" required></select>
+                <small>Hold Ctrl / Cmd to select multiple services</small>
             </div>
             <div class="input-group">
                 <label>Total Amount ($)</label>
@@ -709,26 +641,29 @@
     </div>
 </div>
 
+<!-- ── Status Modal ── -->
 <div class="modal-overlay" id="statusModal">
-    <div class="modal" style="max-width: 400px;">
+    <div class="modal">
         <div class="modal-header">
             <h3>Change Status</h3>
             <button class="modal-close" id="statusModalClose"><i class="fas fa-times"></i></button>
         </div>
-        <input type="hidden" id="changeStatusAppointmentId" value="" />
-        <div class="input-group">
-            <label>Select New Status</label>
-            <select id="newStatusSelect">
-                <option value="PENDING">PENDING</option>
-                <option value="CONFIRMED">CONFIRMED</option>
-                <option value="COMPLETED">COMPLETED</option>
-                <option value="CANCELLED">CANCELLED</option>
-            </select>
-        </div>
-        <div class="btn-row">
-            <button type="button" class="btn-secondary" id="statusModalCancel">Cancel</button>
-            <button type="button" class="btn-primary" id="saveStatusBtn"><i class="fas fa-sync-alt"></i> Update Status</button>
-        </div>
+        <form id="statusForm">
+            <input type="hidden" id="changeStatusAppointmentId" value="" />
+            <div class="input-group">
+                <label>Select New Status</label>
+                <select id="newStatusSelect" required>
+                    <option value="PENDING">PENDING</option>
+                    <option value="CONFIRMED">CONFIRMED</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button type="button" class="btn-secondary" id="statusModalCancel">Cancel</button>
+                <button type="submit" class="btn-primary" id="saveStatusBtn"><i class="fas fa-sync-alt"></i> Update Status</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -741,6 +676,7 @@
     $(document).ready(function (){
         loadAllAppointment();
         loadAllAppointmentDropdown();
+        loadAllServicesDropdown();
 
         $('#addAppointmentBtn').on('click', function (){
             $('#appointmentForm')[0].reset();
@@ -751,13 +687,14 @@
 
         $('#modalClose , #modalCancel').on('click',function (){
             $('#appointmentModal').removeClass('show');
-        })
+        });
 
         $('#statusModalClose, #statusModalCancel').on('click', function(){
             $('#statusModal').removeClass('show');
         });
 
-        $('#saveStatusBtn').on('click', function(){
+        $('#statusForm').on('submit', function(e){
+            e.preventDefault();
             let id = $('#changeStatusAppointmentId').val();
             let newStatus = $('#newStatusSelect').val();
             if(id && newStatus){
@@ -775,9 +712,19 @@
             }
         })
 
+
         $('#searchInput, #statusFilter, #dateFilter').on('input change', function(){
             searchStatus();
         });
+    });
+
+    $('#serviceIds').on('change', function () {
+        let total = 0;
+        $('#serviceIds option:selected').each(function () {
+            let price = parseFloat($(this).data('price')) || 0;
+            total += price;
+        });
+        $('#totalAmount').val(total.toFixed(2));
     });
 
     function showToast(message, type = 'success') {
@@ -793,22 +740,15 @@
             url: "http://localhost:8080/v1/customer/customer",
             type: "GET",
             contentType : "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
             success: function (response){
                 let customerList = response.body || response.data || response || [];
                 let options = '<option value="">— Select Customer —</option>';
-
-                if (!Array.isArray(customerList)) {
-                    customerList = [];
-                }
-
+                if (!Array.isArray(customerList)) { customerList = []; }
                 let activeCustomers = customerList.filter(c => {
                     let status = (c.customerStatus || 'ACTIVE').toString().toUpperCase();
                     return status === 'ACTIVE';
                 });
-
                 activeCustomers.forEach(c => {
                     let cId = c.customerId || c.id;
                     let cName = c.customerName || c.name || `Customer #${cId}`;
@@ -822,14 +762,46 @@
         });
     }
 
+    function loadAllServicesDropdown() {
+        $.ajax({
+            url: "http://localhost:8080/v1/service/service",
+            type: "GET",
+            contentType: "application/json",
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            success: function (response) {
+                let services = response.body || response.data || response || [];
+                let options = '';
+                let activeServices = services.filter(s => {
+                    let status = (s.serviceStatus || 'ACTIVE').toString().toUpperCase();
+                    return status === 'ACTIVE';
+                });
+                activeServices.forEach(s => {
+                    options += `<option value="${s.serviceId}" data-price="${s.price || 0}">
+                                ${s.serviceName} - LKR ${parseFloat(s.price || 0).toFixed(2)}
+                            </option>`;
+                });
+                $('#serviceIds').html(options);
+            },
+            error: function (xhr) {
+                console.error("Error loading services", xhr);
+            }
+        });
+    }
+    $('#serviceId').on('change', function () {
+        let total = 0;
+        $('#serviceIds option:selected').each(function () {
+            let price = parseFloat($(this).data('price')) || 0;
+            total += price;
+        });
+        $('#totalAmount').val(total.toFixed(2));
+    });
+
     function loadAllAppointment(){
         $.ajax({
             url: "http://localhost:8080/v1/appointment/appointment",
             type: "GET",
             contentType : "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
             success: function (response){
                 allAppointment = response.body || response.data || response || [];
                 renderTable(allAppointment);
@@ -861,9 +833,9 @@
                     <td>${a.appointmentDate}</td>
                     <td>${a.appointmentTime}</td>
                     <td>${amount}</td>
-                    <td><span class="status-badge ${statusClass}">${status}</span></td>
+                    <td><span class="status-dot ${statusClass}"></span><span class="status-badge ${statusClass}">${status}</span></td>
                     <td style="text-align:right;">
-                        <button type="button" class="action-btn status-toggle" onclick="openStatusModal(${a.appointmentId}, '${status}')" title="Change Status"><i class="fas fa-sync-alt"></i></button>
+                        <button type="button" class="action-btn status-toggle" onclick="toggleAppointmentStatus(${a.appointmentId}, '${status}')" title="Toggle Status"><i class="fas fa-sync-alt"></i></button>
                         <button type="button" class="action-btn" onclick="selectAppointment(${a.appointmentId})" title="Edit"><i class="fas fa-edit"></i></button>
                         <button type="button" class="action-btn delete" onclick="deleteAppointment(${a.appointmentId})" title="Delete"><i class="fas fa-trash"></i></button>
                     </td>
@@ -874,30 +846,38 @@
         $('#rowCount').text(list ? list.length : 0);
     }
 
+    function toggleAppointmentStatus(appointmentId, currentStatus) {
+        openStatusModal(appointmentId, currentStatus);
+    }
+
+    function openStatusModal(appointmentId, currentStatus){
+        $('#changeStatusAppointmentId').val(appointmentId);
+        $('#newStatusSelect').val(currentStatus);
+        $('#statusModal').addClass('show');
+    }
+
     function saveAppointment(){
         let customerId = $('#customerId').val() ? parseInt($('#customerId').val()) : null;
         let appointmentDate = $('#appointmentDate').val();
         let appointmentTime = $('#appointmentTime').val();
         let totalAmount = $('#totalAmount').val() ? parseFloat($('#totalAmount').val()) : 0.0;
         let status = $('#appointmentStatus').val().toUpperCase();
+        let serviceIds = $('#serviceIds').val() ? $('#serviceIds').val().map(Number) : [];
 
         const appointmentDTO = {
             "customerId": customerId,
             "appointmentDate": appointmentDate,
             "appointmentTime": appointmentTime,
             "totalAmount": totalAmount,
-            "appointmentStatus" : status
+            "appointmentStatus" : status,
+            "serviceIds": serviceIds
         };
-
-        console.log("Sending DTO: ", appointmentDTO);
 
         $.ajax({
             url: "http://localhost:8080/v1/appointment/save-appointment",
             type: "POST",
             contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
             data: JSON.stringify(appointmentDTO),
             success: function (response){
                 showToast("Appointment saved successfully!");
@@ -918,6 +898,7 @@
         let appointmentTime = $('#appointmentTime').val();
         let totalAmount = $('#totalAmount').val() ? parseFloat($('#totalAmount').val()) : 0.0;
         let status = $('#appointmentStatus').val().toUpperCase();
+        let serviceIds = $('#serviceIds').val() ? $('#serviceIds').val().map(Number) : [];
 
         const appointmentDTO = {
             "appointmentId": appointmentId,
@@ -925,16 +906,15 @@
             "appointmentDate": appointmentDate,
             "appointmentTime": appointmentTime,
             "totalAmount": totalAmount,
-            "appointmentStatus": status
+            "appointmentStatus": status,
+            "serviceIds": serviceIds
         };
 
         $.ajax({
             url: "http://localhost:8080/v1/appointment/update-appointment",
             type: "PUT",
             contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
             data: JSON.stringify(appointmentDTO),
             success: function (response){
                 showToast("Appointment updated successfully!");
@@ -953,9 +933,7 @@
             url: "http://localhost:8080/v1/appointment/select/" + appointmentId,
             type: "GET",
             contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
             success: function (response){
                 let a = response.body || response.data || response;
                 $('#appointmentId').val(a.appointmentId);
@@ -965,6 +943,13 @@
                 $('#totalAmount').val(a.totalAmount);
                 let currentStatus = (a.appointmentStatus || 'PENDING').toString().toUpperCase();
                 $('#appointmentStatus').val(currentStatus);
+
+                if (a.serviceIds && Array.isArray(a.serviceIds)) {
+                    $('#serviceIds').val(a.serviceIds.map(String));
+                } else {
+                    $('#serviceIds').val([]);
+                }
+
                 $('#modalTitle').text("Edit Appointment");
                 $('#appointmentModal').addClass('show');
             },
@@ -981,9 +966,7 @@
                 url: "http://localhost:8080/v1/appointment/" + appointmentId,
                 type: "DELETE",
                 contentType: "application/json",
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-                },
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
                 success: function (response){
                     showToast("Appointment deleted successfully!");
                     loadAllAppointment();
@@ -995,20 +978,12 @@
         }
     }
 
-    function openStatusModal(appointmentId, currentStatus){
-        $('#changeStatusAppointmentId').val(appointmentId);
-        $('#newStatusSelect').val(currentStatus);
-        $('#statusModal').addClass('show');
-    }
-
     function changeStatus(appointmentId, newStatus){
         $.ajax({
             url: `http://localhost:8080/v1/appointment/update-status/${appointmentId}?status=${newStatus}`,
             type: "PATCH",
             contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
             success: function (response){
                 showToast("Status changed successfully!");
                 $('#statusModal').removeClass('show');
@@ -1043,12 +1018,3 @@
 </script>
 </body>
 </html>
-
-<!--private Long appointmentId;-->
-<!--private Long customerId;-->
-<!--private String customerName;-->
-<!--private LocalDate appointmentDate;-->
-<!--private LocalTime appointmentTime;-->
-<!--private AppointmentStatus appointmentStatus;-->
-<!--private Double totalAmount;-->
-<!--private List<Long> serviceIds;-->

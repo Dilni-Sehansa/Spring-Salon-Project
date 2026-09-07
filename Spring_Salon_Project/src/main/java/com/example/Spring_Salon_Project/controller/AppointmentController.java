@@ -2,6 +2,7 @@ package com.example.Spring_Salon_Project.controller;
 
 import com.example.Spring_Salon_Project.dto.AppointmentDTO;
 import com.example.Spring_Salon_Project.dto.CommonResponse;
+import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
@@ -73,8 +74,9 @@ public class AppointmentController {
     @PatchMapping(value = "/update-status/{appointmentId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonResponse updateAppointmentStatus(
             @PathVariable Long appointmentId,
-            @RequestParam String status) {
+            @RequestParam AppointmentStatus status) {
         appointmentService.updateAppointmentStatus(appointmentId, status);
         return new CommonResponse(0, "Appointment Status Updated Successfully");
     }
+
 }

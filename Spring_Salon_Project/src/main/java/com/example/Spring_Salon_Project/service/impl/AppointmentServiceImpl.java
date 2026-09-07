@@ -1,11 +1,12 @@
 package com.example.Spring_Salon_Project.service.impl;
 
 import com.example.Spring_Salon_Project.dto.AppointmentDTO;
-import com.example.Spring_Salon_Project.entity.Appointment;
-import com.example.Spring_Salon_Project.entity.Customer;
+import com.example.Spring_Salon_Project.entity.*;
 import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
+import com.example.Spring_Salon_Project.repository.AppointmentDetailRepository;
 import com.example.Spring_Salon_Project.repository.AppointmentRepository;
+import com.example.Spring_Salon_Project.repository.SaloonServiceRepository;
 import com.example.Spring_Salon_Project.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,8 @@ import java.util.Optional;
 public class AppointmentServiceImpl implements AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
+    private final AppointmentDetailRepository appointmentDetailRepository;
+    private final SaloonServiceRepository saloonServiceRepository;
 
     @Override
     public AppointmentDTO saveAppointment(AppointmentDTO appointmentDTO) {
@@ -46,6 +49,32 @@ public class AppointmentServiceImpl implements AppointmentService {
 
             Appointment save = appointmentRepository.save(appointment);
             log.info("Appointment saved successfully");
+
+            if (appointmentDTO.getServiceIds() != null && !appointmentDTO.getServiceIds().isEmpty()) {
+                for (Long serviceId : appointmentDTO.getServiceIds()) {
+                    Optional<SaloonService> optionalService = saloonServiceRepository.findById(serviceId);
+
+                    if (optionalService.isPresent()) {
+                        SaloonService service = optionalService.get();
+
+                        if (service.getServiceStatus() != null &&
+                                service.getServiceStatus().name().equalsIgnoreCase("INACTIVE")) {
+                            log.warn("Skipping INACTIVE service ID: {}", serviceId);
+                            continue;
+                        }
+
+                        AppointmentDetail detail = new AppointmentDetail();
+                        detail.setAppointment(save);
+                        detail.setService(service);
+                        detail.setPrice(service.getPrice());
+
+                        appointmentDetailRepository.save(detail);
+                        log.info("Saved AppointmentDetail for serviceId: {}", serviceId);
+                    } else {
+                        log.warn("Service not found for ID: {}", serviceId);
+                    }
+                }
+            }
 
             Long savedCustomerId = (save.getCustomer() != null) ? save.getCustomer().getCustomerId() : null;
             String savedCustomerName = (save.getCustomer() != null) ? save.getCustomer().getCustomerName() : null;
@@ -98,6 +127,37 @@ public class AppointmentServiceImpl implements AppointmentService {
 
             appointmentRepository.save(appointment);
             log.info("Appointment updated successfully");
+
+            if (appointmentDTO.getServiceIds() != null) {
+
+                List<AppointmentDetail> existingDetails = appointmentDetailRepository
+                        .findByAppointment_AppointmentId(appointment.getAppointmentId());
+
+                if (existingDetails != null && !existingDetails.isEmpty()) {
+                    appointmentDetailRepository.deleteAll(existingDetails);
+                }
+
+                for (Long serviceId : appointmentDTO.getServiceIds()) {
+                    Optional<SaloonService> optionalService = saloonServiceRepository.findById(serviceId);
+
+                    if (optionalService.isPresent()) {
+                        SaloonService service = optionalService.get();
+
+                        if (service.getServiceStatus() != null &&
+                                service.getServiceStatus().name().equalsIgnoreCase("INACTIVE")) {
+                            continue;
+                        }
+
+                        AppointmentDetail detail = new AppointmentDetail();
+                        detail.setAppointment(appointment);
+                        detail.setService(service);
+                        detail.setPrice(service.getPrice());
+
+                        appointmentDetailRepository.save(detail);
+                    }
+                }
+                log.info("Appointment details updated successfully");
+            }
 
         } catch (Exception e) {
             log.error("Error updating appointment: {}", e.getMessage());
@@ -169,7 +229,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void updateAppointmentStatus(Long appointmentId, String status) {
+    public void updateAppointmentStatus(Long appointmentId, AppointmentStatus status) {
         log.info("Execute method updateAppointmentStatus for ID: {} to Status: {}", appointmentId, status);
 
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
@@ -177,14 +237,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (optionalAppointment.isEmpty()) {
             throw new CustomerException(404, "Appointment not found");
         }
-
-        try {
             Appointment appointment = optionalAppointment.get();
-            appointment.setAppointmentStatus(AppointmentStatus.valueOf(status.toUpperCase()));
+            appointment.setAppointmentStatus(status);
             appointmentRepository.save(appointment);
             log.info("Appointment status updated successfully");
-        } catch (IllegalArgumentException e) {
-            throw new CustomerException(400, "Invalid status: " + status);
-        }
+
     }
+
 }
