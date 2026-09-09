@@ -2,7 +2,9 @@ package com.example.Spring_Salon_Project.service.impl;
 
 import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.UserDTO;
+import com.example.Spring_Salon_Project.entity.SaloonService;
 import com.example.Spring_Salon_Project.entity.User;
+import com.example.Spring_Salon_Project.enumiration.ServiceStatus;
 import com.example.Spring_Salon_Project.enumiration.UserStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.UserRepository;
@@ -187,5 +189,30 @@ public class UserServiceImpl implements UserService {
             log.error("Error in method deleteUser() : {}", e.getMessage());
             throw e;
         }
+    }
+
+    @Override
+    public void changeSaloonStatus(long userId) {
+        log.info("Execute method changeSaloonStatus");
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            throw new CustomerException(404, "User not found ID:" + userId);
+        }
+        User user = optionalUser.get();
+        if (user.getUserStatus() == UserStatus.ACTIVE) {
+            user.setUserStatus(UserStatus.INACTIVE);
+        } else {
+            user.setUserStatus(UserStatus.ACTIVE);
+        }
+        userRepository.save(user);
+        log.info("User status changed successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("USER");
+        logDTO.setEntityId(user.getUserId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("User status changed to: " + user.getUserStatus());
+        auditLogService.saveAuditLog(logDTO);
     }
 }

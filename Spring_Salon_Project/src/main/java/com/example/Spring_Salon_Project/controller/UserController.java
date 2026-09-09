@@ -75,4 +75,10 @@ public class UserController {
         return new CommonResponse(OPERATION_SUCCESS, userDataDTO, SUCCESS_MESSAGE);
     }
 
+    @PatchMapping(value = "/change-status/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CommonResponse changeUserStatus(@PathVariable long userId) {
+        userService.changeSaloonStatus(userId);
+        return new CommonResponse(0, "User Status Changed Successfully");
+    }
+
 }

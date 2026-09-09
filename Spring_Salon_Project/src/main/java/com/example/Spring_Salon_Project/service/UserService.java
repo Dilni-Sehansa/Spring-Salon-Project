@@ -19,4 +19,6 @@ public interface UserService {
     void updateUser(UserDTO userDTO);
 
     void deleteUser(long userId);
+
+    void changeSaloonStatus(long userId);
 }

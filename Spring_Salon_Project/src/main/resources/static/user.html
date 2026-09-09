@@ -377,6 +377,17 @@
         .status-dot.active { background: #6fcf97; }
         .status-dot.inactive { background: #eb5757; }
 
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-badge.active { background: #6fcf97; color: #fff; }
+        .status-badge.inactive { background: #eb5757; color: #fff; }
+
         .action-btn {
             background: transparent;
             border: none;
@@ -394,6 +405,11 @@
         .action-btn.delete:hover {
             color: #eb5757;
             background: rgba(235, 87, 87, 0.08);
+        }
+
+        .action-btn.status-toggle:hover {
+            color: #6fcf97;
+            background: rgba(111, 207, 151, 0.08);
         }
 
         /* ── Modal ── */
@@ -484,6 +500,27 @@
             flex: 1;
             justify-content: center;
         }
+
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: #111827;
+            color: #fff;
+            padding: 13px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.86rem;
+            box-shadow: 0 14px 34px rgba(0,0,0,0.22);
+            z-index: 2000;
+            opacity: 0;
+            transform: translateY(14px);
+            transition: all 0.35s ease;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: linear-gradient(135deg, #059669, #047857); }
+        .toast.error { background: linear-gradient(135deg, #F43F5E, #E11D48); }
     </style>
 </head>
 <body>
@@ -617,6 +654,7 @@
     </div>
 </div>
 
+<div class="toast" id="toast"></div>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -649,6 +687,14 @@
         $('#roleFilter, #statusFilter').on('change', searchUsers);
     });
 
+    function showToast(message, type = 'success') {
+        const toast = $('#toast');
+        toast.text(message).removeClass('success error').addClass(`${type} show`);
+        setTimeout(() => {
+            toast.removeClass('show');
+        }, 3000);
+    }
+
     function loadAllUsers() {
         $.ajax({
             url: "http://localhost:8080/v1/user/users",
@@ -678,20 +724,30 @@
         for (const u of users) {
             let roleClass = u.userRole ? u.userRole.toLowerCase() : 'customer';
 
-
-
             let currentStatus = (u.userStatus || u.status || 'ACTIVE').toString().toUpperCase();
             let statusClass = currentStatus === 'ACTIVE' ? 'active' : 'inactive';
 
             html += `<tr>
                 <td>#${u.userId}</td>
                 <td><b>${u.firstName ? u.firstName + ' ' + u.lastName : u.userName}</b></td>
-                <td>${u.email}</td>
-                <td><span class="role-badge ${roleClass}">${u.userRole || u.role}</span></td>
-                <td><span class="status-dot ${statusClass}"></span> ${currentStatus}</td>
+                <td>${u.email || ''}</td>
+                <td><span class="role-badge ${roleClass}">${u.userRole || u.role || 'CUSTOMER'}</span></td>
+                <td>
+                    <span class="status-dot ${statusClass}"></span>
+                    <span class="status-badge ${statusClass}">${currentStatus}</span>
+                </td>
                 <td style="text-align:right;">
-                    <button type="button" class="action-btn" onclick="selectUser(${u.userId})"><i class="fas fa-edit"></i></button>
-                    <button type="button" class="action-btn delete" onclick="deleteUser(${u.userId})"><i class="fas fa-trash"></i></button>
+                    <button type="button" class="action-btn status-toggle"
+                            onclick="toggleStatus(${u.userId})"
+                            title="Toggle Status">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button type="button" class="action-btn" onclick="selectUser(${u.userId})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" class="action-btn delete" onclick="deleteUser(${u.userId})">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </td>
             </tr>`;
         }
@@ -865,6 +921,25 @@
                 });
 
                 renderTable(filtered);
+            }
+        });
+    }
+
+    function toggleStatus(userId) {
+        $.ajax({
+            url: "http://localhost:8080/v1/user/change-status/" + userId,
+            type: "PATCH",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response) {
+                showToast(response.message || "Status changed successfully!");
+                loadAllUsers();
+            },
+            error: function (xhr) {
+                let msg = (xhr.responseJSON && xhr.responseJSON.message) || "Error changing status!";
+                showToast(msg, "error");
             }
         });
     }
