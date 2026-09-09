@@ -55,9 +55,10 @@ public class StaffServiceImpl implements StaffService {
             auditLogService.saveAuditLog(logDTO);
 
             Long savedUserId = (save.getUser() != null) ? save.getUser().getUserId() : null;
+            String savedUserName = null;
 
 
-            return new StaffDTO(save.getStaffId(),save.getSpecialization(),save.getBio(),save.getExperienceYears(),savedUserId,save.getStaffStatus());
+            return new StaffDTO(save.getStaffId(),save.getSpecialization(),save.getBio(),save.getExperienceYears(),savedUserId, savedUserName ,save.getStaffStatus());
 
         } catch (Exception e) {
             log.error("Error saving staff: {}", e.getMessage());

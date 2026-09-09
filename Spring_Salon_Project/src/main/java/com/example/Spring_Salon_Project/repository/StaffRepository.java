@@ -20,6 +20,7 @@ public interface StaffRepository extends JpaRepository<Staff,Long> {
               s.bio,
               s.experienceYears,
                u.userId,
+               u.userName,
               s.staffStatus
             
          )
@@ -34,6 +35,7 @@ public interface StaffRepository extends JpaRepository<Staff,Long> {
           s.bio,
           s.experienceYears,
           u.userId,
+          u.userName,
           s.staffStatus
       )
       FROM Staff s LEFT JOIN s.user u ORDER BY s.staffId DESC 
@@ -47,6 +49,7 @@ public interface StaffRepository extends JpaRepository<Staff,Long> {
                s.bio,
                s.experienceYears,
                u.userId,
+               u.userName,
                s.staffStatus
           )
           FROM Staff s LEFT JOIN s.user u WHERE s.staffStatus = :staffStatus
@@ -60,6 +63,7 @@ public interface StaffRepository extends JpaRepository<Staff,Long> {
           s.bio,
           s.experienceYears,
           u.userId,
+          u.userName,
           s.staffStatus
      )
      FROM Staff s LEFT JOIN s.user u WHERE s.staffId = :staffId
@@ -73,6 +77,7 @@ public interface StaffRepository extends JpaRepository<Staff,Long> {
         s.bio,
         s.experienceYears,
         u.userId,
+        u.userName,
         s.staffStatus
     )
     FROM Staff s

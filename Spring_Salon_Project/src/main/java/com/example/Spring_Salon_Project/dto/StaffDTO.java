@@ -16,5 +16,6 @@ public class StaffDTO {
     private String bio;
     private Integer experienceYears;
     private Long userId;
+    private String userName;
     private StaffStatus staffStatus;
 }

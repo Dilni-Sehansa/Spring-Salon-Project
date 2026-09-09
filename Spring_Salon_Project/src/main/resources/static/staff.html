@@ -413,15 +413,11 @@
             border-radius: 50%;
             margin-right: 6px;
         }
-        .status-dot.ACTIVE {
-            background: #6fcf97;
-        }
-        .status-dot.INACTIVE {
-            background: #eb5757;
-        }
-        .status-dot.BLOCKED {
-            background: #f2994a;
-        }
+        .status-dot.AVAILABLE { background: #6fcf97; }
+        .status-dot.ACTIVE { background: #6fcf97; }
+        .status-dot.INACTIVE { background: #eb5757; }
+        .status-dot.BLOCKED { background: #f2994a; }
+        .status-dot.ON_LEAVE { background: #f2c94a; }
 
         .action-btn {
             background: transparent;
@@ -723,7 +719,6 @@
             <div class="input-group">
                 <label>Status</label>
                 <select id="staffStatus">
-                    <option value="all">All Status</option>
                     <option value="AVAILABLE">Available</option>
                     <option value="INACTIVE">Inactive</option>
                     <option value="ON_LEAVE">On Leave</option>
@@ -799,6 +794,13 @@
             }
         });
 
+        $('#statusForm').on('submit', function (e){
+            e.preventDefault();
+            let staffId = $('#changeStatusStaffId').val();
+            let newStatus = $('#newStatusSelect').val();
+            changeStatus(staffId, newStatus);
+        });
+
         $('#searchInput').on('keyup', searchStaff);
         $('#statusFilter').on('change', searchStaff);
     });
@@ -831,8 +833,8 @@
 
                 activeUsers.forEach(u => {
                     let userId = u.userId || u.id;
-                    let userName = u.userName || u.name || u.email || 'User';
-                    options += `<option value="${u.userId}">${u.userName}(ID: ${u.userId})</option>`;
+                    let userName = u.userName || u.username || u.name || u.email || 'User';
+                    options += `<option value="${userId}">${userName} (ID: ${userId})</option>`;
                 });
                 $('#userId').html(options);
             },
@@ -874,9 +876,13 @@
                 let status = (s.staffStatus || 'AVAILABLE').toString().toUpperCase();
                 let statusClass = status;
 
+                let displayUserName = s.userName || s.username ||
+                    (s.user ? (s.user.userName || s.user.username || s.user.name || s.user.email) : null) ||
+                    'N/A';
+
                 html += `<tr>
                     <td>#${s.staffId}</td>
-                    <td><b>${s.userName || 'N/A'}</b></td>
+                    <td><b>${displayUserName}</b></td>
                     <td>${s.specialization || '-'}</td>
                     <td>${s.bio || '-'}</td>
                     <td>${s.experienceYears ? s.experienceYears + ' yrs' : '-'}</td>
@@ -948,7 +954,7 @@
             },
             data: JSON.stringify(staffDTO),
             success: function (response){
-                alert("staff save successfully!");
+                showToast("staff save successfully!");
                 $('#staffModal').removeClass('show');
                 loadAllStaff();
             },
@@ -985,7 +991,7 @@
             },
             data: JSON.stringify(staffDTO),
             success: function (response){
-                alert(response.message || "Staff update successfully!");
+                showToast(response.message || "Staff update successfully!");
                 $('#staffModal').removeClass('show');
                 loadAllStaff();
             },
@@ -1063,9 +1069,13 @@
                     let experienceYears = String(s.experienceYears || '').toLowerCase();
                     let currentStatus = (s.staffStatus || 'AVAILABLE').toString().toUpperCase();
 
+                    let displayUserName = (s.userName || s.username ||
+                        (s.user ? (s.user.userName || s.user.username || s.user.name) : '') || '').toLowerCase();
+
                     let matchesSearch = specialization.includes(searchValue) ||
                         bio.includes(searchValue) ||
-                        experienceYears.includes(searchValue);
+                        experienceYears.includes(searchValue) ||
+                        displayUserName.includes(searchValue);
 
                     let matchesStatus = (selectedStatus === 'ALL') || (currentStatus === selectedStatus);
 
