@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Glow · Feedback</title>
+    <title>Glow · Notifications</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
@@ -22,6 +22,10 @@
             --green-tint: #ECFDF5;
             --amber: #B45309;
             --amber-tint: #FFFBEB;
+            --blue: #2563EB;
+            --blue-tint: #EFF6FF;
+            --purple: #7C3AED;
+            --purple-tint: #F5F3FF;
             --pending-text: #BE123C;
             --pending-tint: #FFF1F5;
             --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.04);
@@ -38,6 +42,7 @@
             -webkit-font-smoothing: antialiased;
         }
         ::selection { background: var(--rose); color: #fff; }
+
         /* ── Sidebar ── */
         .sidebar {
             width: 258px;
@@ -122,13 +127,19 @@
         }
         .sidebar-footer a i { width: 18px; text-align: center; color: var(--faint); }
         .sidebar-footer a:hover { background: var(--pastel); color: var(--rose-dark); }
-        /* ── Main ── */
+
+        /* ── Main Layout ── */
         .main {
             flex: 1;
             padding: 34px 42px 60px;
             min-width: 0;
         }
-        .page-header { margin-bottom: 26px; }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 26px;
+        }
         .page-header h2 {
             font-family: 'Fraunces', serif;
             font-size: 1.9rem;
@@ -136,7 +147,9 @@
             color: var(--ink);
         }
         .page-header p { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
-        /* ── KPI row ── */
+        .header-actions { display: flex; gap: 10px; }
+
+        /* ── KPI Row ── */
         .kpi-row {
             display: grid;
             grid-template-columns: 1.3fr 1fr 1fr;
@@ -158,8 +171,7 @@
             box-shadow: var(--shadow-lg);
         }
         .kpi-hero .kpi-label { color: rgba(255,255,255,0.85); }
-        .kpi-hero .kpi-number { font-size: 2.5rem; display: flex; align-items: baseline; gap: 10px; }
-        .kpi-hero .kpi-number .kpi-stars { font-size: 1rem; color: rgba(255,255,255,0.75); }
+        .kpi-hero .kpi-number { font-size: 2.5rem; }
         .kpi-hero .kpi-sub { color: rgba(255,255,255,0.75); }
         .kpi-hero i.kpi-bg-icon {
             position: absolute;
@@ -176,9 +188,10 @@
         .kpi-plain .kpi-label { color: var(--muted); }
         .kpi-plain .kpi-number { font-size: 1.9rem; color: var(--ink); }
         .kpi-plain .kpi-sub { color: var(--faint); }
-        .kpi-plain.total .kpi-label i { color: var(--rose); }
-        .kpi-plain.delighted .kpi-label i { color: var(--amber); }
-        /* ── Layout grid ── */
+        .kpi-plain.unread .kpi-label i { color: var(--rose-dark); }
+        .kpi-plain.read .kpi-label i { color: var(--green); }
+
+        /* ── Work Grid ── */
         .work-grid {
             display: grid;
             grid-template-columns: 340px 1fr;
@@ -191,11 +204,12 @@
             border-radius: 20px;
             box-shadow: var(--shadow-sm);
         }
-        /* ── Form panel ── */
+
+        /* ── Form Panel ── */
         .form-panel { padding: 24px 24px 26px; position: sticky; top: 34px; }
         .form-panel h3 { font-size: 1.05rem; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
         .form-panel .panel-sub { font-size: 0.8rem; color: var(--faint); margin-bottom: 18px; }
-        .field { margin-bottom: 16px; }
+        .field { margin-bottom: 15px; }
         .field label {
             display: block;
             font-size: 0.78rem;
@@ -216,41 +230,14 @@
             color: var(--ink);
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-            resize: vertical;
         }
-        .field textarea { min-height: 96px; line-height: 1.5; }
+        .field textarea { min-height: 90px; resize: vertical; }
         .field input:focus, .field select:focus, .field textarea:focus {
             border-color: var(--rose);
             background: #fff;
             box-shadow: 0 0 0 3.5px rgba(236, 72, 153, 0.12);
         }
-        .char-count { text-align: right; font-size: 0.72rem; color: var(--faint); margin-top: 4px; }
-        /* ── Star rating input ── */
-        .star-rating-input {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 12px 14px;
-            border-radius: 13px;
-            background: var(--pastel);
-            border: 1.5px dashed rgba(236, 72, 153, 0.3);
-        }
-        .star-rating-input i {
-            font-size: 1.55rem;
-            color: var(--border-strong);
-            cursor: pointer;
-            transition: color 0.15s, transform 0.15s;
-        }
-        .star-rating-input i:hover { transform: scale(1.15); }
-        .star-rating-input i.active { color: var(--rose); text-shadow: 0 2px 10px rgba(236, 72, 153, 0.35); }
-        .star-rating-label {
-            margin-left: auto;
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--rose-dark);
-            min-width: 64px;
-            text-align: right;
-        }
+
         .btn-primary {
             width: 100%;
             background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
@@ -268,11 +255,27 @@
             gap: 8px;
             box-shadow: 0 10px 24px rgba(219, 39, 119, 0.28);
             transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
-            margin-top: 4px;
         }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(219, 39, 119, 0.34); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-        /* ── Feed panel ── */
+
+        .btn-secondary {
+            background: var(--pastel);
+            color: var(--rose-dark);
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            padding: 9px 16px;
+            border-radius: 11px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover { background: var(--rose); color: #fff; }
+
+        /* ── Notification Feed Stream ── */
         .feed-panel { padding: 22px 24px 20px; min-width: 0; }
         .feed-panel-head {
             display: flex;
@@ -295,9 +298,9 @@
             border: 1.5px solid var(--border-strong);
             background: #fcfcfd;
             font-family: inherit;
-            font-size: 0.78rem;
+            font-size: 0.83rem;
             outline: none;
-            width: 210px;
+            width: 180px;
             transition: all 0.2s;
         }
         .filters select {
@@ -314,120 +317,106 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .filters input:focus, .filters select:focus {
-            border-color: var(--rose);
-            background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
-        }
-        /* ── Feedback review stream (NOT a table) ── */
-        .feed-scroll { max-height: 720px; overflow-y: auto; padding-right: 6px; }
-        .feed-scroll::-webkit-scrollbar { width: 7px; }
+        .filters input:focus, .filters select:focus { border-color: var(--rose); background-color: #fff; }
+
+        .feed-scroll { max-height: 680px; overflow-y: auto; padding-right: 6px; }
+        .feed-scroll::-webkit-scrollbar { width: 6px; }
         .feed-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
-        .feedback-stream { position: relative; padding-left: 2px; }
-        .feedback-stream::before {
+
+        .notification-stream { position: relative; }
+        .notif-card {
+            position: relative;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .notif-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+        .notif-card.unread {
+            background: linear-gradient(180deg, #FFFFFF 0%, #FDF2F8 100%);
+            border-color: rgba(236, 72, 153, 0.25);
+        }
+        .notif-card.unread::before {
             content: '';
             position: absolute;
-            left: 24px;
-            top: 6px;
-            bottom: 6px;
-            width: 2px;
-            background: linear-gradient(to bottom, rgba(236,72,153,0.35), rgba(236,72,153,0.05));
+            left: 0; top: 16px; bottom: 16px;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+            background: var(--rose);
         }
-        .feed-item {
-            position: relative;
-            display: flex;
-            gap: 18px;
-            padding-bottom: 22px;
-        }
-        .feed-item:last-child { padding-bottom: 4px; }
-        .feed-avatar {
-            width: 48px;
-            height: 48px;
-            flex-shrink: 0;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
-            color: #fff;
+
+        .notif-icon-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Fraunces', serif;
-            font-weight: 600;
-            font-size: 1.05rem;
-            box-shadow: 0 8px 18px rgba(219, 39, 119, 0.28);
-            position: relative;
-            z-index: 2;
-            border: 3px solid var(--white);
+            font-size: 1.1rem;
+            flex-shrink: 0;
         }
-        .feed-card {
-            flex: 1;
-            min-width: 0;
-            position: relative;
-            background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(253,242,248,0.55));
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(236, 72, 153, 0.14);
-            border-radius: 18px;
-            padding: 16px 20px 17px;
-            box-shadow: var(--shadow-sm);
-            transition: box-shadow 0.2s, transform 0.2s;
-        }
-        .feed-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-        .feed-card::before {
-            content: '\f10e';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            position: absolute;
-            top: 14px;
-            right: 18px;
-            font-size: 1.3rem;
-            color: rgba(236, 72, 153, 0.1);
-        }
-        .feed-card-head {
+        /* Notification Type Dynamic Styles */
+        .type-APPOINTMENT_REMINDER { background: var(--pastel); color: var(--rose-dark); }
+        .type-LOW_STOCK { background: var(--amber-tint); color: var(--amber); }
+        .type-PAYMENT { background: var(--green-tint); color: var(--green); }
+        .type-SCHEDULE_CHANGE { background: var(--blue-tint); color: var(--blue); }
+        .type-SYSTEM { background: var(--purple-tint); color: var(--purple); }
+        .type-FEEDBACK { background: var(--pending-tint); color: var(--pending-text); }
+
+        .notif-content { flex: 1; min-width: 0; }
+        .notif-head {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 8px;
+            gap: 8px;
+            margin-bottom: 4px;
         }
-        .feed-name { font-weight: 600; font-size: 0.94rem; color: var(--ink); }
-        .feed-name .feed-id { font-weight: 500; color: var(--faint); font-size: 0.74rem; margin-left: 6px; }
-        .feed-stars { margin-top: 4px; font-size: 0.86rem; letter-spacing: 2px; }
-        .feed-stars i { color: var(--border-strong); }
-        .feed-stars i.filled { color: var(--rose); }
-        .feed-date {
-            font-size: 0.72rem;
-            color: var(--faint);
-            white-space: nowrap;
+        .notif-title { font-weight: 600; font-size: 0.92rem; color: var(--ink); }
+        .notif-time { font-size: 0.72rem; color: var(--faint); white-space: nowrap; }
+        .notif-msg { font-size: 0.84rem; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
+
+        .notif-meta {
             display: flex;
             align-items: center;
-            gap: 5px;
+            justify-content: space-between;
+            gap: 10px;
         }
-        .feed-comment {
-            font-size: 0.87rem;
-            color: var(--muted);
-            line-height: 1.6;
-            margin-top: 6px;
-        }
-        .feed-comment.empty { color: var(--faint); font-style: italic; }
-        .feed-tag {
+        .type-badge {
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            margin-top: 10px;
             padding: 3px 10px;
             border-radius: 50px;
             font-size: 0.68rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
-        .feed-tag.great { background: var(--green-tint); color: var(--green); }
-        .feed-tag.good { background: var(--pastel); color: var(--rose-dark); }
-        .feed-tag.low { background: var(--pending-tint); color: var(--pending-text); }
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
+
+        .notif-actions { display: flex; gap: 8px; }
+        .btn-action {
+            background: transparent;
+            border: none;
             color: var(--faint);
+            font-size: 0.82rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.18s;
         }
-        .empty-state i { font-size: 2rem; margin-bottom: 12px; display: block; color: var(--border-strong); }
+        .btn-action:hover { background: var(--border); color: var(--ink); }
+        .btn-action.read-btn:hover { background: var(--green-tint); color: var(--green); }
+        .btn-action.delete-btn:hover { background: var(--pending-tint); color: var(--crimson); }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--faint); }
+        .empty-state i { font-size: 2.2rem; margin-bottom: 12px; display: block; color: var(--border-strong); }
+
         .feed-footer {
             display: flex;
             justify-content: center;
@@ -435,6 +424,7 @@
             color: var(--faint);
             font-size: 0.78rem;
         }
+
         /* ── Toast ── */
         .toast {
             position: fixed;
@@ -459,6 +449,7 @@
         .toast.show { opacity: 1; transform: translateY(0); }
         .toast.success { background: linear-gradient(135deg, #059669, #047857); }
         .toast.error { background: linear-gradient(135deg, var(--crimson), #E11D48); }
+
         @media (max-width: 1080px) {
             .work-grid { grid-template-columns: 1fr; }
             .form-panel { position: static; }
@@ -471,6 +462,8 @@
     </style>
 </head>
 <body>
+
+<!-- ── Sidebar ── -->
 <aside class="sidebar">
     <div class="sidebar-brand">
         <i class="fas fa-spa"></i>
@@ -489,133 +482,141 @@
         <a href="service.html"><i class="fas fa-cut"></i> <span>Service</span></a>
         <a href="product.html"><i class="fas fa-box"></i> <span>Product</span></a>
         <a href="payment.html"><i class="fas fa-credit-card"></i> <span>Payment</span></a>
-        <a href="Notification.html"><i class="fas fa-hand-holding-usd"></i> <span>Advance Payment</span></a>
         <a href="Notification.html"><i class="fas fa-percentage"></i> <span>Notification</span></a>
-        <a href="feedback.html" class="active"><i class="fas fa-comment-alt"></i> <span>Feedback</span></a>
+        <a href="staffCommission.html"><i class="fas fa-percentage"></i> <span>Staff Commission</span></a>
+        <a href="feedback.html"><i class="fas fa-comment-alt"></i> <span>Feedback</span></a>
+        <a href="notification.html" class="active"><i class="fas fa-bell"></i> <span>Notifications</span></a>
     </nav>
     <div class="sidebar-footer">
         <a href="user.html"><i class="fas fa-cog"></i><span>User</span></a>
         <a href="login.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
     </div>
 </aside>
+
+<!-- ── Main Content ── -->
 <main class="main">
     <div class="page-header">
-        <h2>Customer feedback</h2>
-        <p>Collect, monitor, and celebrate the voice of every guest.</p>
+        <div>
+            <h2>Notifications Center</h2>
+            <p>Track system alerts, customer reminders, and operational updates.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-secondary" id="markAllReadBtn"><i class="fas fa-check-double"></i> Mark all read</button>
+        </div>
     </div>
+
+    <!-- ── KPI Row ── -->
     <div class="kpi-row">
         <div class="kpi-card kpi-hero">
-            <i class="fas fa-heart kpi-bg-icon"></i>
-            <div class="kpi-label"><i class="fas fa-star"></i> Average rating</div>
-            <div class="kpi-number"><span id="kpiAvgRating">0.0</span><span class="kpi-stars" id="kpiAvgStars"></span></div>
-            <div class="kpi-sub" id="kpiAvgSub">Across all feedback received</div>
-        </div>
-        <div class="kpi-card kpi-plain total">
-            <div class="kpi-label"><i class="fas fa-comments"></i> Total feedback</div>
+            <i class="fas fa-bell kpi-bg-icon"></i>
+            <div class="kpi-label"><i class="fas fa-layer-group"></i> Total Notifications</div>
             <div class="kpi-number" id="kpiTotalCount">0</div>
-            <div class="kpi-sub">Reviews submitted to date</div>
+            <div class="kpi-sub" id="kpiTotalSub">Across current user account</div>
         </div>
-        <div class="kpi-card kpi-plain delighted">
-            <div class="kpi-label"><i class="fas fa-crown"></i> 5-star reviews</div>
-            <div class="kpi-number" id="kpiDelightedCount">0</div>
-            <div class="kpi-sub" id="kpiDelightedSub">0% of total feedback</div>
+        <div class="kpi-card kpi-plain unread">
+            <div class="kpi-label"><i class="fas fa-envelope-open-text"></i> Unread Alerts</div>
+            <div class="kpi-number" id="kpiUnreadCount">0</div>
+            <div class="kpi-sub">Requires your attention</div>
+        </div>
+        <div class="kpi-card kpi-plain read">
+            <div class="kpi-label"><i class="fas fa-check-circle"></i> Read Alerts</div>
+            <div class="kpi-number" id="kpiReadCount">0</div>
+            <div class="kpi-sub">Archived and processed</div>
         </div>
     </div>
+
+    <!-- ── Work Grid ── -->
     <div class="work-grid">
-        <!-- ── New feedback form ── -->
+        <!-- ── New Notification Form Panel ── -->
         <div class="panel form-panel">
-            <h3>Share feedback</h3>
-            <p class="panel-sub">Log a guest's rating and comments</p>
-            <form id="feedbackForm">
+            <h3>Send Notification</h3>
+            <p class="panel-sub">Dispatch custom alert or reminder</p>
+            <form id="notificationForm">
                 <div class="field">
-                    <label for="customerId">Customer</label>
-                    <select id="customerId" required>
-                        <option value="">— Select customer —</option>
+                    <label for="userIdSelect">Target User / Customer</label>
+                    <select id="userIdSelect" required>
+                        <option value="">— Select Recipient —</option>
                     </select>
                 </div>
                 <div class="field">
-                    <label>Rating</label>
-                    <div class="star-rating-input" id="starRatingInput">
-                        <i class="fas fa-star" data-value="1"></i>
-                        <i class="fas fa-star" data-value="2"></i>
-                        <i class="fas fa-star" data-value="3"></i>
-                        <i class="fas fa-star" data-value="4"></i>
-                        <i class="fas fa-star" data-value="5"></i>
-                        <span class="star-rating-label" id="starRatingLabel">Select rating</span>
-                    </div>
-                    <input type="hidden" id="rating" value="" required />
+                    <label for="notifType">Type</label>
+                    <select id="notifType" required>
+                        <option value="APPOINTMENT_REMINDER">Appointment Reminder</option>
+                        <option value="LOW_STOCK">Low Stock</option>
+                        <option value="PAYMENT">Payment</option>
+                        <option value="SCHEDULE_CHANGE">Schedule Change</option>
+                        <option value="SYSTEM">System</option>
+                        <option value="FEEDBACK">Feedback</option>
+                    </select>
                 </div>
                 <div class="field">
-                    <label for="comments">Comments</label>
-                    <textarea id="comments" maxlength="1000" placeholder="What did the guest love, or what could we improve?"></textarea>
-                    <div class="char-count"><span id="commentsCount">0</span>/1000</div>
+                    <label for="notifTitle">Title</label>
+                    <input type="text" id="notifTitle" placeholder="e.g. Appointment Reminder" maxlength="150" required />
                 </div>
-                <button type="submit" class="btn-primary" id="submitFeedbackBtn">
-                    <i class="fas fa-paper-plane"></i> Submit feedback
+                <div class="field">
+                    <label for="notifMessage">Message</label>
+                    <textarea id="notifMessage" placeholder="Type notification content..." maxlength="1000" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary" id="submitNotifBtn">
+                    <i class="fas fa-paper-plane"></i> Send Notification
                 </button>
             </form>
         </div>
-        <!-- ── Feedback review stream ── -->
+
+        <!-- ── Notifications Stream Panel ── -->
         <div class="panel feed-panel">
             <div class="feed-panel-head">
-                <h3>Feedback stream</h3>
+                <h3>Notification Activity</h3>
                 <div class="filters">
                     <div class="search-wrap">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search customer ID or name..." />
+                        <input type="text" id="searchInput" placeholder="Search title or text..." />
                     </div>
-                    <select id="ratingFilter">
-                        <option value="ALL">All ratings</option>
-                        <option value="5">5 stars</option>
-                        <option value="4">4 stars</option>
-                        <option value="3">3 stars</option>
-                        <option value="2">2 stars</option>
-                        <option value="1">1 star</option>
+                    <select id="typeFilter">
+                        <option value="ALL">All Types</option>
+                        <option value="APPOINTMENT_REMINDER">Appointment</option>
+                        <option value="LOW_STOCK">Low Stock</option>
+                        <option value="PAYMENT">Payment</option>
+                        <option value="SCHEDULE_CHANGE">Schedule</option>
+                        <option value="SYSTEM">System</option>
+                        <option value="FEEDBACK">Feedback</option>
+                    </select>
+                    <select id="statusFilter">
+                        <option value="ALL">All Status</option>
+                        <option value="UNREAD">Unread Only</option>
+                        <option value="READ">Read Only</option>
                     </select>
                 </div>
             </div>
             <div class="feed-scroll">
-                <div class="feedback-stream" id="feedbackStream"></div>
+                <div class="notification-stream" id="notificationStream"></div>
             </div>
-            <div class="feed-footer">Showing <span id="rowCount">0</span> reviews</div>
+            <div class="feed-footer">Showing <span id="rowCount">0</span> notifications</div>
         </div>
     </div>
 </main>
+
 <div class="toast" id="toast"></div>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
-    let allFeedbacks = [];
-    let selectedRating = 0;
+    let allNotifications = [];
+    const loggedInUserId = localStorage.getItem("USER_ID") || 1;
 
     $(document).ready(function () {
-        loadAllFeedbacks();
-        loadActiveCustomers();
+        loadUsers();
+        loadNotifications();
 
-        $('#starRatingInput i').on('click', function () {
-            selectedRating = parseInt($(this).data('value'));
-            $('#rating').val(selectedRating);
-            paintStars(selectedRating);
-            updateRatingLabel(selectedRating);
-        });
-
-        $('#starRatingInput i').on('mouseenter', function () {
-            paintStars(parseInt($(this).data('value')));
-        });
-
-        $('#starRatingInput').on('mouseleave', function () {
-            paintStars(selectedRating);
-        });
-
-        $('#comments').on('input', function () {
-            $('#commentsCount').text($(this).val().length);
-        });
-
-        $('#feedbackForm').on('submit', function (e) {
+        $('#notificationForm').on('submit', function (e) {
             e.preventDefault();
-            saveFeedback();
+            sendNotification();
         });
 
-        $('#searchInput, #ratingFilter').on('input change', filterFeedbacks);
+        $('#markAllReadBtn').on('click', function () {
+            markAllAsRead();
+        });
+
+        $('#searchInput, #typeFilter, #statusFilter').on('input change', filterNotifications);
     });
 
     function showToast(message, type = 'success') {
@@ -626,21 +627,26 @@
         }, 3000);
     }
 
-    function paintStars(uptoValue) {
-        $('#starRatingInput i').each(function () {
-            const val = parseInt($(this).data('value'));
-            $(this).toggleClass('active', val <= uptoValue);
-        });
+    function typeIcon(type) {
+        switch (type) {
+            case 'APPOINTMENT_REMINDER': return 'fa-calendar-check';
+            case 'LOW_STOCK': return 'fa-box-open';
+            case 'PAYMENT': return 'fa-credit-card';
+            case 'SCHEDULE_CHANGE': return 'fa-clock';
+            case 'SYSTEM': return 'fa-cog';
+            case 'FEEDBACK': return 'fa-star';
+            default: return 'fa-bell';
+        }
     }
 
-    function updateRatingLabel(value) {
-        const labels = { 1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Great', 5: 'Excellent' };
-        $('#starRatingLabel').text(value ? value + ' · ' + labels[value] : 'Select rating');
+    function formatTime(d) {
+        if (!d) return '—';
+        return d.toString().replace('T', ' ').slice(0, 16);
     }
 
-    function loadActiveCustomers() {
+    function loadUsers() {
         $.ajax({
-            url: "http://localhost:8080/v1/customer/customer",
+            url: "http://localhost:8080/v1/user/users",
             type: "GET",
             contentType: "application/json",
             headers: {
@@ -650,207 +656,198 @@
                 let list = response.body || response.data || response || [];
                 if (!Array.isArray(list)) list = [];
 
-                let active = list.filter(c => {
-                    let status = (c.customerStatus || c.status || 'ACTIVE').toString().toUpperCase();
-                    return status === 'ACTIVE';
-                });
-
-                let options = '<option value="">— Select customer —</option>';
-                active.forEach(c => {
-                    let id = c.customerId;
-                    let name = c.customerName || 'Unknown';
+                let options = '<option value="">— Select Recipient —</option>';
+                list.forEach(u => {
+                    let id = u.userId;
+                    let name = u.userName || u.name || ('User #' + id);
                     options += `<option value="${id}">#${id} — ${name}</option>`;
                 });
-
-                $('#customerId').html(options);
+                $('#userIdSelect').html(options);
             },
-            error: function (xhr) {
-                console.error("Error loading customers", xhr);
-                showToast("Failed to load customer list", "error");
+            error: function () {
+                $('#userIdSelect').html(`<option value="${loggedInUserId}">#${loggedInUserId} — Current User</option>`);
             }
         });
     }
 
-    function saveFeedback() {
-        let customerId = $('#customerId').val() ? parseInt($('#customerId').val()) : null;
-        let rating = $('#rating').val() ? parseInt($('#rating').val()) : null;
-        let comments = $('#comments').val().trim();
+    function sendNotification() {
+        let userId = $('#userIdSelect').val();
+        let title = $('#notifTitle').val().trim();
+        let message = $('#notifMessage').val().trim();
+        let type = $('#notifType').val();
 
-        if (!customerId) {
-            showToast("Please select a customer", "error");
+        if (!userId || !title || !message) {
+            showToast("Please fill in all required fields", "error");
             return;
         }
 
-        if (!rating || isNaN(rating) || rating < 1 || rating > 5) {
-            showToast("Please select a rating between 1 and 5", "error");
-            return;
-        }
+        $('#submitNotifBtn').prop('disabled', true);
 
-        const feedbackDTO = {
-            "customerId": customerId,
-            "rating": rating,
-            "comments": comments
+        let notificationPayload = {
+            userId: parseInt(userId),
+            title: title,
+            message: message,
+            type: type
         };
 
-        console.log("Sending DTO:", feedbackDTO);
-
-        $('#submitFeedbackBtn').prop('disabled', true);
-
         $.ajax({
-            url: "http://localhost:8080/v1/feedback/feedback-saved",
+            url: "http://localhost:8080/v1/notification/save-notification",
             type: "POST",
             contentType: "application/json",
+            data: JSON.stringify(notificationPayload),
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem("JWT")
             },
-            data: JSON.stringify(feedbackDTO),
-            success: function (response) {
-                showToast("Feedback saved successfully!");
-
-                $('#feedbackForm')[0].reset();
-
-                selectedRating = 0;
-                $('#rating').val('');
-                paintStars(0);
-                updateRatingLabel(0);
-                $('#commentsCount').text('0');
-
-                loadAllFeedbacks();
+            success: function () {
+                showToast("Notification sent successfully");
+                $('#notificationForm')[0].reset();
+                loadNotifications();
             },
             error: function (xhr) {
-                console.error("Error saving feedback", xhr);
-                let message = (xhr.responseJSON && xhr.responseJSON.message) || "Failed to save feedback";
-                showToast(message, "error");
+                let msg = (xhr.responseJSON && xhr.responseJSON.message) || "Failed to send notification";
+                showToast(msg, "error");
             },
             complete: function () {
-                $('#submitFeedbackBtn').prop('disabled', false);
+                $('#submitNotifBtn').prop('disabled', false);
             }
         });
     }
 
-    function loadAllFeedbacks() {
+    function loadNotifications() {
         $.ajax({
-            url: "http://localhost:8080/v1/feedback/feedback",
+            url: `http://localhost:8080/v1/notification/user/${loggedInUserId}`,
             type: "GET",
             contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
             success: function (response) {
-                allFeedbacks = response.body || response.data || response || [];
-                if (!Array.isArray(allFeedbacks)) allFeedbacks = [];
-                renderSummary(allFeedbacks);
-                renderStream(allFeedbacks);
+                allNotifications = response.body || response.data || response || [];
+                if (!Array.isArray(allNotifications)) allNotifications = [];
+                renderSummary(allNotifications);
+                renderStream(allNotifications);
             },
             error: function (xhr) {
-                console.error("Error loading feedback", xhr);
-                showToast("Failed to load feedback", "error");
-                renderSummary([]);
-                renderStream([]);
+                console.error("Error loading notifications", xhr);
+                showToast("Failed to load notifications", "error");
             }
         });
     }
 
     function renderSummary(list) {
         let total = list.length;
-        let sum = 0;
-        let fiveStar = 0;
+        let unread = 0;
+        let read = 0;
 
-        list.forEach(f => {
-            let r = parseInt(f.rating) || 0;
-            sum += r;
-            if (r === 5) fiveStar++;
+        list.forEach(n => {
+            if (n.read || n.isRead) read++;
+            else unread++;
         });
 
-        let avg = total ? (sum / total) : 0;
-
-        $('#kpiAvgRating').text(avg.toFixed(1));
-        $('#kpiAvgStars').html(starIcons(Math.round(avg)));
-        $('#kpiAvgSub').text(total ? 'Across ' + total + ' feedback' + (total === 1 ? '' : 's') + ' received' : 'No feedback received yet');
         $('#kpiTotalCount').text(total);
-        $('#kpiDelightedCount').text(fiveStar);
-        $('#kpiDelightedSub').text((total ? Math.round((fiveStar / total) * 100) : 0) + '% of total feedback');
-    }
-
-    function starIcons(rating) {
-        let html = '';
-        for (let i = 1; i <= 5; i++) {
-            html += `<i class="fas fa-star ${i <= rating ? '' : 'far'}"></i>`;
-        }
-        return html;
-    }
-
-    function feedStarIcons(rating) {
-        let html = '';
-        for (let i = 1; i <= 5; i++) {
-            html += `<i class="fas fa-star ${i <= rating ? 'filled' : ''}"></i>`;
-        }
-        return html;
-    }
-
-    function initials(name) {
-        if (!name) return '?';
-        let parts = name.trim().split(/\s+/);
-        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
-    }
-
-    function tagForRating(rating) {
-        if (rating >= 5) return '<span class="feed-tag great"><i class="fas fa-crown"></i> Delighted guest</span>';
-        if (rating >= 3) return '<span class="feed-tag good"><i class="fas fa-thumbs-up"></i> Satisfied guest</span>';
-        return '<span class="feed-tag low"><i class="fas fa-triangle-exclamation"></i> Needs attention</span>';
-    }
-
-    function formatDate(d) {
-        if (!d) return '—';
-        return d.toString().replace('T', ' ').slice(0, 10);
+        $('#kpiUnreadCount').text(unread);
+        $('#kpiReadCount').text(read);
     }
 
     function renderStream(list) {
         let html = "";
         if (!list || list.length === 0) {
-            html = `<div class="empty-state"><i class="fas fa-comment-slash"></i>No feedback found</div>`;
+            html = `<div class="empty-state"><i class="fas fa-bell-slash"></i>No notifications found</div>`;
         } else {
-            for (const f of list) {
-                let rating = parseInt(f.rating) || 0;
-                let name = f.customerName || ('Customer #' + f.customerId);
-                let comments = (f.comments || '').trim();
+            list.forEach(n => {
+                let isRead = n.read || n.isRead;
+                let type = n.type || 'SYSTEM';
 
                 html += `
-                    <div class="feed-item">
-                        <div class="feed-avatar">${initials(name)}</div>
-                        <div class="feed-card">
-                            <div class="feed-card-head">
-                                <div>
-                                    <div class="feed-name">${name}<span class="feed-id">#${f.feedbackId} · Cust #${f.customerId}</span></div>
-                                    <div class="feed-stars">${feedStarIcons(rating)}</div>
-                                </div>
-                                <div class="feed-date"><i class="far fa-calendar"></i> ${formatDate(f.feedbackDate)}</div>
+                    <div class="notif-card ${isRead ? 'read' : 'unread'}">
+                        <div class="notif-icon-box type-${type}">
+                            <i class="fas ${typeIcon(type)}"></i>
+                        </div>
+                        <div class="notif-content">
+                            <div class="notif-head">
+                                <div class="notif-title">${n.title || 'Alert'}</div>
+                                <div class="notif-time"><i class="far fa-clock"></i> ${formatTime(n.createTime)}</div>
                             </div>
-                            <div class="feed-comment ${comments ? '' : 'empty'}">${comments ? comments : 'No written comments left for this visit.'}</div>
-                            ${tagForRating(rating)}
+                            <div class="notif-msg">${n.message || ''}</div>
+                            <div class="notif-meta">
+                                <span class="type-badge type-${type}">${type.replace('_', ' ')}</span>
+                                <div class="notif-actions">
+                                    ${!isRead ? `<button class="btn-action read-btn" onclick="markAsRead(${n.notificationId})" title="Mark as read"><i class="fas fa-check"></i> Read</button>` : ''}
+                                    <button class="btn-action delete-btn" onclick="deleteNotif(${n.notificationId})" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </div>
                         </div>
                     </div>`;
-            }
+            });
         }
-
-        $('#feedbackStream').html(html);
+        $('#notificationStream').html(html);
         $('#rowCount').text(list ? list.length : 0);
     }
 
-    function filterFeedbacks() {
+    function markAsRead(id) {
+        $.ajax({
+            url: `http://localhost:8080/v1/notification/read/${id}`,
+            type: "PATCH",
+            contentType: "application/json",
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            success: function () {
+                showToast("Notification marked as read");
+                loadNotifications();
+            },
+            error: function () {
+                showToast("Failed to mark as read", "error");
+            }
+        });
+    }
+
+    function markAllAsRead() {
+        $.ajax({
+            url: `http://localhost:8080/v1/notification/user/${loggedInUserId}/read-all`,
+            type: "PATCH",
+            contentType: "application/json",
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            success: function () {
+                showToast("All notifications marked as read");
+                loadNotifications();
+            },
+            error: function () {
+                showToast("Failed to mark all as read", "error");
+            }
+        });
+    }
+
+    function deleteNotif(id) {
+        $.ajax({
+            url: `http://localhost:8080/v1/notification/${id}`,
+            type: "DELETE",
+            contentType: "application/json",
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            success: function () {
+                showToast("Notification deleted");
+                loadNotifications();
+            },
+            error: function () {
+                showToast("Failed to delete notification", "error");
+            }
+        });
+    }
+
+    function filterNotifications() {
         let searchVal = $('#searchInput').val().toLowerCase().trim();
-        let ratingVal = $('#ratingFilter').val();
+        let typeVal = $('#typeFilter').val();
+        let statusVal = $('#statusFilter').val();
 
-        let filtered = allFeedbacks.filter(f => {
-            let customerId = String(f.customerId || '').toLowerCase();
-            let customerName = (f.customerName || '').toLowerCase();
-            let rating = String(f.rating || '');
+        let filtered = allNotifications.filter(n => {
+            let title = (n.title || '').toLowerCase();
+            let msg = (n.message || '').toLowerCase();
+            let type = n.type || '';
+            let isRead = n.read || n.isRead;
 
-            let matchesSearch = !searchVal || customerId.includes(searchVal) || customerName.includes(searchVal);
-            let matchesRating = ratingVal === 'ALL' || rating === ratingVal;
+            let matchesSearch = !searchVal || title.includes(searchVal) || msg.includes(searchVal);
+            let matchesType = typeVal === 'ALL' || type === typeVal;
+            let matchesStatus = statusVal === 'ALL' ||
+                (statusVal === 'READ' && isRead) ||
+                (statusVal === 'UNREAD' && !isRead);
 
-            return matchesSearch && matchesRating;
+            return matchesSearch && matchesType && matchesStatus;
         });
 
         renderStream(filtered);

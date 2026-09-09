@@ -1,6 +1,7 @@
 package com.example.Spring_Salon_Project.dto;
 
 import com.example.Spring_Salon_Project.enumiration.PaymentMethod;
+import com.example.Spring_Salon_Project.enumiration.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,9 @@ public class PaymentDTO {
     private Double totalAmount;
     private Double discount;
     private Double finalAmount;
+    private Double amountPaid;
+    private Double changeAmount;
     private PaymentMethod paymentMethod;
+    private PaymentStatus paymentStatus;
     private LocalDateTime paymentDate;
 }

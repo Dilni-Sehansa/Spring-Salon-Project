@@ -1,13 +1,12 @@
 package com.example.Spring_Salon_Project.dto;
 
 import com.example.Spring_Salon_Project.enumiration.CustomerStatus;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class CustomerDTO {
     private Long customerId;
     private String customerName;

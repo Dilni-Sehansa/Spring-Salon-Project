@@ -7,7 +7,6 @@ import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -64,11 +63,12 @@ public class CategoryController {
 
 
     @GetMapping("/search")
-    public ResponseEntity<?> filterCategory(
+    public CommonResponse filterCategory(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String status) {
 
         CategoryStatus categoryStatus = null;
+
         if (status != null && !status.trim().isEmpty() && !status.equalsIgnoreCase("all")) {
             try {
                 categoryStatus = CategoryStatus.valueOf(status.toUpperCase());
@@ -78,6 +78,6 @@ public class CategoryController {
         }
 
         List<CategoryDTO> list = categoryService.filterCategory(name, categoryStatus);
-        return ResponseEntity.ok(list);
+        return new CommonResponse(0, list, "Category Filtered Successfully");
     }
 }

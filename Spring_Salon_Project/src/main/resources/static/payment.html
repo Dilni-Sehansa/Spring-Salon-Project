@@ -1,53 +1,1061 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glow · Payments &amp; Billing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --rose: #EC4899;
+            --rose-dark: #DB2777;
+            --crimson: #F43F5E;
+            --pastel: #FDF2F8;
+            --white: #FFFFFF;
+            --border: #F3F4F6;
+            --border-strong: #E5E7EB;
+            --muted: #4B5563;
+            --faint: #9CA3AF;
+            --ink: #111827;
+            --green: #059669;
+            --green-tint: #ECFDF5;
+            --pending-text: #BE123C;
+            --pending-tint: #FFF1F5;
+            --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.04);
+            --shadow-md: 0 8px 24px rgba(17, 24, 39, 0.06);
+            --shadow-lg: 0 24px 60px rgba(219, 39, 119, 0.16);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--pastel);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::selection { background: var(--rose); color: #fff; }
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 258px;
+            background: var(--white);
+            border-right: 1px solid var(--border);
+            padding: 28px 18px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 2px 6px 22px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sidebar-brand i {
+            font-size: 1.3rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+            padding: 11px;
+            border-radius: 14px;
+            box-shadow: var(--shadow-md);
+        }
+        .sidebar-brand h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+        .sidebar-brand h1 span { color: var(--rose); }
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 13px;
+            border-radius: 11px;
+            color: var(--muted);
+            font-weight: 500;
+            font-size: 0.86rem;
+            text-decoration: none;
+            transition: background 0.18s, color 0.18s;
+        }
+        .sidebar-nav a i { width: 18px; text-align: center; font-size: 0.92rem; color: var(--faint); transition: color 0.18s; }
+        .sidebar-nav a:hover { background: var(--pastel); color: var(--rose-dark); }
+        .sidebar-nav a:hover i { color: var(--rose); }
+        .sidebar-nav a.active { background: var(--pastel); color: var(--rose-dark); font-weight: 600; box-shadow: inset 3px 0 0 var(--rose); }
+        .sidebar-nav a.active i { color: var(--rose); }
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 13px;
+            border-radius: 11px;
+            color: var(--muted);
+            font-weight: 500;
+            font-size: 0.86rem;
+            text-decoration: none;
+            transition: background 0.18s, color 0.18s;
+        }
+        .sidebar-footer a i { width: 18px; text-align: center; color: var(--faint); }
+        .sidebar-footer a:hover { background: var(--pastel); color: var(--rose-dark); }
+        /* ── Main ── */
+        .main {
+            flex: 1;
+            padding: 34px 42px 60px;
+            min-width: 0;
+        }
+        .page-header { margin-bottom: 26px; }
+        .page-header h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.9rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+        .page-header p { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+        /* ── KPI row ── */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+        .kpi-card {
+            border-radius: 20px;
+            padding: 22px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card .kpi-label { font-size: 0.82rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        .kpi-card .kpi-number { font-family: 'Fraunces', serif; font-weight: 600; line-height: 1.1; margin: 10px 0 4px; }
+        .kpi-card .kpi-sub { font-size: 0.78rem; }
+        .kpi-hero {
+            background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+            color: #fff;
+            box-shadow: var(--shadow-lg);
+        }
+        .kpi-hero .kpi-label { color: rgba(255,255,255,0.85); }
+        .kpi-hero .kpi-number { font-size: 2.5rem; }
+        .kpi-hero .kpi-sub { color: rgba(255,255,255,0.75); }
+        .kpi-hero i {
+            position: absolute;
+            right: 18px;
+            top: 18px;
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.35);
+        }
+        .kpi-plain {
+            background: var(--white);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+        .kpi-plain .kpi-label { color: var(--muted); }
+        .kpi-plain .kpi-number { font-size: 1.9rem; color: var(--ink); }
+        .kpi-plain .kpi-sub { color: var(--faint); }
+        .kpi-plain.completed .kpi-label i { color: var(--green); }
+        .kpi-plain.pending .kpi-label i { color: var(--crimson); }
+        /* ── Layout grid ── */
+        .work-grid {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        .panel {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+        /* ── Form panel ── */
+        .form-panel { padding: 24px 24px 26px; position: sticky; top: 34px; }
+        .form-panel h3 { font-size: 1.05rem; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+        .form-panel .panel-sub { font-size: 0.8rem; color: var(--faint); margin-bottom: 18px; }
+        .field { margin-bottom: 15px; }
+        .field label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 10px 13px;
+            border-radius: 11px;
+            border: 1.5px solid var(--border-strong);
+            background: #fcfcfd;
+            font-family: inherit;
+            font-size: 0.88rem;
+            color: var(--ink);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .field input:focus, .field select:focus {
+            border-color: var(--rose);
+            background: #fff;
+            box-shadow: 0 0 0 3.5px rgba(236, 72, 153, 0.12);
+        }
+        .field input[readonly] {
+            background: #f3f4f6;
+            color: var(--muted);
+            cursor: not-allowed;
+        }
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .appt-status-msg {
+            font-size: 0.76rem;
+            margin-top: 6px;
+            display: none;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.4;
+        }
+        .appt-status-msg.show { display: flex; }
+        .appt-status-msg.ok { color: var(--green); }
+        .appt-status-msg.taken { color: var(--pending-text); }
+        .appt-status-msg.checking { color: var(--faint); }
+        .appt-customer {
+            display: block;
+            margin-top: 2px;
+            font-weight: 500;
+            color: var(--ink);
+        }
+        .final-strip {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            background: var(--pastel);
+            border: 1px dashed rgba(236, 72, 153, 0.35);
+            border-radius: 13px;
+            padding: 12px 16px;
+            margin: 4px 0 18px;
+        }
+        .final-strip span:first-child { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+        .final-strip span:last-child { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: var(--rose-dark); }
+        .change-strip {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            background: var(--green-tint);
+            border: 1px dashed rgba(5, 150, 105, 0.35);
+            border-radius: 13px;
+            padding: 12px 16px;
+            margin: 4px 0 18px;
+        }
+        .change-strip span:first-child { font-size: 0.8rem; color: var(--green); font-weight: 500; }
+        .change-strip span:last-child { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: var(--green); }
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+            color: #fff;
+            border: none;
+            padding: 13px 20px;
+            border-radius: 13px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 10px 24px rgba(219, 39, 119, 0.28);
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(219, 39, 119, 0.34); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        /* ── Table panel ── */
+        .table-panel { padding: 22px 24px 8px; min-width: 0; }
+        .table-panel-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .table-panel-head h3 { font-size: 1.05rem; font-weight: 600; color: var(--ink); }
+        .filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .filters .search-wrap { position: relative; }
+        .filters .search-wrap i {
+            position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+            color: var(--faint); font-size: 0.82rem;
+        }
+        .filters input[type="text"] {
+            padding: 8px 14px 8px 32px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border-strong);
+            background: #fcfcfd;
+            font-family: inherit;
+            font-size: 0.83rem;
+            outline: none;
+            width: 190px;
+            transition: all 0.2s;
+        }
+        .filters select {
+            padding: 8px 30px 8px 12px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border-strong);
+            background: #fcfcfd url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%239CA3AF' d='M5 7L1 2h8z'/%3E%3C/svg%3E") no-repeat right 11px center;
+            appearance: none;
+            -webkit-appearance: none;
+            font-family: inherit;
+            font-size: 0.83rem;
+            color: var(--muted);
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filters input:focus, .filters select:focus {
+            border-color: var(--rose);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+        .table-scroll {
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+        }
+        .table-scroll::-webkit-scrollbar { height: 8px; }
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: var(--border-strong);
+            border-radius: 10px;
+        }
+        .table-scroll::-webkit-scrollbar-track { background: #f9fafb; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 980px; }
+        thead th {
+            text-align: left;
+            padding: 10px 14px;
+            font-weight: 500;
+            font-size: 0.78rem;
+            color: var(--faint);
+            border-bottom: 1.5px solid var(--border);
+            white-space: nowrap;
+        }
+        tbody td {
+            padding: 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--ink);
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr { transition: background 0.15s; }
+        tbody tr:hover { background: #FFFBFD; }
+        td.num { font-variant-numeric: tabular-nums; }
+        td.final-amt { font-weight: 600; color: var(--rose-dark); font-variant-numeric: tabular-nums; }
+        td.change-amt { font-weight: 600; color: var(--green); font-variant-numeric: tabular-nums; }
+        .method-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.76rem;
+            font-weight: 500;
+            color: var(--muted);
+        }
+        .method-badge i { font-size: 0.78rem; color: var(--faint); }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+        .status-badge::before { content:''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .status-badge.completed { background: var(--green-tint); color: var(--green); }
+        .status-badge.pending { background: var(--pending-tint); color: var(--pending-text); }
+        .row-action {
+            background: var(--pastel);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            color: var(--rose-dark);
+            cursor: pointer;
+            transition: all 0.18s;
+            font-size: 0.85rem;
+        }
+        .row-action:hover { background: var(--rose); color: #fff; }
+        .table-footer {
+            display: flex;
+            justify-content: center;
+            padding: 16px 0 6px;
+            color: var(--faint);
+            font-size: 0.78rem;
+        }
+        .empty-row td {
+            text-align: center;
+            padding: 46px 20px;
+            color: var(--faint);
+        }
+        .empty-row i { font-size: 1.8rem; margin-bottom: 10px; display: block; color: var(--border-strong); }
+        /* ── Modal (receipt style) ── */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(17, 24, 39, 0.45);
+            backdrop-filter: blur(3px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show { display: flex; }
+        .receipt {
+            background: #fff;
+            width: 100%;
+            max-width: 380px;
+            border-radius: 18px 18px 0 0;
+            padding: 30px 30px 22px;
+            box-shadow: var(--shadow-lg);
+            animation: riseIn 0.25s ease;
+            position: relative;
+        }
+        .receipt::after {
+            content: '';
+            display: block;
+            height: 14px;
+            margin: 0 -30px -22px;
+            background:
+                    radial-gradient(circle at 10px 0, transparent 9px, #fff 10px) top left / 20px 14px repeat-x;
+            border-radius: 0 0 18px 18px;
+        }
+        @keyframes riseIn {
+            from { opacity: 0; transform: translateY(18px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .receipt-head { text-align: center; margin-bottom: 6px; }
+        .receipt-head i {
+            color: var(--rose);
+            background: var(--pastel);
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        .receipt-head h3 { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600; color: var(--ink); }
+        .receipt-head p { font-size: 0.78rem; color: var(--faint); margin-top: 2px; }
+        .receipt-close {
+            position: absolute; top: 16px; right: 16px;
+            background: var(--pastel);
+            border: none; width: 28px; height: 28px; border-radius: 8px;
+            color: var(--faint); cursor: pointer; font-size: 0.85rem;
+        }
+        .receipt-close:hover { color: var(--crimson); }
+        .receipt-body { margin-top: 18px; }
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 9px 0;
+            border-bottom: 1px dashed var(--border-strong);
+            font-size: 0.85rem;
+        }
+        .receipt-row span:first-child { color: var(--muted); }
+        .receipt-row span:last-child { color: var(--ink); font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
+        .receipt-row.total { border-bottom: none; padding-top: 14px; }
+        .receipt-row.total span:first-child { font-weight: 600; color: var(--ink); }
+        .receipt-row.total span:last-child { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: var(--rose-dark); }
+        .receipt-row.change span:last-child { color: var(--green); font-weight: 600; }
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--ink);
+            color: #fff;
+            padding: 13px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.86rem;
+            box-shadow: 0 14px 34px rgba(0,0,0,0.22);
+            z-index: 2000;
+            opacity: 0;
+            transform: translateY(14px);
+            transition: all 0.35s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: linear-gradient(135deg, #059669, #047857); }
+        .toast.error { background: linear-gradient(135deg, var(--crimson), #E11D48); }
+        @media (max-width: 1080px) {
+            .work-grid { grid-template-columns: 1fr; }
+            .form-panel { position: static; }
+            .kpi-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 720px) {
+            .sidebar { display: none; }
+            .main { padding: 22px 18px 50px; }
+            .field-row { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-<div class="petal"></div>
-<div class="petal"></div>
-<div class="petal"></div>
-<div class="petal"></div>
-
-<!-- ─── SIDEBAR ─── -->
 <aside class="sidebar">
     <div class="sidebar-brand">
         <i class="fas fa-spa"></i>
         <h1>Glow<span>.</span></h1>
     </div>
     <nav class="sidebar-nav">
-        <!-- Main -->
         <a href="dashboard.html"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
-
-        <!-- Operations & Bookings -->
         <a href="appointment.html"><i class="fas fa-calendar-check"></i> <span>Appointments</span></a>
         <a href="appointmentDetail.html"><i class="fas fa-calendar-alt"></i> <span>Appointment Detail</span></a>
-
-        <!-- People Management -->
         <a href="customer.html"><i class="fas fa-users"></i> <span>Customers</span></a>
         <a href="staff.html"><i class="fas fa-user-tie"></i> <span>Staff</span></a>
         <a href="staffSchedule.html"><i class="fas fa-clock"></i> <span>Staff Schedule</span></a>
         <a href="staffService.html"><i class="fas fa-concierge-bell"></i> <span>Staff Service</span></a>
         <a href="supplier.html"><i class="fas fa-truck"></i> <span>Supplier</span></a>
-
-        <!-- Services & Products -->
         <a href="category.html"><i class="fas fa-list"></i> <span>Category</span></a>
         <a href="service.html"><i class="fas fa-cut"></i> <span>Service</span></a>
         <a href="product.html"><i class="fas fa-box"></i> <span>Product</span></a>
-
-        <!-- Payments & Finance -->
-        <a href="payment.html"><i class="fas fa-credit-card"></i> <span>Payment</span></a>
-        <a href="advancePayment.html"><i class="fas fa-hand-holding-usd"></i> <span>Advance Payment</span></a>
-        <a href="staffCommission.html"><i class="fas fa-percentage"></i> <span>Staff Commission</span></a>
-
-        <!-- Engagement -->
-        <a href="feedback.html" class="active"><i class="fas fa-comment-alt"></i> <span>Feedback</span></a>
+        <a href="payment.html" class="active"><i class="fas fa-credit-card"></i> <span>Payment</span></a>
+        <a href="Notification.html"><i class="fas fa-hand-holding-usd"></i> <span>Advance Payment</span></a>
+        <a href="Notification.html"><i class="fas fa-percentage"></i> <span>Notification</span></a>
+        <a href="feedback.html"><i class="fas fa-comment-alt"></i> <span>Feedback</span></a>
     </nav>
     <div class="sidebar-footer">
         <a href="user.html"><i class="fas fa-cog"></i><span>User</span></a>
         <a href="login.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
     </div>
 </aside>
+<main class="main">
+    <div class="page-header">
+        <h2>Payments &amp; billing</h2>
+        <p>Record new payments and keep track of every transaction in one place.</p>
+    </div>
+    <div class="kpi-row">
+        <div class="kpi-card kpi-hero">
+            <i class="fas fa-sack-dollar"></i>
+            <div class="kpi-label"><i class="fas fa-circle-dollar-to-slot"></i> Total revenue</div>
+            <div class="kpi-number" id="kpiRevenue">$0.00</div>
+            <div class="kpi-sub">Collected from completed payments</div>
+        </div>
+        <div class="kpi-card kpi-plain completed">
+            <div class="kpi-label"><i class="fas fa-circle-check"></i> Completed payments</div>
+            <div class="kpi-number" id="kpiCompletedCount">0</div>
+            <div class="kpi-sub" id="kpiCompletedSub">$0.00 collected</div>
+        </div>
+        <div class="kpi-card kpi-plain pending">
+            <div class="kpi-label"><i class="fas fa-hourglass-half"></i> Pending payments</div>
+            <div class="kpi-number" id="kpiPendingCount">0</div>
+            <div class="kpi-sub" id="kpiPendingSub">$0.00 awaiting</div>
+        </div>
+    </div>
+    <div class="work-grid">
+        <!-- ── New payment form ── -->
+        <div class="panel form-panel">
+            <h3>New payment</h3>
+            <p class="panel-sub">Bill a completed appointment</p>
+            <form id="paymentForm">
+                <div class="field">
+                    <label for="appointmentId">Appointment ID</label>
+                    <select id="appointmentId" required>
+                        <option value="">— Select completed appointment —</option>
+                    </select>
+                    <div class="appt-status-msg" id="apptStatusMsg"></div>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label for="totalAmount">Total amount (Rs)</label>
+                        <input type="number" step="0.01" min="0" id="totalAmount" placeholder="0.00" required readonly />
+                    </div>
+                    <div class="field">
+                        <label for="discount">Discount (Rs)</label>
+                        <input type="number" step="0.01" min="0" id="discount" placeholder="0.00" />
+                    </div>
+                </div>
+                <div class="final-strip">
+                    <span>Final amount</span>
+                    <span id="finalAmountDisplay">$0.00</span>
+                </div>
+                <!-- Amount Paid by Customer -->
+                <div class="field">
+                    <label for="amountPaid">Amount Paid by Customer ($)</label>
+                    <input type="number" step="0.01" min="0" id="amountPaid" placeholder="0.00" required />
+                </div>
+                <!-- Change Amount -->
+                <div class="change-strip">
+                    <span>Change (balance)</span>
+                    <span id="changeAmountDisplay">$0.00</span>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label for="paymentMethod">Payment method</label>
+                        <select id="paymentMethod">
+                            <option value="CASH">Cash</option>
+                            <option value="CARD">Card</option>
+                            <option value="ONLINE">Online</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="paymentStatus">Payment status</label>
+                        <select id="paymentStatus">
+                            <option value="COMPLETED">Completed</option>
+                            <option value="PENDING">Pending</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="paymentDate">Payment date &amp; time</label>
+                    <input type="datetime-local" id="paymentDate" required />
+                </div>
+                <button type="submit" class="btn-primary" id="processPaymentBtn">
+                    <i class="fas fa-lock"></i> Process payment
+                </button>
+            </form>
+        </div>
+        <!-- ── Payment history ── -->
+        <div class="panel table-panel">
+            <div class="table-panel-head">
+                <h3>Payment history</h3>
+                <div class="filters">
+                    <div class="search-wrap">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search ID..." />
+                    </div>
+                    <select id="methodFilter">
+                        <option value="ALL">All methods</option>
+                        <option value="CASH">Cash</option>
+                        <option value="CARD">Card</option>
+                        <option value="ONLINE">Online</option>
+                    </select>
+                    <select id="statusFilter">
+                        <option value="ALL">All status</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="PENDING">Pending</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-scroll">
+                <table id="paymentTable">
+                    <thead>
+                    <tr>
+                        <th>Payment ID</th>
+                        <th>Appointment</th>
+                        <th>Total</th>
+                        <th>Discount</th>
+                        <th>Final</th>
+                        <th>Paid</th>
+                        <th>Change</th>
+                        <th>Method</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th style="text-align:right;">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody id="paymentTableBody"></tbody>
+                </table>
+            </div>
+            <div class="table-footer">Showing <span id="rowCount">0</span> payments</div>
+        </div>
+    </div>
+</main>
+<!-- ── Receipt / view modal ── -->
+<div class="modal-overlay" id="viewModal">
+    <div class="receipt">
+        <button class="receipt-close" id="viewModalClose"><i class="fas fa-times"></i></button>
+        <div class="receipt-head">
+            <i class="fas fa-receipt"></i>
+            <h3>Payment receipt</h3>
+            <p id="receiptSub">—</p>
+        </div>
+        <div class="receipt-body" id="receiptBody"></div>
+    </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    let allPayments = [];
+    let completedAppointments = {};
+
+    $(document).ready(function () {
+        setDefaultPaymentDate();
+        loadAllPayments();
+        loadCompletedAppointments();
+
+        $('#totalAmount, #discount, #amountPaid').on('input', recomputeFinalAmount);
+
+        $('#appointmentId').on('change', function () {
+            const id = $(this).val();
+            if (id) {
+                checkAppointmentPayment(id);
+            } else {
+                $('#apptStatusMsg').removeClass('show ok taken checking').empty();
+                $('#totalAmount').val('').prop('readonly', true);
+                $('#processPaymentBtn').prop('disabled', false);
+                recomputeFinalAmount();
+            }
+        });
+
+        $('#paymentForm').on('submit', function (e) {
+            e.preventDefault();
+            savePayment();
+        });
+
+        $('#searchInput, #methodFilter, #statusFilter').on('input change', filterPayments);
+
+        $('#viewModalClose').on('click', function () {
+            $('#viewModal').removeClass('show');
+        });
+        $('#viewModal').on('click', function (e) {
+            if (e.target === this) $(this).removeClass('show');
+        });
+    });
+
+    function setDefaultPaymentDate() {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        $('#paymentDate').val(now.toISOString().slice(0, 16));
+    }
+
+    function recomputeFinalAmount() {
+        const total = parseFloat($('#totalAmount').val()) || 0;
+        const discount = parseFloat($('#discount').val()) || 0;
+        const final = Math.max(total - discount, 0);
+        $('#finalAmountDisplay').text('$' + final.toFixed(2));
+        const amountPaid = parseFloat($('#amountPaid').val()) || 0;
+        const change = Math.max(amountPaid - final, 0);
+        $('#changeAmountDisplay').text('$' + change.toFixed(2));
+    }
+
+    function showToast(message, type = 'success') {
+        const toast = $('#toast');
+        const icon = type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check';
+        toast.html(`<i class="fas ${icon}"></i> ${message}`).removeClass('success error').addClass(`${type} show`);
+        setTimeout(() => toast.removeClass('show'), 3200);
+    }
+
+    function loadCompletedAppointments() {
+        $.ajax({
+            url: "http://localhost:8080/v1/appointment/appointment",
+            type: "GET",
+            contentType: "application/json",
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            success: function (response) {
+                let list = response.body || response.data || response || [];
+                if (!Array.isArray(list)) list = [];
+
+                const completed = list.filter(a => {
+                    const status = (a.appointmentStatus || '').toString().toUpperCase();
+                    return status === 'COMPLETED';
+                });
+
+                let options = '<option value="">— Select completed appointment —</option>';
+                completedAppointments = {}; // reset
+
+                completed.forEach(a => {
+                    const id = a.appointmentId;
+                    const name = a.customerName || 'Unknown';
+                    const amount = parseFloat(a.totalAmount) || 0;
+                    const date = a.appointmentDate || '';
+
+                    completedAppointments[id] = {
+                        customerName: name,
+                        totalAmount: amount,
+                        date: date
+                    };
+
+                    options += `<option value="${id}">#${id} — ${name} (${date}) — $${amount.toFixed(2)}</option>`;
+                });
+
+                $('#appointmentId').html(options);
+            },
+            error: function (xhr) {
+                console.error("Error loading appointments", xhr);
+                showToast("Failed to load appointments for dropdown", "error");
+            }
+        });
+    }
+
+    function checkAppointmentPayment(appointmentId) {
+        const msg = $('#apptStatusMsg');
+        msg.removeClass('ok taken').addClass('show checking')
+            .html('<i class="fas fa-spinner fa-spin"></i> Checking appointment...');
+        $('#totalAmount').val('').prop('readonly', true);
+        recomputeFinalAmount();
+
+        $.ajax({
+            url: "http://localhost:8080/v1/payment/appointment/" + appointmentId,
+            type: "GET",
+            contentType: "application/json",
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            success: function () {
+                msg.removeClass('checking').addClass('taken')
+                    .html('<i class="fas fa-triangle-exclamation"></i> This appointment has already been paid');
+                $('#processPaymentBtn').prop('disabled', true);
+                $('#totalAmount').val('').prop('readonly', true);
+                recomputeFinalAmount();
+            },
+            error: function (xhr) {
+                msg.removeClass('checking').addClass('ok');
+                $('#processPaymentBtn').prop('disabled', false);
+
+                const cached = completedAppointments[appointmentId];
+                if (cached) {
+                    const customerName = cached.customerName || '—';
+                    const amount = cached.totalAmount || 0;
+
+                    msg.html(
+                        '<i class="fas fa-circle-check"></i> Ready to bill' +
+                        '<span class="appt-customer"><i class="fas fa-user" style="margin-right:4px;opacity:.7"></i>' +
+                        customerName + '</span>'
+                    );
+
+                    $('#totalAmount').val(amount > 0 ? amount.toFixed(2) : '').prop('readonly', true);
+                    recomputeFinalAmount();
+                } else {
+                    fetchAppointmentDetails(appointmentId);
+                }
+            }
+        });
+    }
+
+    function fetchAppointmentDetails(appointmentId) {
+        const msg = $('#apptStatusMsg');
+        $.ajax({
+            url: "http://localhost:8080/v1/appointment/select/" + appointmentId,
+            type: "GET",
+            contentType: "application/json",
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            success: function (response) {
+                const appt = response.body || response.data || response || {};
+                const customerName = appt.customerName || '—';
+                const amount = parseFloat(appt.totalAmount) || 0;
+
+                msg.html(
+                    '<i class="fas fa-circle-check"></i> Ready to bill' +
+                    '<span class="appt-customer"><i class="fas fa-user" style="margin-right:4px;opacity:.7"></i>' +
+                    customerName + '</span>'
+                );
+                $('#totalAmount').val(amount > 0 ? amount.toFixed(2) : '').prop('readonly', true);
+                recomputeFinalAmount();
+            },
+            error: function () {
+                msg.html(
+                    '<i class="fas fa-circle-check"></i> Ready to bill' +
+                    '<span class="appt-customer" style="color:var(--faint)">Customer details not found</span>'
+                );
+                $('#totalAmount').val('').prop('readonly', false);
+                recomputeFinalAmount();
+            }
+        });
+    }
+
+    function savePayment() {
+        const appointmentId = parseInt($('#appointmentId').val());
+        const totalAmount = parseFloat($('#totalAmount').val());
+        const discount = parseFloat($('#discount').val()) || 0;
+        const amountPaid = parseFloat($('#amountPaid').val()) || 0;
+        const finalAmount = Math.max(totalAmount - discount, 0);
+
+        if (!appointmentId || !totalAmount || totalAmount <= 0) {
+            showToast("Select an appointment and ensure total amount is valid", "error");
+            return;
+        }
+        if (amountPaid < finalAmount) {
+            showToast("Amount paid cannot be less than final amount", "error");
+            return;
+        }
+
+        const paymentDTO = {
+            "appointmentId": appointmentId,
+            "totalAmount": totalAmount,
+            "discount": discount,
+            "finalAmount": finalAmount,
+            "amountPaid": amountPaid,
+            "paymentMethod": $('#paymentMethod').val(),
+            "paymentStatus": $('#paymentStatus').val(),
+            "paymentDate": $('#paymentDate').val() ? $('#paymentDate').val() + ":00" : null
+        };
+
+        $('#processPaymentBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+        $.ajax({
+            url: "http://localhost:8080/v1/payment/save-payment",
+            type: "POST",
+            contentType: "application/json",
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            data: JSON.stringify(paymentDTO),
+            success: function () {
+                showToast("Payment processed successfully");
+                $('#paymentForm')[0].reset();
+                $('#apptStatusMsg').removeClass('show ok taken checking').empty();
+                $('#totalAmount').prop('readonly', true);
+                setDefaultPaymentDate();
+                recomputeFinalAmount();
+                loadAllPayments();
+                loadCompletedAppointments();
+            },
+            error: function (xhr) {
+                console.error("Error saving payment", xhr);
+                const message = (xhr.responseJSON && xhr.responseJSON.message) || "Payment couldn't be saved — check the appointment ID and try again";
+                showToast(message, "error");
+            },
+            complete: function () {
+                $('#processPaymentBtn').prop('disabled', false).html('<i class="fas fa-lock"></i> Process payment');
+            }
+        });
+    }
+
+    function loadAllPayments() {
+        $.ajax({
+            url: "http://localhost:8080/v1/payment/payment",
+            type: "GET",
+            contentType: "application/json",
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            success: function (response) {
+                allPayments = response.body || response.data || response || [];
+                if (!Array.isArray(allPayments)) allPayments = [];
+                renderSummary(allPayments);
+                renderTable(allPayments);
+            },
+            error: function (xhr) {
+                console.error("Error loading payments", xhr);
+                showToast("Failed to load payment history", "error");
+            }
+        });
+    }
+
+    function renderSummary(list) {
+        let revenue = 0, completedCount = 0, completedSum = 0, pendingCount = 0, pendingSum = 0;
+        list.forEach(p => {
+            const status = (p.paymentStatus || '').toString().toUpperCase();
+            const amount = parseFloat(p.finalAmount) || 0;
+            if (status === 'COMPLETED') {
+                completedCount++;
+                completedSum += amount;
+                revenue += amount;
+            } else if (status === 'PENDING') {
+                pendingCount++;
+                pendingSum += amount;
+            }
+        });
+        $('#kpiRevenue').text('$' + revenue.toFixed(2));
+        $('#kpiCompletedCount').text(completedCount);
+        $('#kpiCompletedSub').text('$' + completedSum.toFixed(2) + ' collected');
+        $('#kpiPendingCount').text(pendingCount);
+        $('#kpiPendingSub').text('$' + pendingSum.toFixed(2) + ' awaiting');
+    }
+
+    function methodIcon(method) {
+        switch ((method || '').toUpperCase()) {
+            case 'CASH': return 'fa-money-bill-wave';
+            case 'CARD': return 'fa-credit-card';
+            case 'ONLINE': return 'fa-globe';
+            default: return 'fa-circle-question';
+        }
+    }
+
+    function renderTable(list) {
+        let html = "";
+        if (!list || list.length === 0) {
+            html = `<tr class="empty-row"><td colspan="11"><i class="fas fa-receipt"></i>No payments found</td></tr>`;
+        } else {
+            list.forEach(p => {
+                const status = (p.paymentStatus || 'PENDING').toString().toUpperCase();
+                const method = (p.paymentMethod || '').toString().toUpperCase();
+                const date = p.paymentDate ? p.paymentDate.toString().replace('T', ' ').slice(0, 16) : '—';
+                html += `<tr>
+                    <td>#${p.paymentId}</td>
+                    <td>#${p.appointmentId}</td>
+                    <td class="num">$${parseFloat(p.totalAmount || 0).toFixed(2)}</td>
+                    <td class="num">$${parseFloat(p.discount || 0).toFixed(2)}</td>
+                    <td class="final-amt">$${parseFloat(p.finalAmount || 0).toFixed(2)}</td>
+                    <td class="num">$${parseFloat(p.amountPaid || 0).toFixed(2)}</td>
+                    <td class="change-amt">$${parseFloat(p.changeAmount || 0).toFixed(2)}</td>
+                    <td><span class="method-badge"><i class="fas ${methodIcon(method)}"></i> ${method}</span></td>
+                    <td><span class="status-badge ${status.toLowerCase()}">${status}</span></td>
+                    <td>${date}</td>
+                    <td style="text-align:right;">
+                        <button type="button" class="row-action" onclick="viewPayment(${p.paymentId})" title="View receipt"><i class="fas fa-eye"></i></button>
+                    </td>
+                </tr>`;
+            });
+        }
+        $('#paymentTableBody').html(html);
+        $('#rowCount').text(list ? list.length : 0);
+    }
+
+    function filterPayments() {
+        const searchVal = $('#searchInput').val().toLowerCase().trim();
+        const methodVal = $('#methodFilter').val().toUpperCase();
+        const statusVal = $('#statusFilter').val().toUpperCase();
+        const filtered = allPayments.filter(p => {
+            const paymentId = String(p.paymentId || '').toLowerCase();
+            const appointmentId = String(p.appointmentId || '').toLowerCase();
+            const method = (p.paymentMethod || '').toString().toUpperCase();
+            const status = (p.paymentStatus || '').toString().toUpperCase();
+            const matchesSearch = !searchVal || paymentId.includes(searchVal) || appointmentId.includes(searchVal);
+            const matchesMethod = methodVal === 'ALL' || method === methodVal;
+            const matchesStatus = statusVal === 'ALL' || status === statusVal;
+            return matchesSearch && matchesMethod && matchesStatus;
+        });
+        renderTable(filtered);
+    }
+
+    function viewPayment(paymentId) {
+        $.ajax({
+            url: "http://localhost:8080/v1/payment/" + paymentId,
+            type: "GET",
+            contentType: "application/json",
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            success: function (response) {
+                const p = response.body || response.data || response;
+                renderReceipt(p);
+            },
+            error: function (xhr) {
+                console.error("Error loading payment", xhr);
+                showToast("Couldn't load that payment", "error");
+            }
+        });
+    }
+
+    function renderReceipt(p) {
+        const status = (p.paymentStatus || 'PENDING').toString().toUpperCase();
+        const method = (p.paymentMethod || '').toString().toUpperCase();
+        const date = p.paymentDate ? p.paymentDate.toString().replace('T', ' ').slice(0, 16) : '—';
+        $('#receiptSub').text('Payment #' + p.paymentId + ' · Appointment #' + p.appointmentId);
+        $('#receiptBody').html(`
+            <div class="receipt-row"><span>Total amount</span><span>$${parseFloat(p.totalAmount || 0).toFixed(2)}</span></div>
+            <div class="receipt-row"><span>Discount</span><span>-$${parseFloat(p.discount || 0).toFixed(2)}</span></div>
+            <div class="receipt-row"><span>Final amount</span><span>$${parseFloat(p.finalAmount || 0).toFixed(2)}</span></div>
+            <div class="receipt-row"><span>Amount Paid</span><span>$${parseFloat(p.amountPaid || 0).toFixed(2)}</span></div>
+            <div class="receipt-row change"><span>Change (balance)</span><span>$${parseFloat(p.changeAmount || 0).toFixed(2)}</span></div>
+            <div class="receipt-row"><span>Method</span><span>${method}</span></div>
+            <div class="receipt-row"><span>Status</span><span><span class="status-badge ${status.toLowerCase()}">${status}</span></span></div>
+            <div class="receipt-row"><span>Date</span><span>${date}</span></div>
+            <div class="receipt-row total"><span>Final amount</span><span>$${parseFloat(p.finalAmount || 0).toFixed(2)}</span></div>
+        `);
+        $('#viewModal').addClass('show');
+    }
+</script>
 </body>
 </html>

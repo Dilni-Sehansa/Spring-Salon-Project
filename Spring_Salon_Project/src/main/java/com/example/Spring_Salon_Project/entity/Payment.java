@@ -33,12 +33,24 @@ public class Payment {
     @Column(nullable = false)
     private Double finalAmount;
 
+    @Column(nullable = false)
+    private Double amountPaid;
+
+    @Column(nullable = false)
+    private Double changeAmount;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentMethod paymentMethod;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentStatus paymentStatus;
+
     @Column(nullable = false)
     private LocalDateTime paymentDate;
+
+
 
 
 }

@@ -79,11 +79,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/v1/appointment/**").hasAnyRole("ADMIN", "STAFF")
                         .requestMatchers(HttpMethod.PATCH, "/v1/appointment/**").hasAnyRole("ADMIN", "STAFF")
 
+                        .requestMatchers("/v1/notification/**").authenticated()
+
 
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()) // Add this
+                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
