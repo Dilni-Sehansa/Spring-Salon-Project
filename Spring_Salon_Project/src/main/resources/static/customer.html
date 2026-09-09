@@ -325,6 +325,10 @@
             background: var(--crimson-tint);
             color: var(--crimson);
         }
+        .action-btn.status-toggle:hover {
+            color: var(--green);
+            background: var(--green-tint);
+        }
 
         /* Modal */
         .modal-overlay {
@@ -597,6 +601,30 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="statusModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Change Status</h3>
+            <button class="modal-close" id="statusModalClose"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="statusForm">
+            <input type="hidden" id="changeStatusCustomerId" value="" />
+            <div class="input-group">
+                <label>Select New Status</label>
+                <select id="newStatusSelect" required>
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="INACTIVE">INACTIVE</option>
+                    <option value="BLOCKED">BLOCKED</option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button type="button" class="btn-secondary" id="statusModalCancel">Cancel</button>
+                <button type="submit" class="btn-primary" id="saveStatusBtn"><i class="fas fa-sync-alt"></i> Update Status</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js">
@@ -618,6 +646,19 @@
 
         $('#modalCancel, #modalClose').on('click', function () {
             $('#customerModal').removeClass('show');
+        });
+
+        $('#statusModalClose, #statusModalCancel').on('click', function(){
+            $('#statusModal').removeClass('show');
+        });
+
+        $('#statusForm').on('submit', function(e){
+            e.preventDefault();
+            let id = $('#changeStatusCustomerId').val();
+            let newStatus = $('#newStatusSelect').val();
+            if(id && newStatus){
+                changeStatus(id, newStatus);
+            }
         });
 
         $('#customerForm').on('submit',function (e){
@@ -695,7 +736,7 @@
         } else {
             for (const c of customerList) {
                 let currentStatus = (c.customerStatus || 'ACTIVE').toString().toUpperCase();
-                let statusClass = currentStatus.toLowerCase();   // active / inactive / blocked
+                let statusClass = currentStatus.toLowerCase();
                 let linkedUser = c.userId ? `#${c.userId}` : '<i>None</i>';
 
                 html += `<tr>
@@ -708,6 +749,7 @@
                     <span class="status-badge ${statusClass}">${currentStatus}</span>
                 </td>
                 <td style="text-align:right;">
+                    <button type="button" class="action-btn status-toggle" onclick="toggleCustomerStatus(${c.customerId}, '${currentStatus}')" title="Toggle Status"><i class="fas fa-sync-alt"></i></button>
                     <button type="button" class="action-btn" onclick="selectCustomer(${c.customerId})"><i class="fas fa-edit"></i></button>
                     <button type="button" class="action-btn delete" onclick="deleteCustomer(${c.customerId})"><i class="fas fa-trash"></i></button>
                 </td>
@@ -717,6 +759,36 @@
 
         $('#customerTableBody').html(html);
         $('#rowCount').text(customerList ? customerList.length : 0);
+    }
+
+    function toggleCustomerStatus(customerId, currentStatus) {
+        openStatusModal(customerId, currentStatus);
+    }
+
+    function openStatusModal(customerId, currentStatus){
+        $('#changeStatusCustomerId').val(customerId);
+        $('#newStatusSelect').val(currentStatus);
+        $('#statusModal').addClass('show');
+    }
+
+    function changeStatus(customerId, newStatus) {
+        $.ajax({
+            url: "http://localhost:8080/v1/customer/update-status/" + customerId + "?status=" + newStatus,
+            type: "PATCH",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function (response) {
+                showToast("Customer status updated successfully!");
+                $('#statusModal').removeClass('show');
+                loadAllCustomers();
+            },
+            error: function (xhr) {
+                console.error("Error updating status", xhr);
+                showToast("Failed to update status!", "error");
+            }
+        });
     }
 
     function saveCustomer(){
@@ -866,6 +938,7 @@
             }
         });
     }
+
 </script>
 </body>
 </html>

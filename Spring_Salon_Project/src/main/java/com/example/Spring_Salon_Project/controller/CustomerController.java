@@ -2,6 +2,8 @@ package com.example.Spring_Salon_Project.controller;
 
 import com.example.Spring_Salon_Project.dto.CommonResponse;
 import com.example.Spring_Salon_Project.dto.CustomerDTO;
+import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
+import com.example.Spring_Salon_Project.enumiration.CustomerStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -70,6 +72,14 @@ public class CustomerController {
     public CommonResponse getCustomerByPhone(@PathVariable String phone) {
         CustomerDTO customerDTO = customerService.getCustomerByPhone(phone);
         return new CommonResponse(0, customerDTO, "Customer Loaded Successfully");
+    }
+
+    @PatchMapping(value = "/update-status/{customerId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CommonResponse updateCustomerStatus(
+            @PathVariable Long customerId,
+            @RequestParam CustomerStatus status) {
+        customerService.updateCustomerStatus(customerId, status);
+        return new CommonResponse(0, "Customer Status Updated Successfully");
     }
 
 

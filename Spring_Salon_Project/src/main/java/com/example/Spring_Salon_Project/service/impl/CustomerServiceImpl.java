@@ -2,6 +2,7 @@ package com.example.Spring_Salon_Project.service.impl;
 
 import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.CustomerDTO;
+import com.example.Spring_Salon_Project.entity.Appointment;
 import com.example.Spring_Salon_Project.entity.Customer;
 import com.example.Spring_Salon_Project.entity.User;
 import com.example.Spring_Salon_Project.enumiration.CustomerStatus;
@@ -200,5 +201,28 @@ public class CustomerServiceImpl implements CustomerService {
         } else {
             throw new CustomerException(404, "Customer not found for phone number: " + phone);
         }
+    }
+
+    @Override
+    public void updateCustomerStatus(Long customerId, CustomerStatus status) {
+        log.info("Execute method updateCustomerStatus for ID: {} to Status: {}", customerId, status);
+
+        Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
+
+        if (optionalCustomer.isEmpty()) {
+            throw new CustomerException(404, "Customer not found");
+        }
+        Customer customer = optionalCustomer.get();
+        customer.setCustomerStatus(status);
+        customerRepository.save(customer);
+        log.info("Customer status updated successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("CUSTOMER");
+        logDTO.setEntityId(customer.getCustomerId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Appointment status changed to: " + status);
+        auditLogService.saveAuditLog(logDTO);
     }
 }

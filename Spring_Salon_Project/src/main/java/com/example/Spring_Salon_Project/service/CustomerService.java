@@ -1,6 +1,8 @@
 package com.example.Spring_Salon_Project.service;
 
 import com.example.Spring_Salon_Project.dto.CustomerDTO;
+import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
+import com.example.Spring_Salon_Project.enumiration.CustomerStatus;
 
 import java.util.List;
 
@@ -23,4 +25,6 @@ public interface CustomerService {
     CustomerDTO getCustomerByUserId(long userId);
 
     CustomerDTO getCustomerByPhone(String phone);
+
+    void updateCustomerStatus(Long customerId, CustomerStatus status);
 }
