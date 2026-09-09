@@ -15,4 +15,5 @@ public class AppointmentDetailDTO {
     private Long appointmentId;
     private Long serviceId;
     private String serviceName;
+    private Boolean deleted;
 }

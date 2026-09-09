@@ -4,348 +4,322 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Glow · Appointment Detail Management</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- MODIFIED UI: added Fraunces alongside Poppins to match the Notification.html / appointment.html type pairing -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
+        :root {
+            --rose: #EC4899;
+            --rose-dark: #DB2777;
+            --crimson: #F43F5E;
+            --crimson-tint: #FFF1F2;
+            --pastel: #FDF2F8;
+            --white: #FFFFFF;
+            --border: #F3F4F6;
+            --border-strong: #E5E7EB;
+            --muted: #4B5563;
+            --faint: #9CA3AF;
+            --ink: #111827;
+            --green: #059669;
+            --green-tint: #ECFDF5;
+            --amber: #B45309;
+            --amber-tint: #FFFBEB;
+            --blue: #2563EB;
+            --blue-tint: #EFF6FF;
+            --purple: #7C3AED;
+            --purple-tint: #F5F3FF;
+            --pending-text: #BE123C;
+            --pending-tint: #FFF1F5;
+            --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.04);
+            --shadow-md: 0 8px 24px rgba(17, 24, 39, 0.06);
+            --shadow-lg: 0 24px 60px rgba(219, 39, 119, 0.16);
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        /* MODIFIED UI: flat pastel background, no radial gradients */
         body {
             font-family: 'Poppins', sans-serif;
-            background:
-                    radial-gradient(circle at 15% 10%, rgba(255, 182, 193, 0.35), transparent 45%),
-                    radial-gradient(circle at 85% 90%, rgba(255, 111, 145, 0.20), transparent 50%),
-                    linear-gradient(135deg, #fff6f7 0%, #ffeef1 100%);
+            background: var(--pastel);
+            color: var(--ink);
             min-height: 100vh;
             display: flex;
-            overflow: hidden;
-            position: relative;
+            -webkit-font-smoothing: antialiased;
         }
+        ::selection { background: var(--rose); color: #fff; }
 
-        .petal {
-            position: fixed;
-            border-radius: 50% 0 50% 50%;
-            opacity: 0.22;
-            pointer-events: none;
-            z-index: 0;
-            animation: petalFloat 14s infinite ease-in-out;
-            background: #ff6f91;
-        }
-        .petal:nth-child(1) { width: 40px; height: 40px; top: 5%; left: 3%; animation-delay: 0s; }
-        .petal:nth-child(2) { width: 25px; height: 25px; top: 20%; right: 5%; animation-delay: 3s; background: #ffb6c1; }
-        .petal:nth-child(3) { width: 50px; height: 50px; bottom: 10%; left: 8%; animation-delay: 6s; }
-        .petal:nth-child(4) { width: 30px; height: 30px; bottom: 25%; right: 6%; animation-delay: 9s; background: #ffb6c1; }
-
-        @keyframes petalFloat {
-            0% { transform: translateY(0) rotate(0deg) scale(1); }
-            33% { transform: translateY(-35px) rotate(25deg) scale(1.05); }
-            66% { transform: translateY(20px) rotate(-15deg) scale(0.95); }
-            100% { transform: translateY(0) rotate(0deg) scale(1); }
-        }
 
         .sidebar {
-            width: 260px;
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 32px 20px;
+            width: 258px;
+            background: var(--white);
+            border-right: 1px solid var(--border);
+            padding: 28px 18px;
             display: flex;
             flex-direction: column;
             height: 100vh;
             position: sticky;
             top: 0;
-            z-index: 10;
-            box-shadow: 2px 0 30px rgba(0, 0, 0, 0.03);
             overflow-y: auto;
+            flex-shrink: 0;
         }
-
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
         .sidebar-brand {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 40px;
-            padding-bottom: 24px;
-            border-bottom: 2px solid rgba(255, 111, 145, 0.10);
+            padding: 2px 6px 22px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border);
         }
-
         .sidebar-brand i {
-            font-size: 2rem;
-            color: #ff6f91;
-            background: rgba(255, 111, 145, 0.10);
-            padding: 12px;
-            border-radius: 18px;
+            font-size: 1.3rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+            padding: 11px;
+            border-radius: 14px;
+            box-shadow: var(--shadow-md);
         }
-
         .sidebar-brand h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #2d2d2d;
+            font-family: 'Fraunces', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--ink);
         }
-        .sidebar-brand h1 span { color: #ff6f91; }
-
+        .sidebar-brand h1 span { color: var(--rose); }
         .sidebar-nav {
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 2px;
         }
-
         .sidebar-nav a {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 12px 16px;
-            border-radius: 14px;
-            color: #5a4a44;
+            gap: 12px;
+            padding: 10px 13px;
+            border-radius: 11px;
+            color: var(--muted);
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: 0.86rem;
             text-decoration: none;
-            transition: all 0.25s ease;
+            transition: background 0.18s, color 0.18s;
         }
-
-        .sidebar-nav a i {
-            width: 22px;
-            font-size: 1.1rem;
-            color: #b3886a;
-            transition: color 0.25s;
-        }
-
-        .sidebar-nav a:hover {
-            background: rgba(255, 111, 145, 0.08);
-            color: #ff6f91;
-        }
-        .sidebar-nav a:hover i { color: #ff6f91; }
-
-        .sidebar-nav a.active {
-            background: #ff6f91;
-            color: #fff;
-            box-shadow: 0 6px 18px rgba(255, 111, 145, 0.25);
-        }
-        .sidebar-nav a.active i { color: #fff; }
-
+        .sidebar-nav a i { width: 18px; text-align: center; font-size: 0.92rem; color: var(--faint); transition: color 0.18s; }
+        .sidebar-nav a:hover { background: var(--pastel); color: var(--rose-dark); }
+        .sidebar-nav a:hover i { color: var(--rose); }
+        .sidebar-nav a.active { background: var(--pastel); color: var(--rose-dark); font-weight: 600; box-shadow: inset 3px 0 0 var(--rose); }
+        .sidebar-nav a.active i { color: var(--rose); }
         .sidebar-footer {
             margin-top: auto;
-            padding-top: 20px;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 2px;
         }
-
         .sidebar-footer a {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 10px 16px;
-            border-radius: 14px;
-            color: #5a4a44;
+            gap: 12px;
+            padding: 9px 13px;
+            border-radius: 11px;
+            color: var(--muted);
             font-weight: 500;
+            font-size: 0.86rem;
             text-decoration: none;
-            transition: all 0.25s;
+            transition: background 0.18s, color 0.18s;
         }
-        .sidebar-footer a i { width: 22px; color: #b3886a; }
-        .sidebar-footer a:hover {
-            background: rgba(255, 111, 145, 0.08);
-            color: #ff6f91;
-        }
+        .sidebar-footer a i { width: 18px; text-align: center; color: var(--faint); }
+        .sidebar-footer a:hover { background: var(--pastel); color: var(--rose-dark); }
 
         .main {
             flex: 1;
-            padding: 32px 40px;
-            overflow-y: auto;
-            height: 100vh;
-            position: relative;
-            z-index: 1;
+            padding: 34px 42px 60px;
+            min-width: 0;
         }
+        .main::-webkit-scrollbar { width: 4px; }
+        .main::-webkit-scrollbar-track { background: transparent; }
+        .main::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
 
         .main-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 28px;
+            align-items: flex-end;
+            margin-bottom: 26px;
             flex-wrap: wrap;
             gap: 16px;
         }
-
         .main-header h2 {
-            font-size: 1.85rem;
-            font-weight: 700;
-            color: #2d2d2d;
+            font-family: 'Fraunces', serif;
+            font-size: 1.9rem;
+            font-weight: 600;
+            color: var(--ink);
             display: flex;
             align-items: center;
-            gap: 14px;
-            letter-spacing: -0.3px;
+            gap: 12px;
         }
         .main-header h2 i {
             color: #fff;
-            background: linear-gradient(135deg, #ff6f91, #ff9bb3);
-            padding: 12px;
-            border-radius: 16px;
-            font-size: 1.2rem;
-            box-shadow: 0 8px 20px rgba(255, 111, 145, 0.3);
+            background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+            padding: 10px;
+            border-radius: 14px;
+            font-size: 1rem;
+            box-shadow: var(--shadow-md);
         }
-
         .main-header .subtitle {
-            font-size: 0.85rem;
-            color: #b3886a;
-            font-weight: 500;
+            font-size: 0.88rem;
+            color: var(--muted);
+            font-weight: 400;
             margin-top: 4px;
-            margin-left: 62px;
+            margin-left: 0;
         }
 
         .filter-bar {
             display: flex;
-            gap: 16px;
-            margin-bottom: 28px;
+            gap: 12px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
             align-items: center;
         }
-
         .filter-bar .search-wrapper {
             flex: 1;
-            min-width: 180px;
+            min-width: 200px;
             position: relative;
         }
-
         .filter-bar .search-wrapper input {
             width: 100%;
-            padding: 14px 20px 14px 46px;
-            border-radius: 50px;
-            border: 2px solid rgba(255, 111, 145, 0.12);
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(6px);
+            padding: 10px 16px 10px 38px;
+            border-radius: 11px;
+            border: 1.5px solid var(--border-strong);
+            background: #fcfcfd;
             font-family: inherit;
-            font-size: 0.95rem;
+            font-size: 0.87rem;
+            color: var(--ink);
             outline: none;
-            transition: all 0.3s;
-            box-shadow: 0 4px 14px rgba(255, 111, 145, 0.06);
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
         }
         .filter-bar .search-wrapper input:focus {
-            border-color: #ff6f91;
-            box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.1);
+            border-color: var(--rose);
             background: #fff;
+            box-shadow: 0 0 0 3.5px rgba(236, 72, 153, 0.12);
         }
         .filter-bar .search-wrapper i {
             position: absolute;
-            left: 18px;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: #ff8ba6;
+            color: var(--faint);
+            font-size: 0.82rem;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #ff6f91, #ff8ba6);
+            background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
             color: #fff;
             border: none;
-            padding: 14px 28px;
-            border-radius: 50px;
+            padding: 11px 22px;
+            border-radius: 13px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.88rem;
+            font-family: inherit;
             cursor: pointer;
-            transition: all 0.3s ease;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
-            box-shadow: 0 6px 18px rgba(255, 111, 145, 0.32);
+            box-shadow: 0 10px 24px rgba(219, 39, 119, 0.28);
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
             white-space: nowrap;
         }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 26px rgba(255, 111, 145, 0.4);
-        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(219, 39, 119, 0.34); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
         .panel {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 28px;
-            padding: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 10px 40px rgba(255, 111, 145, 0.08);
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
         }
 
         .panel-heading {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px dashed rgba(255, 111, 145, 0.2);
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
         }
-
         .panel-heading h3 {
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 600;
-            color: #5a4a44;
+            color: var(--ink);
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        .panel-heading h3 i { color: #ff6f91; }
+        .panel-heading h3 i { color: var(--rose); }
 
         .count-chip {
-            background: rgba(255, 111, 145, 0.1);
-            color: #ff6f91;
-            font-size: 0.78rem;
+            background: var(--pastel);
+            color: var(--rose-dark);
+            font-size: 0.75rem;
             font-weight: 700;
-            padding: 6px 14px;
+            padding: 5px 13px;
             border-radius: 50px;
         }
 
         .details-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+            gap: 16px;
         }
 
         .detail-card {
             position: relative;
-            background: linear-gradient(160deg, rgba(255, 255, 255, 0.9), rgba(255, 245, 247, 0.75));
-            border: 1px solid rgba(255, 111, 145, 0.14);
-            border-radius: 20px;
-            padding: 20px 20px 18px;
-            box-shadow: 0 6px 18px rgba(255, 111, 145, 0.08);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px 18px 16px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s, transform 0.2s;
             overflow: hidden;
         }
-
         .detail-card::before {
             content: "";
             position: absolute;
             top: 0;
             left: 0;
-            width: 5px;
+            width: 4px;
             height: 100%;
-            background: linear-gradient(180deg, #ff6f91, #ffb6c1);
+            background: linear-gradient(180deg, var(--rose), var(--rose-dark));
         }
-
         .detail-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 34px rgba(255, 111, 145, 0.18);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .detail-card-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .badge-id {
             display: inline-block;
-            padding: 5px 13px;
-            background: rgba(255, 111, 145, 0.12);
-            color: #ff6f91;
+            padding: 4px 12px;
+            background: var(--pastel);
+            color: var(--rose-dark);
             border-radius: 50px;
             font-weight: 700;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             letter-spacing: 0.3px;
         }
 
         .service-name {
-            font-size: 1.08rem;
+            font-size: 1.02rem;
             font-weight: 600;
-            color: #2d2d2d;
+            color: var(--ink);
             margin-bottom: 14px;
             line-height: 1.35;
         }
@@ -353,77 +327,73 @@
         .detail-meta {
             display: flex;
             gap: 10px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             flex-wrap: wrap;
         }
 
         .meta-item {
             flex: 1;
             min-width: 100px;
-            background: rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(255, 111, 145, 0.08);
-            border-radius: 12px;
+            background: var(--pastel);
+            border: 1px solid var(--border);
+            border-radius: 11px;
             padding: 8px 12px;
         }
-
         .meta-label {
             display: block;
-            font-size: 0.68rem;
+            font-size: 0.66rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #b3886a;
+            letter-spacing: 0.4px;
+            color: var(--faint);
             margin-bottom: 3px;
         }
-
         .meta-value {
             display: block;
-            font-size: 0.88rem;
+            font-size: 0.86rem;
             font-weight: 600;
-            color: #5a4a44;
+            color: var(--ink);
         }
 
         .detail-card-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-top: 14px;
-            border-top: 1px dashed rgba(255, 111, 145, 0.18);
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
         }
-
         .detail-price {
-            font-size: 1.15rem;
+            font-size: 1.08rem;
             font-weight: 700;
-            color: #2d2d2d;
+            color: var(--ink);
         }
         .detail-price span {
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            color: #b3886a;
+            color: var(--faint);
             display: block;
             margin-bottom: 2px;
         }
 
         .btn-delete {
-            background: rgba(235, 87, 87, 0.1);
-            border: 1.5px solid rgba(235, 87, 87, 0.35);
-            color: #eb5757;
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
+            background: var(--crimson-tint);
+            border: 1.5px solid rgba(244, 63, 94, 0.25);
+            color: var(--crimson);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.92rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
         }
-        .btn-delete i { color: #eb5757; }
+        .btn-delete i { color: var(--crimson); }
         .btn-delete:hover {
-            background: #eb5757;
-            border-color: #eb5757;
-            box-shadow: 0 8px 18px rgba(235, 87, 87, 0.35);
-            transform: translateY(-2px) scale(1.04);
+            background: var(--crimson);
+            border-color: var(--crimson);
+            box-shadow: 0 8px 18px rgba(244, 63, 94, 0.3);
         }
         .btn-delete:hover i { color: #fff; }
 
@@ -431,64 +401,84 @@
             grid-column: 1 / -1;
             text-align: center;
             padding: 60px 20px;
-            color: #b3886a;
+            color: var(--faint);
         }
         .empty-state i {
-            font-size: 2.6rem;
-            color: rgba(255, 111, 145, 0.35);
+            font-size: 2.4rem;
+            color: var(--border-strong);
             margin-bottom: 14px;
             display: block;
         }
         .empty-state p {
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 500;
         }
 
         .toast {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #2d2d2d;
+            bottom: 28px;
+            right: 28px;
+            background: var(--ink);
             color: #fff;
-            padding: 14px 28px;
-            border-radius: 50px;
+            padding: 13px 24px;
+            border-radius: 12px;
             font-weight: 500;
-            font-size: 0.9rem;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            font-size: 0.86rem;
+            box-shadow: 0 14px 34px rgba(0,0,0,0.22);
             z-index: 2000;
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.4s ease;
+            transform: translateY(14px);
+            transition: all 0.35s ease;
             pointer-events: none;
         }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.success { background: #6fcf97; }
-        .toast.error { background: #eb5757; }
 
-        @media (max-width: 768px) {
-            .sidebar { width: 72px; padding: 16px 8px; }
-            .sidebar-brand h1, .sidebar-nav a span, .sidebar-footer a span { display: none; }
-            .sidebar-brand i { font-size: 1.6rem; padding: 8px; }
-            .sidebar-nav a { justify-content: center; padding: 10px; }
-            .sidebar-nav a i { margin: 0; font-size: 1.2rem; }
-            .sidebar-footer a { justify-content: center; padding: 10px; }
-            .main { padding: 16px; }
-            .main-header h2 { font-size: 1.4rem; }
-            .main-header .subtitle { margin-left: 0; }
-            .details-grid { grid-template-columns: 1fr; }
+        .detail-card.deleted {
+            background: #FFF1F2 !important;
+            border-color: #FECACA !important;
+            opacity: 0.85;
+            pointer-events: none;
+        }
+        .detail-card.deleted::before {
+            background: linear-gradient(180deg, #F43F5E, #E11D48) !important;
+        }
+        .detail-card.deleted .service-name {
+            color: #BE123C;
+            text-decoration: line-through;
+        }
+        .detail-card.deleted .badge-id {
+            background: #FEE2E2;
+            color: #BE123C;
+        }
+        .detail-card.deleted .meta-item {
+            background: #FEF2F2;
+            border-color: #FECACA;
+        }
+        .detail-card.deleted .btn-delete {
+            background: #FECACA;
+            border-color: #F87171;
+            cursor: not-allowed;
+        }
+        .detail-card.deleted .btn-delete i {
+            color: #BE123C;
         }
 
-        .main::-webkit-scrollbar { width: 4px; }
-        .main::-webkit-scrollbar-track { background: transparent; }
-        .main::-webkit-scrollbar-thumb { background: rgba(255, 111, 145, 0.25); border-radius: 10px; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: linear-gradient(135deg, #059669, #047857); }
+        .toast.error { background: linear-gradient(135deg, var(--crimson), #E11D48); }
+
+        @media (max-width: 1080px) {
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .filter-bar .search-wrapper { min-width: unset; }
+        }
+        @media (max-width: 720px) {
+            .sidebar { display: none; }
+            .main { padding: 22px 18px 50px; }
+            .main-header h2 { font-size: 1.5rem; }
+            .details-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
-
-<div class="petal"></div>
-<div class="petal"></div>
-<div class="petal"></div>
-<div class="petal"></div>
 
 <aside class="sidebar">
     <div class="sidebar-brand">
@@ -519,6 +509,7 @@
 </aside>
 
 <main class="main">
+    <!-- MODIFIED UI: header restyled with Fraunces title + gradient icon chip -->
     <div class="main-header">
         <div>
             <h2><i class="fas fa-calendar-alt"></i> Appointment Details</h2>
@@ -526,6 +517,7 @@
         </div>
     </div>
 
+    <!-- MODIFIED UI: filter bar re-skinned with crisp bordered inputs + rose focus ring; IDs unchanged -->
     <div class="filter-bar">
         <div class="search-wrapper">
             <i class="fas fa-hashtag"></i>
@@ -675,40 +667,42 @@
 
         if (!details || details.length === 0) {
             html = `
-                <div class="empty-state">
-                    <i class="fas fa-magnifying-glass-chart"></i>
-                    <p>No appointment details found.</p>
-                </div>`;
+            <div class="empty-state">
+                <i class="fas fa-magnifying-glass-chart"></i>
+                <p>No appointment details found.</p>
+            </div>`;
         } else {
             for (const d of details) {
                 let price = d.price ? parseFloat(d.price).toFixed(2) : "0.00";
 
+                let deletedClass = (d.deleted === true) ? "deleted" : "";
+
                 html += `
-                <div class="detail-card">
-                    <div class="detail-card-top">
-                        <span class="badge-id">#${d.appointmentServiceId}</span>
-                    </div>
-                    <div class="service-name">${d.serviceName || 'Unknown Service'}</div>
-                    <div class="detail-meta">
-                        <div class="meta-item">
-                            <span class="meta-label">Appointment ID</span>
-                            <span class="meta-value">#${d.appointmentId || '-'}</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Service ID</span>
-                            <span class="meta-value">#${d.serviceId || '-'}</span>
-                        </div>
-                    </div>
-                    <div class="detail-card-footer">
-                        <div class="detail-price">
-                            <span>Price</span>
-                            LKR ${price}
-                        </div>
-                        <button class="btn-delete" onclick="deleteAppointmentDetail(${d.appointmentServiceId})" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>`;
+        <div class="detail-card ${deletedClass}" id="card-${d.appointmentServiceId}">
+            <div class="detail-card-top">
+                <span class="badge-id">#${d.appointmentServiceId}</span>
+            </div>
+            <div class="service-name">${d.serviceName || 'Unknown Service'}</div>
+            <div class="detail-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Appointment ID</span>
+                    <span class="meta-value">#${d.appointmentId || '-'}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Service ID</span>
+                    <span class="meta-value">#${d.serviceId || '-'}</span>
+                </div>
+            </div>
+            <div class="detail-card-footer">
+                <div class="detail-price">
+                    <span>Price</span>
+                    LKR ${price}
+                </div>
+                <button class="btn-delete" onclick="deleteAppointmentDetail(${d.appointmentServiceId})" title="Delete">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>`;
             }
         }
 
@@ -717,24 +711,36 @@
     }
 
     function deleteAppointmentDetail(id) {
-        if (confirm("Are you sure you want to delete this appointment detail?")) {
-            $.ajax({
-                url: "http://localhost:8080/v1/appointmentDetail/" + id,
-                type: "DELETE",
-                contentType: "application/json",
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-                },
-                success: function(response) {
-                    showToast(response.message || "Deleted successfully!", "success");
-                    doSearch();
-                },
-                error: function(xhr) {
-                    showToast("Error deleting!", "error");
-                }
-            });
+        if (!confirm("Are you sure you want to delete this appointment detail?")) {
+            return;
         }
+
+        const card = document.getElementById(`card-${id}`);
+
+        if (card) {
+            card.classList.add('deleted');
+        }
+
+        $.ajax({
+            url: "http://localhost:8080/v1/appointmentDetail/" + id,
+            type: "DELETE",
+            contentType: "application/json",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+            },
+            success: function(response) {
+                showToast(response.message || "Deleted successfully!", "success");
+            },
+            error: function(xhr) {
+                if (card) {
+                    card.classList.remove('deleted');
+                }
+                showToast("Error deleting!", "error");
+            }
+        });
     }
+
+
 </script>
 </body>
 </html>

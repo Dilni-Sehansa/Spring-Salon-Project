@@ -26,4 +26,7 @@ public class AppointmentDetail {
     @JoinColumn(name = "service_id", nullable = false)
     private SaloonService service;
 
+    @Column(nullable = false)
+    private Boolean deleted = false;
+
 }

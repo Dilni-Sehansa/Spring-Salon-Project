@@ -15,7 +15,7 @@ public interface AppointmentDetailRepository extends JpaRepository<AppointmentDe
     List<AppointmentDetail> findByAppointment_AppointmentId(Long appointmentId);
 
     @Query("SELECT new com.example.Spring_Salon_Project.dto.AppointmentDetailDTO(" +
-            "ad.appointmentServiceId, ad.price, a.appointmentId, s.serviceId, s.serviceName) " +
+            "ad.appointmentServiceId, ad.price, a.appointmentId, s.serviceId, s.serviceName, ad.deleted) " +
             "FROM AppointmentDetail ad " +
             "LEFT JOIN ad.appointment a " +
             "LEFT JOIN ad.service s " +
@@ -24,8 +24,7 @@ public interface AppointmentDetailRepository extends JpaRepository<AppointmentDe
 
     @Query("""
         SELECT new com.example.Spring_Salon_Project.dto.AppointmentDetailDTO(
-            ad.appointmentServiceId, ad.price, a.appointmentId, s.serviceId, s.serviceName
-        )
+            ad.appointmentServiceId, ad.price, a.appointmentId, s.serviceId, s.serviceName, ad.deleted)
         FROM AppointmentDetail ad
         LEFT JOIN ad.appointment a
         LEFT JOIN a.customer c
@@ -40,7 +39,7 @@ public interface AppointmentDetailRepository extends JpaRepository<AppointmentDe
     );
 
     @Query("SELECT new com.example.Spring_Salon_Project.dto.AppointmentDetailDTO(" +
-            "ad.appointmentServiceId, ad.price, a.appointmentId, s.serviceId, s.serviceName) " +
+            "ad.appointmentServiceId, ad.price, a.appointmentId, s.serviceId, s.serviceName, ad.deleted) " +
             "FROM AppointmentDetail ad " +
             "LEFT JOIN ad.appointment a " +
             "LEFT JOIN ad.service s " +

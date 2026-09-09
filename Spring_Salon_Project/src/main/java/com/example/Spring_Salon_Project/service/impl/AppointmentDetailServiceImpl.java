@@ -2,7 +2,6 @@ package com.example.Spring_Salon_Project.service.impl;
 
 import com.example.Spring_Salon_Project.dto.AppointmentDetailDTO;
 import com.example.Spring_Salon_Project.entity.AppointmentDetail;
-import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.AppointmentDetailRepository;
 import com.example.Spring_Salon_Project.service.AppointmentDetailService;
@@ -53,21 +52,30 @@ public class AppointmentDetailServiceImpl implements AppointmentDetailService {
         try {
             Optional<AppointmentDetail> optionalAppointmentDetail = appointmentDetailRepository.findById(appointmentServiceId);
 
-            if (optionalAppointmentDetail.isEmpty() || optionalAppointmentDetail.get().getAppointment().getAppointmentStatus() == AppointmentStatus.CANCELLED) {
-                throw new CustomerException(404, "Appointment not found or already cancelled: " + appointmentServiceId);
+            if (optionalAppointmentDetail.isEmpty()) {
+                throw new CustomerException(404, "Appointment detail not found for ID: " + appointmentServiceId);
             }
 
-            AppointmentDetail appointmentDetail = optionalAppointmentDetail.get();
-            appointmentDetail.getAppointment().setAppointmentStatus(AppointmentStatus.CANCELLED);
-            appointmentDetailRepository.save(appointmentDetail);
+            AppointmentDetail detail = optionalAppointmentDetail.get();
 
-            log.info("Appointment Detail deleted successfully");
+            if (Boolean.TRUE.equals(detail.getDeleted())) {
+                throw new CustomerException(400, "Appointment detail already deleted");
+            }
 
+            detail.setDeleted(true);
+            appointmentDetailRepository.save(detail);
+
+            log.info("Appointment Detail soft-deleted successfully");
+        }catch (CustomerException e){
+            throw e;
         } catch (Exception e) {
             log.error("Error deleting appointment detail for appointmentServiceId {}: {}", appointmentServiceId, e.getMessage());
             throw e;
         }
     }
+
+
+
 
     @Override
     public List<AppointmentDetailDTO> getAppointmentDetailsByPhoneAndCustomerName(String phone, String customerName) {
