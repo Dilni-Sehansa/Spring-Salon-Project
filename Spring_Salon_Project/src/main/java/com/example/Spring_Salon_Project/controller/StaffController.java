@@ -3,6 +3,7 @@ package com.example.Spring_Salon_Project.controller;
 import com.example.Spring_Salon_Project.dto.CommonResponse;
 import com.example.Spring_Salon_Project.dto.CustomerDTO;
 import com.example.Spring_Salon_Project.dto.StaffDTO;
+import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 import com.example.Spring_Salon_Project.enumiration.StaffStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.CustomerService;
@@ -69,5 +70,13 @@ public class StaffController {
     public CommonResponse getStaffByStatus(@PathVariable StaffStatus staffStatus) {
         List<StaffDTO> staffDTOs = staffService.getStaffByStatus(staffStatus);
         return new CommonResponse(0, staffDTOs, "Staff Loaded Successfully");
+    }
+
+    @PatchMapping(value = "/update-status/{staffId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CommonResponse updateStaffStatus(
+            @PathVariable Long staffId,
+            @RequestParam StaffStatus status) {
+        staffService.updateStaffStatus(staffId, status);
+        return new CommonResponse(0, "Staff Status Updated Successfully");
     }
 }

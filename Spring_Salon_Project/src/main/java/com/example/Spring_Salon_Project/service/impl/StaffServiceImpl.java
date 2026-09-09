@@ -2,6 +2,7 @@ package com.example.Spring_Salon_Project.service.impl;
 
 import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.StaffDTO;
+import com.example.Spring_Salon_Project.entity.Appointment;
 import com.example.Spring_Salon_Project.entity.Staff;
 import com.example.Spring_Salon_Project.entity.User;
 import com.example.Spring_Salon_Project.enumiration.StaffStatus;
@@ -169,5 +170,28 @@ public class StaffServiceImpl implements StaffService {
             throw new CustomerException(404, "Staff not found for Staff Id: "+ staffId);
         }
         return staffDTO;
+    }
+
+    @Override
+    public void updateStaffStatus(Long staffId, StaffStatus status) {
+        log.info("Execute method updateStaffStatus for ID: {} to Status: {}", staffId, status);
+
+        Optional<Staff> optionalStaff = staffRepository.findById(staffId);
+
+        if (optionalStaff.isEmpty()) {
+            throw new CustomerException(404, "Staff not found");
+        }
+        Staff staff = optionalStaff.get();
+        staff.setStaffStatus(status);
+        staffRepository.save(staff);
+        log.info("Staff status updated successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("STAFF");
+        logDTO.setEntityId(staff.getStaffId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Staff status changed to: " + status);
+        auditLogService.saveAuditLog(logDTO);
     }
 }

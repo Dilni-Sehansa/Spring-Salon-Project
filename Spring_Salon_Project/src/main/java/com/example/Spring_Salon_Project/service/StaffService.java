@@ -1,6 +1,7 @@
 package com.example.Spring_Salon_Project.service;
 
 import com.example.Spring_Salon_Project.dto.StaffDTO;
+import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 import com.example.Spring_Salon_Project.enumiration.StaffStatus;
 
 
@@ -22,4 +23,7 @@ public interface StaffService {
     List<StaffDTO> filterStaff(String specialization);
 
     StaffDTO selectStaff(long staffId);
+
+    void updateStaffStatus(Long staffId, StaffStatus status);
+
 }

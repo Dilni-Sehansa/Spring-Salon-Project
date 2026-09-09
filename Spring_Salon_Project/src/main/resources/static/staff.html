@@ -441,6 +441,10 @@
             color: #eb5757;
             background: rgba(235, 87, 87, 0.08);
         }
+        .action-btn.status-toggle:hover {
+            color: #6fcf97;
+            background: rgba(111, 207, 151, 0.08);
+        }
 
         .user-link {
             color: #ff6f91;
@@ -563,6 +567,7 @@
             justify-content: center;
         }
 
+        #statusModal .modal { max-width: 400px; }
         /* ── Toast ── */
         .toast {
             position: fixed;
@@ -732,6 +737,30 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="statusModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Change Staff Status</h3>
+            <button class="modal-close" id="statusModalClose"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="statusForm">
+            <input type="hidden" id="changeStatusStaffId" value="" />
+            <div class="input-group">
+                <label>Select New Status</label>
+                <select id="newStatusSelect" required>
+                    <option value="AVAILABLE">AVAILABLE</option>
+                    <option value="INACTIVE">INACTIVE</option>
+                    <option value="ON_LEAVE">ON_LEAVE</option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button type="button" class="btn-secondary" id="statusModalCancel">Cancel</button>
+                <button type="submit" class="btn-primary" id="saveStatusBtn"><i class="fas fa-sync-alt"></i> Update Status</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- ── Toast ── -->
 <div class="toast" id="toast"></div>
 
@@ -754,6 +783,10 @@
 
         $('#modalCancel, #modalClose').on('click', function (){
             $('#staffModal').removeClass('show');
+        });
+
+        $('#statusModalClose, #statusModalCancel').on('click', function(){
+            $('#statusModal').removeClass('show');
         });
 
         $('#staffForm').on('submit' , function (e){
@@ -830,31 +863,61 @@
 
     function renderTable(staffList) {
         let html = "";
-        if (!staffList || staffList.length === 0) {
-            html = `<tr><td colspan="7" style="text-align:center; color:#b7a89c; padding:20px;">No staff found</td></tr>`;
+        let list = Array.isArray(staffList)
+            ? staffList
+            : (staffList && (staffList.body || staffList.data || staffList.content)) || [];
+
+        if (!list || list.length === 0) {
+            html = `<tr><td colspan="7" style="text-align:center; color:#b7a89c; padding:20px;">No staff members found</td></tr>`;
         } else {
-            for (const s of staffList) {
-                let currentStatus = (s.staffStatus || 'AVAILABLE').toString().toUpperCase();
-                let statusClass = currentStatus === 'INACTIVE' ? 'inactive' : 'active';
-                let linkedUser = s.userId ? `#${s.userId}` : '<i>None</i>';
+            for (const s of list) {
+                let status = (s.staffStatus || 'AVAILABLE').toString().toUpperCase();
+                let statusClass = status;
 
                 html += `<tr>
                     <td>#${s.staffId}</td>
-                    <td>${linkedUser}</td>
-                    <td><b>${s.specialization || ''}</b></td>
+                    <td><b>${s.userName || 'N/A'}</b></td>
+                    <td>${s.specialization || '-'}</td>
                     <td>${s.bio || '-'}</td>
-                    <td>${s.experienceYears || 0} Yrs</td>
-                    <td><span class="status-dot ${statusClass}"></span> ${currentStatus}</td>
+                    <td>${s.experienceYears ? s.experienceYears + ' yrs' : '-'}</td>
+                    <td><span class="status-dot ${statusClass}"></span><b>${status}</b></td>
                     <td style="text-align:right;">
-                        <button type="button" class="action-btn" onclick="selectStaff(${s.staffId})"><i class="fas fa-edit"></i></button>
-                        <button type="button" class="action-btn delete" onclick="deleteStaff(${s.staffId})"><i class="fas fa-trash"></i></button>
+                        <button type="button" class="action-btn status-toggle" onclick="toggleStaffStatus(${s.staffId}, '${status}')" title="Toggle Status"><i class="fas fa-sync-alt"></i></button>
+                        <button type="button" class="action-btn" onclick="selectStaff(${s.staffId})" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="action-btn delete" onclick="deleteStaff(${s.staffId})" title="Delete"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
             }
         }
-
         $('#staffTableBody').html(html);
-        $('#rowCount').text(staffList ? staffList.length : 0);
+        $('#rowCount').text(list ? list.length : 0);
+    }
+
+    function toggleStaffStatus(staffId, currentStatus) {
+        openStatusModal(staffId, currentStatus);
+    }
+
+    function openStatusModal(staffId, currentStatus){
+        $('#changeStatusStaffId').val(staffId);
+        $('#newStatusSelect').val(currentStatus);
+        $('#statusModal').addClass('show');
+    }
+
+    function changeStatus(staffId, newStatus){
+        $.ajax({
+            url: `http://localhost:8080/v1/staff/update-status/${staffId}?status=${newStatus}`,
+            type: "PATCH",
+            contentType: "application/json",
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            success: function (response){
+                showToast("Staff status updated successfully!");
+                $('#statusModal').removeClass('show');
+                loadAllStaff();
+            },
+            error: function (xhr){
+                showToast("Error changing staff status!","error");
+            }
+        });
     }
 
     function saveStaff(){
