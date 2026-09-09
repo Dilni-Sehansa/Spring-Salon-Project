@@ -7,9 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
-        /* ── Reset & base ── */
 
-        /* ── Floating petals ── */
         .petal {
             position: fixed;
             border-radius: 50% 0 50% 50%;
@@ -421,6 +419,10 @@
             color: #eb5757;
             background: rgba(235, 87, 87, 0.08);
         }
+        .action-btn.status-toggle:hover {
+            color: #6fcf97;
+            background: rgba(111, 207, 151, 0.08);
+        }
 
         /* ── Modal ── */
         .modal-overlay {
@@ -532,6 +534,8 @@
             flex: 1;
             justify-content: center;
         }
+
+        #statusModal .modal { max-width: 400px; }
 
         /* ── Toast ── */
         .toast {
@@ -733,6 +737,30 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="statusModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Change Status</h3>
+            <button class="modal-close" id="statusModalClose"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="statusForm">
+            <input type="hidden" id="changeStatusCategoryId" value="" />
+            <div class="input-group">
+                <label>Select New Status</label>
+                <select id="newStatusSelect" required>
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="INACTIVE">INACTIVE</option>
+                    <option value="BLOCKED">BLOCKED</option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button type="button" class="btn-secondary" id="statusModalCancel">Cancel</button>
+                <button type="submit" class="btn-primary" id="saveStatusBtn"><i class="fas fa-sync-alt"></i> Update Status</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- ─── TOAST ─── -->
 <div class="toast" id="toast"></div>
 
@@ -755,6 +783,19 @@
 
         $('#modalCancel, #modalClose').on('click', function () {
             $('#categoryModal').removeClass('show');
+        });
+
+        $('#statusModalClose, #statusModalCancel').on('click', function(){
+            $('#statusModal').removeClass('show');
+        });
+
+        $('#statusForm').on('submit', function(e){
+            e.preventDefault();
+            let id = $('#changeStatusCategoryId').val();
+            let newStatus = $('#newStatusSelect').val();
+            if(id && newStatus){
+                changeStatus(id, newStatus);
+            }
         });
 
         $('#categoryForm').on('submit',function (e){
@@ -798,31 +839,6 @@
         });
     }
 
-    // function renderTable(categoryList) {
-    //     let html = "";
-    //     if (!categoryList || categoryList.length === 0) {
-    //         html = `<tr><td colspan="6" style="text-align:center; color:#b7a89c; padding:20px;">No Category found</td></tr>`;
-    //     } else {
-    //         for (const c of categoryList) {
-    //             let currentStatus = (c.categoryStatus || 'ACTIVE').toString().toUpperCase();
-    //             let statusClass = currentStatus === 'ACTIVE' ? 'active' : 'inactive';
-    //
-    //             html += `<tr>
-    //                 <td>#${c.categoryId}</td>
-    //                 <td><b>${c.categoryName}</b></td>
-    //                 <td>${c.description}</td>
-    //                 <td><span class="status-dot ${statusClass}"></span> ${currentStatus}</td>
-    //                 <td style="text-align:right;">
-    //                     <button type="button" class="action-btn" onclick="selectCategory(${c.categoryId})"><i class="fas fa-edit"></i></button>
-    //                     <button type="button" class="action-btn delete" onclick="deleteCategory(${c.categoryId})"><i class="fas fa-trash"></i></button>
-    //                 </td>
-    //             </tr>`;
-    //         }
-    //     }
-    //
-    //     $('#categoryTableBody').html(html);
-    //     $('#rowCount').text(categoryList ? categoryList.length : 0);
-    // }
 
     function saveCategory(){
         let categoryName = $('#categoryName').val().trim();
@@ -935,41 +951,32 @@
         }
     }
 
-    function changeStatus(categoryId) {
+    function toggleCategoryStatus(categoryId, currentStatus) {
+        openStatusModal(categoryId, currentStatus);
+    }
+
+    function openStatusModal(categoryId, currentStatus){
+        $('#changeStatusCategoryId').val(categoryId);
+        $('#newStatusSelect').val(currentStatus);
+        $('#statusModal').addClass('show');
+    }
+
+    function changeStatus(categoryId, newStatus){
         $.ajax({
-            url: "http://localhost:8080/v1/category/change-status/" + categoryId,
+            url: `http://localhost:8080/v1/category/update-status/${categoryId}?status=${newStatus}`,
             type: "PATCH",
             contentType: "application/json",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("JWT")
-            },
-            success: function (response) {
-                showToast("Category status changed!", "success");
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            success: function (response){
+                showToast("Status changed successfully!");
+                $('#statusModal').removeClass('show');
                 loadAllCategory();
             },
-            error: function (xhr) {
-                showToast("Error changing category status!", "error");
+            error: function (xhr){
+                showToast("Error changing status!","error");
             }
         });
     }
-
-    // function searchCategory(){
-    //     let searchValue = $('#searchInput').val().toLowerCase().trim();
-    //     let selectedStatus = $('#statusFilter').val().toUpperCase();
-    //
-    //     let filtered = allCategory.filter(c => {
-    //         let name = (c.categoryName || '').toLowerCase();
-    //         let description = (c.description || '').toLowerCase();
-    //         let currentStatus = (c.categoryStatus || 'ACTIVE').toString().toUpperCase();
-    //
-    //         let matchesSearch = name.includes(searchValue) || description.includes(searchValue);
-    //         let matchesStatus = (selectedStatus === 'ALL') || (currentStatus === selectedStatus);
-    //
-    //         return matchesSearch && matchesStatus;
-    //     });
-    //
-    //     renderTable(filtered);
-    // }
 
     function renderTable(categoryList) {
         let html = "";
@@ -979,20 +986,32 @@
             : (categoryList && (categoryList.body || categoryList.data || categoryList.content)) || [];
 
         if (!list || list.length === 0) {
-            html = `<tr><td colspan="6" style="text-align:center; color:#b7a89c; padding:20px;">No Category found</td></tr>`;
+            html = `<tr><td colspan="5" style="text-align:center; color:#b7a89c; padding:20px;">No Category found</td></tr>`;
         } else {
             for (const c of list) {
                 let currentStatus = (c.categoryStatus || 'ACTIVE').toString().toUpperCase();
-                let statusClass = currentStatus === 'ACTIVE' ? 'active' : 'inactive';
+                let statusClass = currentStatus.toLowerCase();
 
                 html += `<tr>
                     <td>#${c.categoryId}</td>
                     <td><b>${c.categoryName}</b></td>
-                    <td>${c.description}</td>
-                    <td><span class="status-dot ${statusClass}"></span> ${currentStatus}</td>
+                    <td>${c.description || '-'}</td>
+                    <td>
+                        <span class="status-dot ${statusClass}"></span>
+                        <span class="status-badge ${statusClass}">${currentStatus}</span>
+                    </td>
                     <td style="text-align:right;">
-                        <button type="button" class="action-btn" onclick="selectCategory(${c.categoryId})"><i class="fas fa-edit"></i></button>
-                        <button type="button" class="action-btn delete" onclick="deleteCategory(${c.categoryId})"><i class="fas fa-trash"></i></button>
+                        <button type="button" class="action-btn status-toggle"
+                                onclick="toggleCategoryStatus(${c.categoryId}, '${currentStatus}')"
+                                title="Toggle Status">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button type="button" class="action-btn" onclick="selectCategory(${c.categoryId})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="action-btn delete" onclick="deleteCategory(${c.categoryId})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </td>
                 </tr>`;
             }
@@ -1001,6 +1020,7 @@
         $('#categoryTableBody').html(html);
         $('#rowCount').text(list ? list.length : 0);
     }
+
 
     function searchCategory(){
         let searchValue = $('#searchInput').val().trim();

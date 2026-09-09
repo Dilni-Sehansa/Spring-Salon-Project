@@ -2,6 +2,7 @@ package com.example.Spring_Salon_Project.controller;
 
 import com.example.Spring_Salon_Project.dto.CategoryDTO;
 import com.example.Spring_Salon_Project.dto.CommonResponse;
+import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 import com.example.Spring_Salon_Project.enumiration.CategoryStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.CategoryService;
@@ -55,12 +56,13 @@ public class CategoryController {
         return new CommonResponse(0, categoryDTO, "Category Loaded Successfully");
     }
 
-    @PatchMapping(value = "/change-status/{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse changeCategoryStatus(@PathVariable long categoryId) {
-        categoryService.changeCategoryStatus(categoryId);
+    @PatchMapping(value = "/update-status/{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CommonResponse changeCategoryStatus(
+            @PathVariable long categoryId,
+            @RequestParam CategoryStatus status) {
+        categoryService.changeCategoryStatus(categoryId, status);
         return new CommonResponse(0, "Category Status Changed Successfully");
     }
-
 
     @GetMapping("/search")
     public CommonResponse filterCategory(

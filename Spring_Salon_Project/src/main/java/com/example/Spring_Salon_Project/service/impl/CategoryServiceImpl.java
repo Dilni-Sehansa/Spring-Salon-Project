@@ -163,7 +163,7 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
 
-            if (optionalCategory.isEmpty() || optionalCategory.get().getCategoryStatus() == CategoryStatus.INACTIVE) {
+            if (optionalCategory.isEmpty()) {
                 throw new CustomerException(404, "Category not found");
             }
 
@@ -186,39 +186,26 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void changeCategoryStatus(long categoryId) {
-        log.info("Execute method changeCategoryStatus for categoryId: {}", categoryId);
+    public void changeCategoryStatus(long categoryId, CategoryStatus status) {
+        log.info("Execute method changeCategoryStatus for ID: {} to Status: {}", categoryId, status);
 
-        try {
-            Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
 
-            if (optionalCategory.isPresent()) {
-                Category category = optionalCategory.get();
-
-                if (category.getCategoryStatus() == CategoryStatus.ACTIVE) {
-                    category.setCategoryStatus(CategoryStatus.INACTIVE);
-                } else {
-                    category.setCategoryStatus(CategoryStatus.ACTIVE);
-                }
-
-                categoryRepository.save(category);
-                log.info("Category status updated successfully");
-
-                AuditLogDTO logDTO = new AuditLogDTO();
-                logDTO.setAction("UPDATE");
-                logDTO.setEntityName("CATEGORY");
-                logDTO.setEntityId(category.getCategoryId());
-                logDTO.setPerformedBy("admin");
-                logDTO.setDetails("Category status changed to: " + category.getCategoryStatus());
-                auditLogService.saveAuditLog(logDTO);
-
-            } else {
-                throw new CustomerException(404, "Category not found");
-            }
-        } catch (Exception e) {
-            log.error("Error in method changeCategoryStatus: {}", e.getMessage());
-            throw e;
+        if (optionalCategory.isEmpty()) {
+            throw new CustomerException(404, "Category not found");
         }
+        Category category = optionalCategory.get();
+        category.setCategoryStatus(status);
+        categoryRepository.save(category);
+        log.info("Category status updated successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("CATEGORY");
+        logDTO.setEntityId(category.getCategoryId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Category status changed to: " + status);
+        auditLogService.saveAuditLog(logDTO);
     }
 
     @Override
