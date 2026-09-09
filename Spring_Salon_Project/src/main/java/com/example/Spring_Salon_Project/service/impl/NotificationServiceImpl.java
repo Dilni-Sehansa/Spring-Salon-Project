@@ -203,5 +203,19 @@ public class NotificationServiceImpl implements NotificationService {
 //        }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<NotificationDTO> getAllNotifications() {
+        log.info("Execute method getAllNotifications");
+
+        List<Notification> notificationList = notificationRepository.findAllByOrderByCreateTimeDesc();
+        List<NotificationDTO> dtoList = new ArrayList<>();
+
+        for (Notification notification : notificationList) {
+            dtoList.add(convertToDTO(notification));
+        }
+        return dtoList;
+    }
+
 
 }

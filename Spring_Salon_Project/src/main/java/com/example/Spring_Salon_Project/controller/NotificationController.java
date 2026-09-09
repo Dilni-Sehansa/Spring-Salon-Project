@@ -63,4 +63,10 @@ public class NotificationController {
         notificationService.deleteNotification(notificationId);
         return new CommonResponse(0, "Notification Deleted Successfully");
     }
+
+    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CommonResponse getAllNotifications() {
+        List<NotificationDTO> notifications = notificationService.getAllNotifications();
+        return new CommonResponse(0, notifications, "All Notifications Loaded Successfully");
+    }
 }

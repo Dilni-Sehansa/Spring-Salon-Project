@@ -376,6 +376,7 @@
                 if (resultData && resultData.token) {
                     localStorage.setItem("JWT", resultData.token);
                     localStorage.setItem("userId", resultData.userId);
+                    localStorage.setItem("USER_ROLE", resultData.userRole || resultData.role || "ADMIN");
 
                     showToast("Login Successful!");
                     window.location.href = "dashboard.html";

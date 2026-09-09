@@ -602,6 +602,7 @@
     let allNotifications = [];
     const loggedInUserId = localStorage.getItem("USER_ID") || 1;
 
+
     $(document).ready(function () {
         loadUsers();
         loadNotifications();
@@ -655,8 +656,13 @@
                 let list = response.body || response.data || response || [];
                 if (!Array.isArray(list)) list = [];
 
+                let activeUsers = list.filter(u => {
+                    let status = (u.userStatus || u.status || '').toString().toUpperCase();
+                    return status === 'ACTIVE';
+                });
+
                 let options = '<option value="">— Select Recipient —</option>';
-                list.forEach(u => {
+                activeUsers.forEach(u => {
                     let id = u.userId;
                     let name = u.userName || u.name || ('User #' + id);
                     options += `<option value="${id}">#${id} — ${name}</option>`;
@@ -713,8 +719,15 @@
     }
 
     function loadNotifications() {
+
+        let role = (localStorage.getItem("USER_ROLE") || "").toUpperCase();
+        let url = (role === "ADMIN" || role === "ROLE_ADMIN")
+            ? "http://localhost:8080/v1/notification/all"
+            : `http://localhost:8080/v1/notification/user/${loggedInUserId}`;
+
         $.ajax({
-            url: `http://localhost:8080/v1/notification/user/${loggedInUserId}`,
+            // url: `http://localhost:8080/v1/notification/user/${loggedInUserId}`,
+            url: url,
             type: "GET",
             contentType: "application/json",
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
@@ -798,18 +811,33 @@
     }
 
     function markAllAsRead() {
-        $.ajax({
-            url: `http://localhost:8080/v1/notification/user/${loggedInUserId}/read-all`,
-            type: "PATCH",
-            contentType: "application/json",
-            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
-            success: function () {
-                showToast("All notifications marked as read");
-                loadNotifications();
-            },
-            error: function () {
-                showToast("Failed to mark all as read", "error");
-            }
+        let unreadIds = allNotifications
+            .filter(n => !(n.read || n.isRead))
+            .map(n => n.notificationId);
+
+        if (unreadIds.length === 0) {
+            showToast("No unread notifications");
+            return;
+        }
+
+        let completed = 0;
+
+        unreadIds.forEach(id => {
+            $.ajax({
+                url: `http://localhost:8080/v1/notification/read/${id}`,
+                type: "PATCH",
+                contentType: "application/json",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("JWT")
+                },
+                complete: function () {
+                    completed++;
+                    if (completed === unreadIds.length) {
+                        showToast("All notifications marked as read");
+                        loadNotifications();
+                    }
+                }
+            });
         });
     }
 
