@@ -1,11 +1,13 @@
 package com.example.Spring_Salon_Project.service.impl;
 
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.FeedbackDTO;
 import com.example.Spring_Salon_Project.entity.Customer;
 import com.example.Spring_Salon_Project.entity.Feedback;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.CustomerRepository;
 import com.example.Spring_Salon_Project.repository.FeedbackRepository;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import com.example.Spring_Salon_Project.service.FeedbackService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
     private final CustomerRepository customerRepository;
+    private final AuditLogService auditLogService;
 
     @Override
     public FeedbackDTO saveFeedback(FeedbackDTO feedbackDTO) {
@@ -48,6 +51,14 @@ public class FeedbackServiceImpl implements FeedbackService {
             Feedback savedFeedback = feedbackRepository.save(feedback);
             log.info("Feedback saved successfully with ID: {}", savedFeedback.getFeedbackId());
 
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("CREATE");
+            logDTO.setEntityName("FEEDBACK");
+            logDTO.setEntityId(savedFeedback.getFeedbackId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("New feedback created: " + savedFeedback.getFeedbackId());
+            auditLogService.saveAuditLog(logDTO);
+
             return new FeedbackDTO(
                     savedFeedback.getFeedbackId(),
                     customer.getCustomerId(),
@@ -56,6 +67,7 @@ public class FeedbackServiceImpl implements FeedbackService {
                     savedFeedback.getComments(),
                     savedFeedback.getFeedbackDate()
             );
+
 
         } catch (CustomerException e) {
             log.error("Validation error in saveFeedback: {}", e.getMessage());

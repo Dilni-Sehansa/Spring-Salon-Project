@@ -1,11 +1,13 @@
 package com.example.Spring_Salon_Project.service.impl;
 
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.StaffDTO;
 import com.example.Spring_Salon_Project.entity.Staff;
 import com.example.Spring_Salon_Project.entity.User;
 import com.example.Spring_Salon_Project.enumiration.StaffStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.StaffRepository;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import com.example.Spring_Salon_Project.service.StaffService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class StaffServiceImpl implements StaffService {
 
     private final StaffRepository staffRepository;
+    private final AuditLogService auditLogService;
 
     @Override
     public StaffDTO saveStaff(StaffDTO staffDTO) {
@@ -41,6 +44,14 @@ public class StaffServiceImpl implements StaffService {
 
             Staff save = staffRepository.save(staff);
             log.info("Staff saved successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("CREATE");
+            logDTO.setEntityName("STAFF");
+            logDTO.setEntityId(save.getStaffId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("New Staff member created with Specialization: " + save.getSpecialization());
+            auditLogService.saveAuditLog(logDTO);
 
             Long savedUserId = (save.getUser() != null) ? save.getUser().getUserId() : null;
 
@@ -74,8 +85,16 @@ public class StaffServiceImpl implements StaffService {
             staff.setUser(user);
         }
 
-        staffRepository.save(staff);
+        Staff updatedStaff = staffRepository.save(staff);
         log.info("Staff updated successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("STAFF");
+        logDTO.setEntityId(updatedStaff.getStaffId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Updated Staff member ID: " + updatedStaff.getStaffId() + ", Specialization: " + updatedStaff.getSpecialization());
+        auditLogService.saveAuditLog(logDTO);
     }
 
     @Override
@@ -93,6 +112,15 @@ public class StaffServiceImpl implements StaffService {
             Staff staff = optionalStaff.get();
             staff.setStaffStatus(StaffStatus.INACTIVE);
             staffRepository.save(staff);
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("DELETE");
+            logDTO.setEntityName("STAFF");
+            logDTO.setEntityId(staff.getStaffId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Soft deleted (set status INACTIVE) Staff ID: " + staff.getStaffId());
+            auditLogService.saveAuditLog(logDTO);
+
         } catch (Exception e) {
             log.error("Error delete staff");
             throw e;

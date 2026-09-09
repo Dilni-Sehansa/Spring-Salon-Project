@@ -1,10 +1,12 @@
 package com.example.Spring_Salon_Project.service.impl;
 
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.CategoryDTO;
 import com.example.Spring_Salon_Project.entity.Category;
 import com.example.Spring_Salon_Project.enumiration.CategoryStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.CategoryRepository;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import com.example.Spring_Salon_Project.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,8 @@ import java.util.Optional;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final AuditLogService auditLogService;
+
     @Override
     public CategoryDTO saveCategory(CategoryDTO categoryDTO) {
        log.info("Execute method saveCategory");
@@ -48,6 +52,14 @@ public class CategoryServiceImpl implements CategoryService {
 
            Category save = categoryRepository.save(category);
            log.info("Category saved successfully");
+
+           AuditLogDTO logDTO = new AuditLogDTO();
+           logDTO.setAction("CREATE");
+           logDTO.setEntityName("CATEGORY");
+           logDTO.setEntityId(save.getCategoryId());
+           logDTO.setPerformedBy("admin");
+           logDTO.setDetails("New category created: " + save.getCategoryName());
+           auditLogService.saveAuditLog(logDTO);
 
            return new CategoryDTO(save.getCategoryId(), save.getCategoryName(), save.getDescription(), save.getCategoryStatus());
        } catch (Exception e) {
@@ -87,6 +99,14 @@ public class CategoryServiceImpl implements CategoryService {
                 category.setCategoryStatus(categoryDTO.getCategoryStatus());
             }
             categoryRepository.save(category);
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("UPDATE");
+            logDTO.setEntityName("CATEGORY");
+            logDTO.setEntityId(category.getCategoryId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Category updated: " + category.getCategoryName());
+            auditLogService.saveAuditLog(logDTO);
 
         }catch (Exception e){
             log.error("Error in method updateCategory: {}",e.getMessage());
@@ -150,6 +170,15 @@ public class CategoryServiceImpl implements CategoryService {
             Category category = optionalCategory.get();
             category.setCategoryStatus(CategoryStatus.INACTIVE);
             categoryRepository.save(category);
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("DELETE");
+            logDTO.setEntityName("CATEGORY");
+            logDTO.setEntityId(category.getCategoryId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Category soft-deleted: " + category.getCategoryName());
+            auditLogService.saveAuditLog(logDTO);
+
         }catch (Exception e){
             log.error("Error deleting category");
             throw e;
@@ -174,6 +203,15 @@ public class CategoryServiceImpl implements CategoryService {
 
                 categoryRepository.save(category);
                 log.info("Category status updated successfully");
+
+                AuditLogDTO logDTO = new AuditLogDTO();
+                logDTO.setAction("UPDATE");
+                logDTO.setEntityName("CATEGORY");
+                logDTO.setEntityId(category.getCategoryId());
+                logDTO.setPerformedBy("admin");
+                logDTO.setDetails("Category status changed to: " + category.getCategoryStatus());
+                auditLogService.saveAuditLog(logDTO);
+
             } else {
                 throw new CustomerException(404, "Category not found");
             }

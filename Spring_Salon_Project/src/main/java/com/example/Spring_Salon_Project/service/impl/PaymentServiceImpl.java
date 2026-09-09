@@ -1,5 +1,6 @@
 package com.example.Spring_Salon_Project.service.impl;
 
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.PaymentDTO;
 import com.example.Spring_Salon_Project.entity.Appointment;
 import com.example.Spring_Salon_Project.entity.Payment;
@@ -8,6 +9,7 @@ import com.example.Spring_Salon_Project.enumiration.PaymentStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.AppointmentRepository;
 import com.example.Spring_Salon_Project.repository.PaymentRepository;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import com.example.Spring_Salon_Project.service.PaymentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final AppointmentRepository appointmentRepository;
+    private final AuditLogService auditLogService;
 
     @Override
     public PaymentDTO savePayment(PaymentDTO paymentDTO) {
@@ -73,6 +76,14 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setPaymentDate(paymentDTO.getPaymentDate() != null ? paymentDTO.getPaymentDate() : LocalDateTime.now());
 
         Payment savedPayment = paymentRepository.save(payment);
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("CREATE");
+        logDTO.setEntityName("PAYMENT");
+        logDTO.setEntityId(savedPayment.getPaymentId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Payment processed for Appointment ID: " + savedPayment.getAppointment().getAppointmentId() + ", Final Amount: " + savedPayment.getFinalAmount());
+        auditLogService.saveAuditLog(logDTO);
 
         return new PaymentDTO(
                 savedPayment.getPaymentId(),

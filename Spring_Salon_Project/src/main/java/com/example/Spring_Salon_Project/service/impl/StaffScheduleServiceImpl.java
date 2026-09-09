@@ -1,5 +1,6 @@
 package com.example.Spring_Salon_Project.service.impl;
 
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.StaffScheduleDTO;
 import com.example.Spring_Salon_Project.entity.*;
 import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
@@ -8,6 +9,7 @@ import com.example.Spring_Salon_Project.enumiration.Status;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.StaffRepository;
 import com.example.Spring_Salon_Project.repository.StaffScheduleRepository;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import com.example.Spring_Salon_Project.service.StaffScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ public class StaffScheduleServiceImpl implements StaffScheduleService {
 
     private final StaffScheduleRepository staffScheduleRepository;
     private final StaffRepository staffRepository;
+    private final AuditLogService auditLogService;
 
     @Override
     public StaffScheduleDTO saveSchedule(StaffScheduleDTO staffScheduleDTO) {
@@ -48,6 +51,14 @@ public class StaffScheduleServiceImpl implements StaffScheduleService {
 
             StaffSchedule save = staffScheduleRepository.save(staffSchedule);
             log.info("StaffSchedule saved successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("CREATE");
+            logDTO.setEntityName("STAFF_SCHEDULE");
+            logDTO.setEntityId(save.getScheduleId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("New schedule created for Staff ID: " + save.getStaff().getStaffId() + ", Day: " + save.getDayOfWeek());
+            auditLogService.saveAuditLog(logDTO);
 
             return selectStaffSchedule(save.getScheduleId());
 
@@ -83,8 +94,16 @@ public class StaffScheduleServiceImpl implements StaffScheduleService {
             staffSchedule.setScheduleStatus(staffScheduleDTO.getScheduleStatus());
         }
 
-        staffScheduleRepository.save(staffSchedule);
+        StaffSchedule updated = staffScheduleRepository.save(staffSchedule);
         log.info("StaffSchedule updated successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("STAFF_SCHEDULE");
+        logDTO.setEntityId(updated.getScheduleId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Updated schedule ID: " + updated.getScheduleId() + " for Staff ID: " + updated.getStaff().getStaffId());
+        auditLogService.saveAuditLog(logDTO);
     }
 
     @Override
@@ -103,6 +122,14 @@ public class StaffScheduleServiceImpl implements StaffScheduleService {
             staffScheduleRepository.save(staffSchedule);
 
             log.info("staffSchedule marked as ON_LEAVE successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("DELETE");
+            logDTO.setEntityName("STAFF_SCHEDULE");
+            logDTO.setEntityId(staffSchedule.getScheduleId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Soft deleted schedule (set status to ON_LEAVE) ID: " + staffSchedule.getScheduleId());
+            auditLogService.saveAuditLog(logDTO);
 
         } catch (Exception e) {
             log.error("Error deleting StaffSchedule: {}", e.getMessage());
@@ -145,6 +172,15 @@ public class StaffScheduleServiceImpl implements StaffScheduleService {
             staffSchedule.setScheduleStatus(StaffScheduleStatus.valueOf(staffScheduleStatus.toUpperCase()));
             staffScheduleRepository.save(staffSchedule);
             log.info("Staff Schedule status updated successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("UPDATE");
+            logDTO.setEntityName("STAFF_SCHEDULE");
+            logDTO.setEntityId(staffSchedule.getScheduleId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Changed schedule status to " + staffSchedule.getScheduleStatus() + " for Schedule ID: " + scheduleId);
+            auditLogService.saveAuditLog(logDTO);
+
         } catch (IllegalArgumentException e) {
             throw new CustomerException(400, "Invalid status: " + staffScheduleStatus);
         }

@@ -1,5 +1,6 @@
 package com.example.Spring_Salon_Project.service.impl;
 
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.NotificationDTO;
 import com.example.Spring_Salon_Project.entity.Notification;
 import com.example.Spring_Salon_Project.entity.User;
@@ -7,6 +8,7 @@ import com.example.Spring_Salon_Project.enumiration.NotificationType;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.NotificationRepository;
 import com.example.Spring_Salon_Project.repository.UserRepository;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import com.example.Spring_Salon_Project.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final AuditLogService auditLogService;
 
     private NotificationDTO convertToDTO(Notification saved) {
         Long savedUserId = (saved.getUser() != null) ? saved.getUser().getUserId() : null;
@@ -51,6 +54,8 @@ public class NotificationServiceImpl implements NotificationService {
             throw new CustomerException(404, "User not found ID: " + userId);
         }
 
+        User user = optionalUser.get();
+
         Notification notification = Notification.builder()
                 .user(optionalUser.get())
                 .title(title)
@@ -61,6 +66,14 @@ public class NotificationServiceImpl implements NotificationService {
 
         Notification saved = notificationRepository.save(notification);
         log.info("Notification created successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("CREATE");
+        logDTO.setEntityName("NOTIFICATION");
+        logDTO.setEntityId(saved.getNotificationId());
+        logDTO.setPerformedBy(user.getUserName() != null ? user.getUserName() : "admin");
+        logDTO.setDetails("New Notification created for User: " + user.getUserName() + ", Title: " + saved.getTitle());
+        auditLogService.saveAuditLog(logDTO);
 
         return convertToDTO(saved);
     }
@@ -107,6 +120,16 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setRead(true);
         notificationRepository.save(notification);
         log.info("Notification marked as read successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("NOTIFICATION");
+        logDTO.setEntityId(notification.getNotificationId());
+        logDTO.setPerformedBy(notification.getUser() != null ? notification.getUser().getUserName() : "admin");
+        logDTO.setDetails("Notification marked as read ID: " + notification.getNotificationId());
+        auditLogService.saveAuditLog(logDTO);
+
+
     }
 
     @Override
@@ -122,6 +145,14 @@ public class NotificationServiceImpl implements NotificationService {
             }
             notificationRepository.saveAll(unreadList);
             log.info("All notifications marked as read successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("UPDATE");
+            logDTO.setEntityName("NOTIFICATION");
+            logDTO.setEntityId(userId);
+            logDTO.setPerformedBy("user_" + userId);
+            logDTO.setDetails("Marked all notifications as read for User ID: " + userId);
+            auditLogService.saveAuditLog(logDTO);
         }
     }
 
@@ -142,8 +173,17 @@ public class NotificationServiceImpl implements NotificationService {
             throw new CustomerException(404, "Notification not found ID: " + notificationId);
         }
 
+        Notification notification = optionalNotification.get();
         notificationRepository.deleteById(notificationId);
         log.info("Notification deleted successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("DELETE");
+        logDTO.setEntityName("NOTIFICATION");
+        logDTO.setEntityId(notification.getNotificationId());
+        logDTO.setPerformedBy(notification.getUser() != null ? notification.getUser().getUserName() : "admin");
+        logDTO.setDetails("Notification deleted ID: " + notification.getNotificationId());
+        auditLogService.saveAuditLog(logDTO);
 
 //        log.info("Execute method deleteNotification() notificationId: {}", notificationId);
 //

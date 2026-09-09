@@ -1,5 +1,6 @@
 package com.example.Spring_Salon_Project.service.impl;
 
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.ProductDTO;
 import com.example.Spring_Salon_Project.entity.Category;
 import com.example.Spring_Salon_Project.entity.Product;
@@ -9,6 +10,7 @@ import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.CategoryRepository;
 import com.example.Spring_Salon_Project.repository.ProductRepository;
 import com.example.Spring_Salon_Project.repository.SupplierRepository;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import com.example.Spring_Salon_Project.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final SupplierRepository supplierRepository;
+    private final AuditLogService auditLogService;
 
     @Override
     public ProductDTO saveProduct(ProductDTO productDTO) {
@@ -58,6 +61,14 @@ public class ProductServiceImpl implements ProductService {
 
             Product savedProduct = productRepository.save(product);
             log.info("Product saved successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("CREATE");
+            logDTO.setEntityName("PRODUCT");
+            logDTO.setEntityId(savedProduct.getProductId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("New product created: " + savedProduct.getProductName());
+            auditLogService.saveAuditLog(logDTO);
 
             Long saveCategoryId = (savedProduct.getCategory() != null) ? savedProduct.getCategory().getCategoryId() : null;
             String saveCategoryName = (savedProduct.getCategory() != null) ? savedProduct.getCategory().getCategoryName() : null;
@@ -104,6 +115,14 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
         log.info("Product updated successfully");
 
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("PRODUCT");
+        logDTO.setEntityId(product.getProductId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Product updated: " + product.getProductName());
+        auditLogService.saveAuditLog(logDTO);
+
     }
 
     @Override
@@ -119,6 +138,14 @@ public class ProductServiceImpl implements ProductService {
             Product product = optionalProduct.get();
             product.setProductStatus(ProductStatus.INACTIVE);
             productRepository.save(product);
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("DELETE");
+            logDTO.setEntityName("PRODUCT");
+            logDTO.setEntityId(product.getProductId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Product soft-deleted: " + product.getProductName());
+            auditLogService.saveAuditLog(logDTO);
         }catch(Exception ex) {
             log.error("Error deleting product: {}", ex.getMessage());
             throw ex;
@@ -173,6 +200,15 @@ public class ProductServiceImpl implements ProductService {
             product.setProductStatus(ProductStatus.valueOf(status.toUpperCase()));
             productRepository.save(product);
             log.info("Product status updated successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("UPDATE");
+            logDTO.setEntityName("PRODUCT");
+            logDTO.setEntityId(product.getProductId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Product status changed to: " + status);
+            auditLogService.saveAuditLog(logDTO);
+
         } catch (IllegalArgumentException e) {
             throw new CustomerException(400, "Invalid status: " + status);
         }

@@ -1184,7 +1184,7 @@
         <a href="product.html"><i class="fas fa-box"></i> <span>Product</span></a>
         <a href="payment.html"><i class="fas fa-credit-card"></i> <span>Payment</span></a>
         <a href="Notification.html"><i class="fas fa-percentage"></i> <span>Notification</span></a>
-        <a href="staffCommission.html"><i class="fas fa-percentage"></i> <span>Staff Commission</span></a>
+        <a href="auditLog.html"><i class="fas fa-clipboard-list"></i> <span>Audit Log</span></a>
         <a href="feedback.html"><i class="fas fa-comment-alt"></i> <span>Feedback</span></a>
     </nav>
     <div class="sidebar-footer">
@@ -1242,7 +1242,6 @@
     </div>
 </main>
 
-<!-- MODIFIED UI: Add/Edit Appointment modal restyled (Fraunces heading, field system, rounded-20px card); all IDs/classes untouched -->
 <div class="modal-overlay" id="appointmentModal">
     <div class="modal">
         <div class="modal-header">
@@ -1592,12 +1591,44 @@
                 let currentStatus = (a.appointmentStatus || 'PENDING').toString().toUpperCase();
                 $('#appointmentStatus').val(currentStatus);
 
-                if (a.serviceIds && Array.isArray(a.serviceIds)) {
-                    $('#serviceIds').val(a.serviceIds.map(String));
-                } else {
-                    $('#serviceIds').val([]);
-                }
+                $('#serviceId').val([]);
 
+                $.ajax({
+                    url: "http://localhost:8080/v1/appointmentDetail/by-appointment/" + appointmentId,
+                    type: "GET",
+                    contentType: "application/json",
+                    headers: {'Authorization': 'Bearer ' + localStorage.getItem("JWT")},
+                    success: function (detailRes) {
+                        let details = detailRes.body || detailRes.data || detailRes || [];
+                        if (!Array.isArray(details)) details = [];
+
+                        let selectedServiceIds = details
+                            .map(d => d.serviceId)
+                            .filter(id => id != null)
+                            .map(String);
+
+                        if (selectedServiceIds.length > 0) {
+                            $('#serviceIds').val(selectedServiceIds);
+                        }
+
+                        let total = 0;
+                        $('#serviceIds option:selected').each(function () {
+                            let price = parseFloat($(this).data('price')) || 0;
+                            total += price;
+                        });
+
+                        if (a.totalAmount && parseFloat(a.totalAmount) > 0) {
+                            $('#totalAmount').val(parseFloat(a.totalAmount).toFixed(2));
+                        } else {
+                            $('#totalAmount').val(total.toFixed(2));
+                        }
+                    },
+                    error: function () {
+                        if (a.serviceIds && Array.isArray(a.serviceIds)) {
+                            $('#serviceIds').val(a.serviceIds.map(String));
+                        }
+                    }
+                });
                 $('#modalTitle').text("Edit Appointment");
                 $('#appointmentModal').addClass('show');
             },

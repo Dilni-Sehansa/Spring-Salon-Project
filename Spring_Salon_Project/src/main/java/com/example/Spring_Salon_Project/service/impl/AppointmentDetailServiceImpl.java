@@ -1,10 +1,12 @@
 package com.example.Spring_Salon_Project.service.impl;
 
 import com.example.Spring_Salon_Project.dto.AppointmentDetailDTO;
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.entity.AppointmentDetail;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.AppointmentDetailRepository;
 import com.example.Spring_Salon_Project.service.AppointmentDetailService;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class AppointmentDetailServiceImpl implements AppointmentDetailService {
 
     private final AppointmentDetailRepository appointmentDetailRepository;
+    private final AuditLogService auditLogService;
 
     @Override
     public List<AppointmentDetailDTO> getDetailsByAppointmentId(Long appointmentId) {
@@ -66,6 +69,15 @@ public class AppointmentDetailServiceImpl implements AppointmentDetailService {
             appointmentDetailRepository.save(detail);
 
             log.info("Appointment Detail soft-deleted successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("DELETE");
+            logDTO.setEntityName("APPOINTMENT_DETAIL");
+            logDTO.setEntityId(detail.getAppointmentServiceId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Appointment detail soft-deleted. ID: " + detail.getAppointmentServiceId());
+            auditLogService.saveAuditLog(logDTO);
+
         }catch (CustomerException e){
             throw e;
         } catch (Exception e) {
@@ -73,9 +85,6 @@ public class AppointmentDetailServiceImpl implements AppointmentDetailService {
             throw e;
         }
     }
-
-
-
 
     @Override
     public List<AppointmentDetailDTO> getAppointmentDetailsByPhoneAndCustomerName(String phone, String customerName) {

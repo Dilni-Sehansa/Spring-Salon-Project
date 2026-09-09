@@ -1,10 +1,12 @@
 package com.example.Spring_Salon_Project.service.impl;
 
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.UserDTO;
 import com.example.Spring_Salon_Project.entity.User;
 import com.example.Spring_Salon_Project.enumiration.UserStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.UserRepository;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import com.example.Spring_Salon_Project.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditLogService auditLogService;
 
     @Override
     public UserDTO saveUser(UserDTO userDTO) {
@@ -41,6 +44,14 @@ public class UserServiceImpl implements UserService {
             User save = userRepository.save(user);
 
             log.info("User saved successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("CREATE");
+            logDTO.setEntityName("USER");
+            logDTO.setEntityId(save.getUserId());
+            logDTO.setPerformedBy(save.getUserName());
+            logDTO.setDetails("New user created: " + save.getUserName());
+            auditLogService.saveAuditLog(logDTO);
 
             return new UserDTO(save.getUserId(), save.getUserName(), save.getUserRole(),
                     null, save.getUserStatus(), user.getEmail());
@@ -134,6 +145,14 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(user);
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("USER");
+        logDTO.setEntityId(user.getUserId());
+        logDTO.setPerformedBy(user.getUserName());
+        logDTO.setDetails("User updated: " + user.getUserName());
+        auditLogService.saveAuditLog(logDTO);
     }
 
 
@@ -155,6 +174,14 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
 
             log.info("User Status Changed Successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("DELETE");
+            logDTO.setEntityName("USER");
+            logDTO.setEntityId(user.getUserId());
+            logDTO.setPerformedBy(user.getUserName());
+            logDTO.setDetails("User soft-deleted (INACTIVE): " + user.getUserName());
+            auditLogService.saveAuditLog(logDTO);
 
         } catch (Exception e) {
             log.error("Error in method deleteUser() : {}", e.getMessage());

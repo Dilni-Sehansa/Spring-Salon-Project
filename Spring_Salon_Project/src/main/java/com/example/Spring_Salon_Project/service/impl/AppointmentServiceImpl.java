@@ -1,6 +1,7 @@
 package com.example.Spring_Salon_Project.service.impl;
 
 import com.example.Spring_Salon_Project.dto.AppointmentDTO;
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.entity.*;
 import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
@@ -8,6 +9,7 @@ import com.example.Spring_Salon_Project.repository.AppointmentDetailRepository;
 import com.example.Spring_Salon_Project.repository.AppointmentRepository;
 import com.example.Spring_Salon_Project.repository.SaloonServiceRepository;
 import com.example.Spring_Salon_Project.service.AppointmentService;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final AppointmentDetailRepository appointmentDetailRepository;
     private final SaloonServiceRepository saloonServiceRepository;
+    private final AuditLogService auditLogService;
 
     @Override
     public AppointmentDTO saveAppointment(AppointmentDTO appointmentDTO) {
@@ -49,6 +52,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 
             Appointment save = appointmentRepository.save(appointment);
             log.info("Appointment saved successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("CREATE");
+            logDTO.setEntityName("APPOINTMENT");
+            logDTO.setEntityId(save.getAppointmentId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("New Appointment created. ID: " + save.getAppointmentId()
+                    + ", CustomerId: " + appointmentDTO.getCustomerId());
+            auditLogService.saveAuditLog(logDTO);
 
             if (appointmentDTO.getServiceIds() != null && !appointmentDTO.getServiceIds().isEmpty()) {
                 for (Long serviceId : appointmentDTO.getServiceIds()) {
@@ -128,6 +140,14 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointmentRepository.save(appointment);
             log.info("Appointment updated successfully");
 
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("UPDATE");
+            logDTO.setEntityName("APPOINTMENT");
+            logDTO.setEntityId(appointment.getAppointmentId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Appointment updated. ID: " + appointment.getAppointmentId());
+            auditLogService.saveAuditLog(logDTO);
+
             if (appointmentDTO.getServiceIds() != null) {
 
                 List<AppointmentDetail> existingDetails = appointmentDetailRepository
@@ -181,6 +201,14 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointmentRepository.save(appointment);
 
             log.info("Appointment deleted successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("DELETE");
+            logDTO.setEntityName("APPOINTMENT");
+            logDTO.setEntityId(appointment.getAppointmentId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Appointment cancelled. ID: " + appointment.getAppointmentId());
+            auditLogService.saveAuditLog(logDTO);
 
         } catch (Exception e) {
             log.error("Error deleting appointment");
@@ -241,6 +269,14 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointment.setAppointmentStatus(status);
             appointmentRepository.save(appointment);
             log.info("Appointment status updated successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("APPOINTMENT");
+        logDTO.setEntityId(appointment.getAppointmentId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Appointment status changed to: " + status);
+        auditLogService.saveAuditLog(logDTO);
 
     }
 

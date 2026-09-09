@@ -1,5 +1,6 @@
 package com.example.Spring_Salon_Project.service.impl;
 
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.SaloonServiceDTO;
 import com.example.Spring_Salon_Project.entity.Category;
 import com.example.Spring_Salon_Project.entity.SaloonService;
@@ -7,6 +8,7 @@ import com.example.Spring_Salon_Project.enumiration.ServiceStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.CategoryRepository;
 import com.example.Spring_Salon_Project.repository.SaloonServiceRepository;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import com.example.Spring_Salon_Project.service.SaloonServiceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ public class SaloonServiceImpl implements SaloonServiceService {
 
     private final SaloonServiceRepository saloonServiceRepository;
     private final CategoryRepository categoryRepository;
+    private final AuditLogService auditLogService;
 
     @Override
     public SaloonServiceDTO saveSaloonService(SaloonServiceDTO saloonServiceDTO) {
@@ -50,6 +53,14 @@ public class SaloonServiceImpl implements SaloonServiceService {
 
             SaloonService save = saloonServiceRepository.save(saloonService);
             log.info("SaloonService saved successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("CREATE");
+            logDTO.setEntityName("SALOON_SERVICE");
+            logDTO.setEntityId(save.getServiceId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("New Saloon Service created: " + save.getServiceName());
+            auditLogService.saveAuditLog(logDTO);
 
             return new SaloonServiceDTO(save.getServiceId(),save.getServiceName(),save.getDescription(),save.getPrice(),save.getDurationMinutes(),save.getCategory().getCategoryId(),save.getCategory().getCategoryName(),save.getServiceStatus());
 
@@ -95,6 +106,14 @@ public class SaloonServiceImpl implements SaloonServiceService {
         }
         saloonServiceRepository.save(saloonService);
         log.info("SaloonService updated successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("SALOON_SERVICE");
+        logDTO.setEntityId(saloonService.getServiceId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Saloon Service updated: " + saloonService.getServiceName());
+        auditLogService.saveAuditLog(logDTO);
     }
 
     @Override
@@ -111,6 +130,14 @@ public class SaloonServiceImpl implements SaloonServiceService {
             saloonServiceRepository.save(saloonService);
 
             log.info("Service marked as INACTIVE successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("DELETE");
+            logDTO.setEntityName("SALOON_SERVICE");
+            logDTO.setEntityId(saloonService.getServiceId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Saloon Service soft-deleted: " + saloonService.getServiceName());
+            auditLogService.saveAuditLog(logDTO);
 
         }catch (Exception e){
             log.error("Error deleting SaloonService: {}", e.getMessage());
@@ -175,6 +202,14 @@ public class SaloonServiceImpl implements SaloonServiceService {
         }
         saloonServiceRepository.save(saloonService);
         log.info("SaloonService status changed successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("SALOON_SERVICE");
+        logDTO.setEntityId(saloonService.getServiceId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Saloon Service status changed to: " + saloonService.getServiceStatus());
+        auditLogService.saveAuditLog(logDTO);
     }
 
     @Override

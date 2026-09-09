@@ -1,5 +1,6 @@
 package com.example.Spring_Salon_Project.service.impl;
 
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.StaffServiceDTO;
 import com.example.Spring_Salon_Project.entity.SaloonService;
 import com.example.Spring_Salon_Project.entity.Staff;
@@ -9,6 +10,7 @@ import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.SaloonServiceRepository;
 import com.example.Spring_Salon_Project.repository.StaffRepository;
 import com.example.Spring_Salon_Project.repository.StaffServiceRepository;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import com.example.Spring_Salon_Project.service.StaffServiceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ public class StaffServiceServiceImpl implements StaffServiceService {
     private final StaffServiceRepository staffServiceRepository;
     private final SaloonServiceRepository saloonServiceRepository;
     private final StaffRepository staffRepository;
+    private final AuditLogService auditLogService;
 
 
     @Override
@@ -57,6 +60,14 @@ public class StaffServiceServiceImpl implements StaffServiceService {
 
             StaffService saved = staffServiceRepository.save(staffService);
             log.info("StaffService saved successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("CREATE");
+            logDTO.setEntityName("STAFF_SERVICE");
+            logDTO.setEntityId(saved.getStaffServiceId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Assigned Service ID: " + saved.getSaloonService().getServiceId() + " to Staff ID: " + saved.getStaff().getStaffId());
+            auditLogService.saveAuditLog(logDTO);
 
             return selectStaffService(saved.getStaffServiceId());
 
@@ -105,6 +116,15 @@ public class StaffServiceServiceImpl implements StaffServiceService {
 
         staffServiceRepository.save(staffService);
         log.info("StaffService updated successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("STAFF_SERVICE");
+        logDTO.setEntityId(staffService.getStaffServiceId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Updated StaffService mapping ID: " + staffService.getStaffServiceId());
+        auditLogService.saveAuditLog(logDTO);
+
     }
 
     @Override
@@ -122,6 +142,14 @@ public class StaffServiceServiceImpl implements StaffServiceService {
             staffServiceRepository.save(staffService);
 
             log.info("StaffService marked as INACTIVE successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("DELETE");
+            logDTO.setEntityName("STAFF_SERVICE");
+            logDTO.setEntityId(staffService.getStaffServiceId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Soft deleted StaffService mapping ID: " + staffService.getStaffServiceId());
+            auditLogService.saveAuditLog(logDTO);
 
         } catch (Exception e) {
             log.error("Error deleting StaffService: {}", e.getMessage());
@@ -166,6 +194,14 @@ public class StaffServiceServiceImpl implements StaffServiceService {
 
         staffServiceRepository.save(staffService);
         log.info("StaffService status changed successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("STAFF_SERVICE");
+        logDTO.setEntityId(staffService.getStaffServiceId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Changed StaffService status to: " + staffService.getStaffServiceStatus() + " for ID: " + staffService.getStaffServiceId());
+        auditLogService.saveAuditLog(logDTO);
     }
 
     @Override

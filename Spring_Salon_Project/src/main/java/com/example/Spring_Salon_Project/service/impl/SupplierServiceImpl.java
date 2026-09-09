@@ -1,10 +1,13 @@
 package com.example.Spring_Salon_Project.service.impl;
 
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
+import com.example.Spring_Salon_Project.dto.AuthDTO;
 import com.example.Spring_Salon_Project.dto.SupplierDTO;
 import com.example.Spring_Salon_Project.entity.Supplier;
 import com.example.Spring_Salon_Project.enumiration.SupplierStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.SupplierRepository;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import com.example.Spring_Salon_Project.service.SupplierService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import java.util.Optional;
 public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository supplierRepository;
+    private final AuditLogService auditLogService;
 
     @Override
     public SupplierDTO saveSupplier(SupplierDTO supplierDTO) {
@@ -43,6 +47,14 @@ public class SupplierServiceImpl implements SupplierService {
 
             Supplier savedSupplier = supplierRepository.save(supplier);
             log.info("Supplier saved successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("CREATE");
+            logDTO.setEntityName("SUPPLIER");
+            logDTO.setEntityId(savedSupplier.getSupplierId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("New supplier created: " + savedSupplier.getSupplierName());
+            auditLogService.saveAuditLog(logDTO);
 
             return new SupplierDTO(
                     savedSupplier.getSupplierId(),
@@ -101,6 +113,15 @@ public class SupplierServiceImpl implements SupplierService {
 
         supplierRepository.save(supplier);
         log.info("Supplier updated successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("SUPPLIER");
+        logDTO.setEntityId(supplier.getSupplierId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Supplier updated: " + supplier.getSupplierName());
+        auditLogService.saveAuditLog(logDTO);
+
     }
 
     @Override
@@ -118,6 +139,15 @@ public class SupplierServiceImpl implements SupplierService {
             supplier.setSupplierStatus(SupplierStatus.INACTIVE);
             supplierRepository.save(supplier);
             log.info("Supplier deleted successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("DELETE");
+            logDTO.setEntityName("SUPPLIER");
+            logDTO.setEntityId(supplier.getSupplierId());
+            logDTO.setPerformedBy("admin");
+            logDTO.setDetails("Supplier soft-deleted (INACTIVE): " + supplier.getSupplierName());
+            auditLogService.saveAuditLog(logDTO);
+
         } catch (Exception e) {
             log.error("Error deleting Supplier: {}", e.getMessage());
             throw e;
@@ -164,6 +194,14 @@ public class SupplierServiceImpl implements SupplierService {
         supplier.setSupplierStatus(status);
         supplierRepository.save(supplier);
         log.info("Supplier status updated successfully");
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("SUPPLIER");
+        logDTO.setEntityId(supplier.getSupplierId());
+        logDTO.setPerformedBy("admin");
+        logDTO.setDetails("Supplier status changed to: " + status);
+        auditLogService.saveAuditLog(logDTO);
     }
 
     @Override

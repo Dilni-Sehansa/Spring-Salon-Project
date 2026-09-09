@@ -1,11 +1,13 @@
 package com.example.Spring_Salon_Project.service.impl;
 
+import com.example.Spring_Salon_Project.dto.AuditLogDTO;
 import com.example.Spring_Salon_Project.dto.CustomerDTO;
 import com.example.Spring_Salon_Project.entity.Customer;
 import com.example.Spring_Salon_Project.entity.User;
 import com.example.Spring_Salon_Project.enumiration.CustomerStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.CustomerRepository;
+import com.example.Spring_Salon_Project.service.AuditLogService;
 import com.example.Spring_Salon_Project.service.CustomerService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import java.util.Optional;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final AuditLogService auditLogService;
 
     @Override
     public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
@@ -41,6 +44,14 @@ public class CustomerServiceImpl implements CustomerService {
 
             Customer save = customerRepository.save(customer);
             log.info("Customer saved successfully");
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("CREATE");
+            logDTO.setEntityName("CUSTOMER");
+            logDTO.setEntityId(save.getCustomerId());
+            logDTO.setPerformedBy(save.getCustomerName());
+            logDTO.setDetails("New customer created: " + save.getCustomerName());
+            auditLogService.saveAuditLog(logDTO);
 
             Long savedUserId = (save.getUser() != null) ? save.getUser().getUserId() : null;
 
@@ -78,8 +89,15 @@ public class CustomerServiceImpl implements CustomerService {
         }
         customerRepository.save(customer);
         log.info("Customer updated successfully");
-    }
 
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("CUSTOMER");
+        logDTO.setEntityId(customer.getCustomerId());
+        logDTO.setPerformedBy(customer.getCustomerName());
+        logDTO.setDetails("Customer updated: " + customer.getCustomerName());
+        auditLogService.saveAuditLog(logDTO);
+    }
 
     @Override
     public CustomerDTO getCustomerDetails(String customerName) {
@@ -143,6 +161,15 @@ public class CustomerServiceImpl implements CustomerService {
             Customer customer = optionalCustomer.get();
             customer.setCustomerStatus(CustomerStatus.INACTIVE);
             customerRepository.save(customer);
+
+            AuditLogDTO logDTO = new AuditLogDTO();
+            logDTO.setAction("DELETE");
+            logDTO.setEntityName("CUSTOMER");
+            logDTO.setEntityId(customer.getCustomerId());
+            logDTO.setPerformedBy(customer.getCustomerName());
+            logDTO.setDetails("Customer soft-deleted (INACTIVE): " + customer.getCustomerName());
+            auditLogService.saveAuditLog(logDTO);
+
         }catch (Exception e){
             log.error("Error deleting customer");
             throw e;
