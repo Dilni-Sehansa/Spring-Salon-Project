@@ -4,6 +4,7 @@ import com.example.Spring_Salon_Project.dto.CommonResponse;
 import com.example.Spring_Salon_Project.dto.FeedbackDTO;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.FeedbackService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class FeedbackController {
     private final JwtUtil jwtUtil;
 
     @PostMapping(value = "/feedback-saved", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse saveFeedback(@RequestBody FeedbackDTO feedbackDTO){
+    public CommonResponse saveFeedback(@Valid @RequestBody FeedbackDTO feedbackDTO){
         FeedbackDTO saveFeedback = feedbackService.saveFeedback(feedbackDTO);
         return new CommonResponse(0,saveFeedback,"Feedback Saved Successfully");
     }

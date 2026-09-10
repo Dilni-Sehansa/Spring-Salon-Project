@@ -6,6 +6,7 @@ import com.example.Spring_Salon_Project.dto.SupplierDTO;
 import com.example.Spring_Salon_Project.enumiration.SupplierStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.SupplierService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class SupplierController {
     private final JwtUtil jwtUtil;
 
     @PostMapping(value = "/supplier-saved", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse saveSupplier(@RequestBody SupplierDTO supplierDTO){
+    public CommonResponse saveSupplier(@Valid  @RequestBody SupplierDTO supplierDTO){
         SupplierDTO saveSupplier = supplierService.saveSupplier(supplierDTO);
         return new CommonResponse(0,saveSupplier,"Supplier Saved Successfully");
     }
@@ -59,7 +60,7 @@ public class SupplierController {
     }
 
     @PutMapping(value = "/update-supplier",produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse updateSupplier(@RequestBody SupplierDTO supplierDTO){
+    public CommonResponse updateSupplier(@Valid @RequestBody SupplierDTO supplierDTO){
         supplierService.updateSupplier(supplierDTO);
         return new CommonResponse(0,"Supplier Updated Successfully");
     }

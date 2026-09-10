@@ -3,6 +3,7 @@ package com.example.Spring_Salon_Project.controller;
 import com.example.Spring_Salon_Project.dto.CommonResponse;
 import com.example.Spring_Salon_Project.dto.PaymentDTO;
 import com.example.Spring_Salon_Project.service.PaymentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping(value = "/save-payment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse savePayment(@RequestBody PaymentDTO paymentDTO) {
+    public CommonResponse savePayment(@Valid @RequestBody PaymentDTO paymentDTO) {
         PaymentDTO savedPayment = paymentService.savePayment(paymentDTO);
         return new CommonResponse(201, savedPayment, "Payment Saved Successfully");
     }

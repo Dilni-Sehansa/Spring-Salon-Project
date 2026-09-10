@@ -5,6 +5,7 @@ import com.example.Spring_Salon_Project.dto.CommonResponse;
 import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.AppointmentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -23,7 +24,7 @@ public class AppointmentController {
     private final JwtUtil jwtUtil;
 
     @PostMapping(value = "/save-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse saveAppointment(@RequestBody AppointmentDTO appointmentDTO) {
+    public CommonResponse saveAppointment(@Valid @RequestBody AppointmentDTO appointmentDTO) {
         AppointmentDTO savedAppointment = appointmentService.saveAppointment(appointmentDTO);
         return new CommonResponse(0, savedAppointment, "Appointment Saved Successfully");
     }
@@ -41,7 +42,7 @@ public class AppointmentController {
     }
 
     @PutMapping(value = "/update-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse updateAppointment(@RequestBody AppointmentDTO appointmentDTO) {
+    public CommonResponse updateAppointment(@Valid @RequestBody AppointmentDTO appointmentDTO) {
         appointmentService.updateAppointment(appointmentDTO);
         return new CommonResponse(0, "Appointment Updated Successfully");
     }

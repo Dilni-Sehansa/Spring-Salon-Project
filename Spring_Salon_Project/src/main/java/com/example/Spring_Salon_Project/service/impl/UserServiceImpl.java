@@ -9,6 +9,7 @@ import com.example.Spring_Salon_Project.enumiration.UserStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.UserRepository;
 import com.example.Spring_Salon_Project.service.AuditLogService;
+import com.example.Spring_Salon_Project.service.EmailService;
 import com.example.Spring_Salon_Project.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,41 +27,59 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuditLogService auditLogService;
+    private final EmailService emailService;
 
     @Override
     public UserDTO saveUser(UserDTO userDTO) {
         log.info("Execute method saveUser");
+        String plainPassword = userDTO.getPassword();
+
 
         try {
+
+            if (plainPassword == null || plainPassword.trim().isEmpty()) {
+                throw new CustomerException(400, "Password is required");
+            }
+
+            if (userRepository.findByUserName(userDTO.getUserName()).isPresent()) {
+                throw new CustomerException(400, "Username already exists");
+            }
+
             User user = new User();
             user.setUserName(userDTO.getUserName());
             user.setUserRole(userDTO.getUserRole());
             user.setEmail(userDTO.getEmail());
-            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            user.setPassword(passwordEncoder.encode(plainPassword));
 
-            if (userDTO.getUserStatus() != null) {
-                user.setUserStatus(userDTO.getUserStatus());
-            } else {
-                user.setUserStatus(UserStatus.ACTIVE);
-            }
+            user.setUserStatus(UserStatus.INACTIVE);
+            user.setEmailVerified(false);
+
+            String token = UUID.randomUUID().toString();
+            user.setVerificationToken(token);
 
             User save = userRepository.save(user);
-
-            log.info("User saved successfully");
+            log.info("User saved successfully. Waiting for email verification.");
 
             AuditLogDTO logDTO = new AuditLogDTO();
             logDTO.setAction("CREATE");
             logDTO.setEntityName("USER");
             logDTO.setEntityId(save.getUserId());
             logDTO.setPerformedBy(save.getUserName());
-            logDTO.setDetails("New user created: " + save.getUserName());
+            logDTO.setDetails("New user created (pending email verification):" + save.getUserName());
             auditLogService.saveAuditLog(logDTO);
+
+            try {
+                String verificationUrl = "http://localhost:8080/verify-email.html?token=" + token;
+                emailService.sendVerificationEmail(save.getEmail(), save.getUserName(), plainPassword, verificationUrl);
+            } catch (Exception e) {
+                log.error("Failed to send verification email: {}", e.getMessage());
+            }
 
             return new UserDTO(save.getUserId(), save.getUserName(), save.getUserRole(),
                     null, save.getUserStatus(), user.getEmail());
 
         } catch (Exception e) {
-            log.info("Error saving user");
+            log.info("Error saving user: {}", e.getMessage());
             throw e;
         }
     }
@@ -213,6 +233,38 @@ public class UserServiceImpl implements UserService {
         logDTO.setEntityId(user.getUserId());
         logDTO.setPerformedBy("admin");
         logDTO.setDetails("User status changed to: " + user.getUserStatus());
+        auditLogService.saveAuditLog(logDTO);
+    }
+
+    @Override
+    public void verifyEmail(String token) {
+        log.info("Execute method verifyEmail for token: {}", token);
+
+        Optional<User> optionalUser = userRepository.findByVerificationToken(token);
+
+        if (optionalUser.isEmpty()) {
+            throw new CustomerException(400, "Invalid or expired verification token");
+        }
+
+        User user = optionalUser.get();
+
+        if (Boolean.TRUE.equals(user.getEmailVerified())) {
+            throw new CustomerException(400, "Email already verified");
+        }
+
+        user.setEmailVerified(true);
+        user.setUserStatus(UserStatus.ACTIVE);
+        user.setVerificationToken(null);
+        userRepository.save(user);
+
+        log.info("Email verified successfully for user: {}", user.getUserName());
+
+        AuditLogDTO logDTO = new AuditLogDTO();
+        logDTO.setAction("UPDATE");
+        logDTO.setEntityName("USER");
+        logDTO.setEntityId(user.getUserId());
+        logDTO.setPerformedBy(user.getUserName());
+        logDTO.setDetails("Email verified successfully");
         auditLogService.saveAuditLog(logDTO);
     }
 }

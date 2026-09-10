@@ -18,6 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 //    @Query(value = "SELECT new com.example.Spring_Salon_Project.dto.UserDTO(u.userId,u.userName,u.userRole) " +
 //            "FROM User u")
 
+    Optional<User> findByVerificationToken(String token);
 
     @Query("""
             SELECT new com.example.Spring_Salon_Project.dto.UserDTO(

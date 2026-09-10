@@ -6,6 +6,7 @@ import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 import com.example.Spring_Salon_Project.enumiration.CategoryStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class CategoryController {
     private final JwtUtil jwtUtil;
 
     @PostMapping(value = "/category-saved" , produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse saveCategory(@RequestBody CategoryDTO categoryDTO){
+    public CommonResponse saveCategory(@Valid @RequestBody CategoryDTO categoryDTO){
         CategoryDTO saveCategory = categoryService.saveCategory(categoryDTO);
         return new CommonResponse(0, saveCategory, "Category saved successfully");
     }
@@ -45,7 +46,7 @@ public class CategoryController {
     }
 
     @PutMapping(value = "/update-category",produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse updateCategory(@RequestBody CategoryDTO categoryDTO){
+    public CommonResponse updateCategory(@Valid @RequestBody CategoryDTO categoryDTO){
         categoryService.updateCategory(categoryDTO);
         return new CommonResponse(0,"Category Updated Successfully");
     }

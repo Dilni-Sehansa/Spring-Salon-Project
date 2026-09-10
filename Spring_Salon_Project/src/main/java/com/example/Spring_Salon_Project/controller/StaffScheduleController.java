@@ -5,6 +5,7 @@ import com.example.Spring_Salon_Project.dto.StaffScheduleDTO;
 import com.example.Spring_Salon_Project.enumiration.StaffScheduleStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.StaffScheduleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class StaffScheduleController {
 
 
     @PostMapping(value = "/staff-schedule-saved", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse saveStaffSchedule(@RequestBody StaffScheduleDTO staffScheduleDTO) {
+    public CommonResponse saveStaffSchedule(@Valid @RequestBody StaffScheduleDTO staffScheduleDTO) {
         StaffScheduleDTO savedStaffSchedule = staffScheduleService.saveSchedule(staffScheduleDTO);
         return new CommonResponse(0, savedStaffSchedule, "Staff Schedule Saved Successfully");
     }
@@ -40,7 +41,7 @@ public class StaffScheduleController {
     }
 
     @PutMapping(value = "/update-staff-schedule", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse updateStaffSchedule(@RequestBody StaffScheduleDTO staffScheduleDTO) {
+    public CommonResponse updateStaffSchedule(@Valid @RequestBody StaffScheduleDTO staffScheduleDTO) {
         staffScheduleService.updateSchedule(staffScheduleDTO);
         return new CommonResponse(0, "Staff Schedule Updated Successfully");
     }

@@ -21,13 +21,13 @@ public class User {
     @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String userName;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -37,5 +37,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserStatus userStatus;
+
+    @Column(name = "verification_token")
+    private String verificationToken;
+
+    @Column(name = "email_verified", nullable = false)
+    private Boolean emailVerified = false;
 
 }

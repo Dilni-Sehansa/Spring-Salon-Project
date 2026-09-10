@@ -21,4 +21,6 @@ public interface UserService {
     void deleteUser(long userId);
 
     void changeSaloonStatus(long userId);
+
+    void verifyEmail(String token);
 }

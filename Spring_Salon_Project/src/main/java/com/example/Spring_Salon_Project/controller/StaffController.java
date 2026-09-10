@@ -8,6 +8,7 @@ import com.example.Spring_Salon_Project.enumiration.StaffStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.CustomerService;
 import com.example.Spring_Salon_Project.service.StaffService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -24,13 +25,13 @@ public class StaffController {
     private final StaffService staffService;
 
     @PostMapping(value = "/staff-saved", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse saveStaff(@RequestBody StaffDTO staffDTO){
+    public CommonResponse saveStaff(@Valid @RequestBody StaffDTO staffDTO){
         StaffDTO saveStaff = staffService.saveStaff(staffDTO);
         return new CommonResponse(0,saveStaff,"Staff Saved Successfully");
     }
 
     @PutMapping(value = "/update-staff",produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse updateStaff(@RequestBody StaffDTO staffDTO){
+    public CommonResponse updateStaff(@Valid @RequestBody StaffDTO staffDTO){
         staffService.updateStaff(staffDTO);
         return new CommonResponse(0,"Staff Updated Successfully");
     }

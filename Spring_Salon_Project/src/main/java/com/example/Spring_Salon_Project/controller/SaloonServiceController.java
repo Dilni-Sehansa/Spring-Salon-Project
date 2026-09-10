@@ -5,6 +5,7 @@ import com.example.Spring_Salon_Project.dto.SaloonServiceDTO;
 import com.example.Spring_Salon_Project.enumiration.ServiceStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.SaloonServiceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class SaloonServiceController {
     private final JwtUtil jwtUtil;
 
     @PostMapping(value = "/service-saved", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse saveService(@RequestBody SaloonServiceDTO saloonServiceDTO){
+    public CommonResponse saveService(@Valid @RequestBody SaloonServiceDTO saloonServiceDTO){
         SaloonServiceDTO saveService = saloonServiceService.saveSaloonService(saloonServiceDTO);
         return new CommonResponse(0,saveService,"Service Saved Successfully");
     }
@@ -54,7 +55,7 @@ public class SaloonServiceController {
     }
 
     @PutMapping(value = "/update-service",produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse updateService(@RequestBody SaloonServiceDTO saloonServiceDTO){
+    public CommonResponse updateService(@Valid @RequestBody SaloonServiceDTO saloonServiceDTO){
         saloonServiceService.updateSaloonService(saloonServiceDTO);
         return new CommonResponse(0,"Service Updated Successfully");
     }

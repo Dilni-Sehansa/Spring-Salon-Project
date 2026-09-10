@@ -1,6 +1,7 @@
 package com.example.Spring_Salon_Project.dto;
 
 import com.example.Spring_Salon_Project.enumiration.StaffStatus;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,8 @@ public class StaffDTO {
     private String specialization;
     private String bio;
     private Integer experienceYears;
+
+    @NotNull(message = "User ID is required")
     private Long userId;
     private String userName;
     private StaffStatus staffStatus;

@@ -3,6 +3,7 @@ package com.example.Spring_Salon_Project.controller;
 import com.example.Spring_Salon_Project.dto.CommonResponse;
 import com.example.Spring_Salon_Project.dto.NotificationDTO;
 import com.example.Spring_Salon_Project.service.NotificationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @PostMapping(value = "/save-notification", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse createNotification(@RequestBody NotificationDTO notificationDTO) {
+    public CommonResponse createNotification(@Valid @RequestBody NotificationDTO notificationDTO) {
         NotificationDTO savedNotification = notificationService.createNotification(
                 notificationDTO.getUserId(),
                 notificationDTO.getTitle(),

@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 
 import java.util.Arrays;
 
@@ -54,11 +55,15 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/", "/*.html", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
-                        .requestMatchers("/login.html", "/singIn.html", "/dashboard.html", "/user.html").permitAll()
+                        .requestMatchers("/login.html", "/singIn.html", "/dashboard.html", "/user.html", "/verify-email.html").permitAll()
+
+
+                        .requestMatchers("/favicon.ico").permitAll()
 
                         //-------------------------USER----------------------------------------
                         .requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/user/user_saved").permitAll()
+                        .requestMatchers(HttpMethod.GET,  "/v1/user/verify-email").permitAll()
 
                         //-------------------- Authenticated user endpoints ------------------------
                         .requestMatchers("/v1/user/**").authenticated()
@@ -102,7 +107,8 @@ public class SecurityConfig {
                         .requestMatchers("/v1/auditLog/**").hasRole("ADMIN")
                         .requestMatchers("/v1/supplier/**").hasRole("ADMIN")
 
-//                        //-------------------------CUSTOMER----------------------------------------
+                          //-------------------------CUSTOMER----------------------------------------
+
 //                        .requestMatchers(HttpMethod.GET, "/v1/customer/**").hasAnyRole("CUSTOMER", "ADMIN", "STAFF")
 //                        .requestMatchers(HttpMethod.PUT, "/v1/customer/**").hasAnyRole("CUSTOMER", "ADMIN", "STAFF")
 //                        .requestMatchers("/v1/customer/**").hasAnyRole("ADMIN", "STAFF")

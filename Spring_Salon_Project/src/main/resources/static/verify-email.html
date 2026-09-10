@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glow · Email Verification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --rose: #EC4899;
+            --rose-dark: #DB2777;
+            --pastel: #FDF2F8;
+            --ink: #111827;
+            --muted: #4B5563;
+            --green: #059669;
+            --crimson: #F43F5E;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--pastel);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 48px 40px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(219, 39, 119, 0.12);
+        }
+        .icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2rem;
+        }
+        .icon.loading { background: #FEF3C7; color: #D97706; }
+        .icon.success { background: #ECFDF5; color: var(--green); }
+        .icon.error { background: #FFF1F2; color: var(--crimson); }
+        h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.6rem;
+            color: var(--ink);
+            margin-bottom: 12px;
+        }
+        p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--rose), var(--rose-dark));
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 13px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 10px 24px rgba(219, 39, 119, 0.28);
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="icon loading" id="iconBox">⏳</div>
+    <h1 id="title">Verifying your email...</h1>
+    <p id="message">Please wait while we activate your account.</p>
+    <a href="login.html" class="btn hidden" id="loginBtn">Go to Login</a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (!token) {
+            showError("Invalid verification link. Token is missing.");
+            return;
+        }
+
+        $.ajax({
+            url: "http://localhost:8080/v1/user/verify-email?token=" + token,
+            type: "GET",
+            success: function (response) {
+                showSuccess(response.message || "Email verified successfully! You can now login.");
+            },
+            error: function (xhr) {
+                let msg = "Verification failed.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                showError(msg);
+            }
+        });
+    });
+
+    function showSuccess(msg) {
+        $('#iconBox').removeClass('loading').addClass('success').text('✓');
+        $('#title').text('Email Verified!');
+        $('#message').text(msg);
+        $('#loginBtn').removeClass('hidden');
+    }
+
+    function showError(msg) {
+        $('#iconBox').removeClass('loading').addClass('error').text('✕');
+        $('#title').text('Verification Failed');
+        $('#message').text(msg);
+        $('#loginBtn').removeClass('hidden');
+    }
+</script>
+</body>
+</html>

@@ -6,6 +6,7 @@ import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 import com.example.Spring_Salon_Project.enumiration.CustomerStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.CustomerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class CustomerController {
     private final JwtUtil jwtUtil;
 
     @PostMapping(value = "/customer-saved", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse saveCustomer(@RequestBody CustomerDTO customerDTO){
+    public CommonResponse saveCustomer(@Valid  @RequestBody CustomerDTO customerDTO){
         CustomerDTO saveCustomer = customerService.saveCustomer(customerDTO);
         return new CommonResponse(0,saveCustomer,"Customer Saved Successfully");
     }
@@ -51,7 +52,7 @@ public class CustomerController {
     }
 
     @PutMapping(value = "/update-customer",produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse updateCustomer(@RequestBody CustomerDTO customerDTO){
+    public CommonResponse updateCustomer(@Valid @RequestBody CustomerDTO customerDTO){
         customerService.updateCustomer(customerDTO);
         return new CommonResponse(0,"Customer Updated Successfully");
     }

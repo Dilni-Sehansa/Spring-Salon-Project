@@ -6,6 +6,7 @@ import com.example.Spring_Salon_Project.dto.UserDTO;
 import com.example.Spring_Salon_Project.dto.UserDataDTO;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class UserController {
     private final JwtUtil jwtUtil;
 
     @PostMapping(value = "/user_saved", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse saveUser(@RequestBody UserDTO userDTO){
+    public CommonResponse saveUser(@Valid @RequestBody UserDTO userDTO){
         UserDTO saveDto = userService.saveUser(userDTO);
         return new CommonResponse(0, saveDto,"User Saved Successfully");
     }
@@ -56,13 +57,13 @@ public class UserController {
     }
 
     @PutMapping(value = "/update-user",produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse updateUser(@RequestBody UserDTO userDTO){
+    public CommonResponse updateUser(@Valid @RequestBody UserDTO userDTO){
         userService.updateUser(userDTO);
         return new CommonResponse(OPERATION_SUCCESS,SUCCESS_MESSAGE);
     }
 
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse loginUser(@RequestBody AuthDTO authDTO) {
+    public CommonResponse loginUser(@Valid @RequestBody AuthDTO authDTO) {
         UserDTO userDetails = userService.getUserDetails(authDTO.getUserName(), authDTO.getPassword());
 
         System.out.println("API called here");
@@ -79,6 +80,12 @@ public class UserController {
     public CommonResponse changeUserStatus(@PathVariable long userId) {
         userService.changeSaloonStatus(userId);
         return new CommonResponse(0, "User Status Changed Successfully");
+    }
+
+    @GetMapping(value = "/verify-email", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CommonResponse verifyEmail(@RequestParam String token) {
+        userService.verifyEmail(token);
+        return new CommonResponse(0, "Email verified successfully! You can now login.");
     }
 
 }

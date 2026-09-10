@@ -5,6 +5,7 @@ import com.example.Spring_Salon_Project.dto.CommonResponse;
 import com.example.Spring_Salon_Project.dto.ProductDTO;
 import com.example.Spring_Salon_Project.service.CategoryService;
 import com.example.Spring_Salon_Project.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping(value = "/save-product", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse saveProduct(@RequestBody ProductDTO productDTO) {
+    public CommonResponse saveProduct(@Valid @RequestBody ProductDTO productDTO) {
         ProductDTO saveProduct = productService.saveProduct(productDTO);
         return new CommonResponse(0, saveProduct, "Product Saved Successfully");
     }
@@ -37,7 +38,7 @@ public class ProductController {
     }
 
     @PutMapping(value = "/update-product", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse updateProduct(@RequestBody ProductDTO productDTO) {
+    public CommonResponse updateProduct(@Valid @RequestBody ProductDTO productDTO) {
         productService.updateProduct(productDTO);
         return new CommonResponse(0, "Product Updated Successfully");
     }
