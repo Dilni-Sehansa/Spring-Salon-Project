@@ -38,6 +38,7 @@ public interface AppointmentDetailRepository extends JpaRepository<AppointmentDe
             @Param("customerName") String customerName
     );
 
+
     @Query("SELECT new com.example.Spring_Salon_Project.dto.AppointmentDetailDTO(" +
             "ad.appointmentServiceId, ad.price, a.appointmentId, s.serviceId, s.serviceName, ad.deleted) " +
             "FROM AppointmentDetail ad " +

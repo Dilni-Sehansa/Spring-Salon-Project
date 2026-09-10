@@ -47,4 +47,5 @@ public class AppointmentDetailController {
 
         return new CommonResponse(0, details, "Appointment Details Loaded Successfully");
     }
+
 }

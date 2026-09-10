@@ -2,14 +2,17 @@ package com.example.Spring_Salon_Project.service.impl;
 
 import com.example.Spring_Salon_Project.dto.AppointmentDTO;
 import com.example.Spring_Salon_Project.dto.AuditLogDTO;
+import com.example.Spring_Salon_Project.dto.SmsRequest;
 import com.example.Spring_Salon_Project.entity.*;
 import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 import com.example.Spring_Salon_Project.exception.CustomerException;
 import com.example.Spring_Salon_Project.repository.AppointmentDetailRepository;
 import com.example.Spring_Salon_Project.repository.AppointmentRepository;
+import com.example.Spring_Salon_Project.repository.CustomerRepository;
 import com.example.Spring_Salon_Project.repository.SaloonServiceRepository;
 import com.example.Spring_Salon_Project.service.AppointmentService;
 import com.example.Spring_Salon_Project.service.AuditLogService;
+import com.example.Spring_Salon_Project.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentDetailRepository appointmentDetailRepository;
     private final SaloonServiceRepository saloonServiceRepository;
     private final AuditLogService auditLogService;
+    private final CustomerRepository customerRepository;
+    private final SmsService smsService;
 
     @Override
     public AppointmentDTO saveAppointment(AppointmentDTO appointmentDTO) {
@@ -88,6 +93,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 }
             }
 
+            sendAppointmentSms(save.getAppointmentId(), appointmentDTO.getCustomerId(), "CREATED");
             Long savedCustomerId = (save.getCustomer() != null) ? save.getCustomer().getCustomerId() : null;
             String savedCustomerName = (save.getCustomer() != null) ? save.getCustomer().getCustomerName() : null;
 
@@ -179,6 +185,10 @@ public class AppointmentServiceImpl implements AppointmentService {
                 log.info("Appointment details updated successfully");
             }
 
+            sendAppointmentSms(appointment.getAppointmentId(),
+                    appointment.getCustomer() != null ? appointment.getCustomer().getCustomerId() : null,
+                    "UPDATED");
+
         } catch (Exception e) {
             log.error("Error updating appointment: {}", e.getMessage());
             throw e;
@@ -210,6 +220,8 @@ public class AppointmentServiceImpl implements AppointmentService {
             logDTO.setDetails("Appointment cancelled. ID: " + appointment.getAppointmentId());
             auditLogService.saveAuditLog(logDTO);
 
+            Long customerId = appointment.getCustomer() != null ? appointment.getCustomer().getCustomerId() : null;
+            sendAppointmentSms(appointmentId, customerId, "CANCELLED");
         } catch (Exception e) {
             log.error("Error deleting appointment");
             throw e;
@@ -278,6 +290,79 @@ public class AppointmentServiceImpl implements AppointmentService {
         logDTO.setDetails("Appointment status changed to: " + status);
         auditLogService.saveAuditLog(logDTO);
 
+        Long customerId = appointment.getCustomer() != null ? appointment.getCustomer().getCustomerId() : null;
+        sendAppointmentSms(appointmentId, customerId, status.name());
+
+    }
+
+    private void sendAppointmentSms(Long appointmentId, Long customerId, String action) {
+        try {
+            if (customerId == null) {
+                log.warn("Cannot send SMS - customerId is null for appointment {}", appointmentId);
+                return;
+            }
+
+            Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
+            if (optionalCustomer.isEmpty()) {
+                log.warn("Customer not found for ID: {}", customerId);
+                return;
+            }
+
+            Customer customer = optionalCustomer.get();
+            String phone = customer.getPhone();
+
+            if (phone == null || phone.trim().isEmpty()) {
+                log.warn("Customer {} has no phone number", customerId);
+                return;
+            }
+
+            String formattedPhone = formatPhoneNumber(phone);
+
+            String message = buildSmsMessage(appointmentId, customer.getCustomerName(), action);
+
+            SmsRequest smsRequest = new SmsRequest();
+            smsRequest.setPhoneNumber(formattedPhone);
+            smsRequest.setMessage(message);
+
+            smsService.sendSms(smsRequest);
+            log.info("SMS sent successfully to {} for appointment {}", formattedPhone, appointmentId);
+
+        } catch (Exception e) {
+            log.error("Failed to send SMS for appointment {}: {}", appointmentId, e.getMessage());
+        }
+    }
+    private String formatPhoneNumber(String phone) {
+        phone = phone.replaceAll("[^0-9+]", "");
+
+
+        if (phone.startsWith("0")) {
+            phone = "94" + phone.substring(1);
+        } else if (phone.startsWith("+94")) {
+            phone = phone.substring(1);
+        } else if (!phone.startsWith("94") && phone.length() == 9) {
+            phone = "94" + phone;
+        }
+        return phone;
+    }
+    private String buildSmsMessage(Long appointmentId, String customerName, String action) {
+        String name = (customerName != null && !customerName.isBlank()) ? customerName : "Customer";
+
+        return switch (action.toUpperCase()) {
+            case "CREATED" ->
+                    "Hi " + name + "! Your appointment #" + appointmentId + " has been successfully booked at Glow Salon. Thank you!";
+            case "UPDATED" ->
+                    "Hi " + name + "! Your appointment #" + appointmentId + " has been updated. Please check the details.";
+            case "CANCELLED" ->
+                    "Hi " + name + "! Your appointment #" + appointmentId + " has been cancelled. Contact us for rescheduling.";
+            case "CONFIRMED" ->
+                    "Hi " + name + "! Your appointment #" + appointmentId + " is CONFIRMED. We look forward to seeing you!";
+            case "COMPLETED" ->
+                    "Hi " + name + "! Thank you for visiting Glow Salon. Appointment #" + appointmentId + " is completed. See you again!";
+            case "PENDING" ->
+                    "Hi " + name + "! Your appointment #" + appointmentId + " is now PENDING. We will confirm soon.";
+            default ->
+                    "Hi " + name + "! Update regarding your appointment #" + appointmentId + " at Glow Salon. Status: " + action;
+        };
     }
 
 }
