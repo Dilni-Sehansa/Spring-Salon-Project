@@ -744,12 +744,12 @@
             },
             data: JSON.stringify(userDTO),
             success: function(response) {
-                alert("User created successfully!");
+                showToast("User created successfully!");
                 $('#userModal').removeClass('show');
                 loadAllUsers();
             },
             error: function(xhr) {
-                alert("Error saving user!");
+                showToast("Error saving user!");
             }
         });
     }
@@ -784,12 +784,12 @@
             },
             data: JSON.stringify(userDTO),
             success: function (response) {
-                alert(response.message || "User updated successfully!");
+                showToast(response.message || "User updated successfully!");
                 $('#userModal').removeClass('show');
                 loadAllUsers();
             },
             error: function (xhr) {
-                alert("Error updating user!");
+                showToast("Error updating user!");
             }
         });
     }
@@ -837,11 +837,11 @@
                     'Authorization': 'Bearer ' + localStorage.getItem("JWT")
                 },
                 success: function (response) {
-                    alert("User deleted successfully!");
+                    showToast("User deleted successfully!");
                     loadAllUsers();
                 },
                 error: function(xhr) {
-                    alert("Error deleting user!");
+                    showToast("Error deleting user!");
                 }
             });
         }
