@@ -1,7 +1,6 @@
 package com.example.Spring_Salon_Project.controller;
 
 import com.example.Spring_Salon_Project.dto.CommonResponse;
-import com.example.Spring_Salon_Project.dto.CustomerDTO;
 import com.example.Spring_Salon_Project.dto.SupplierDTO;
 import com.example.Spring_Salon_Project.enumiration.SupplierStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;

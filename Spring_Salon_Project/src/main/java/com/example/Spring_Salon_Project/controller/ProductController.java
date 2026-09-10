@@ -1,9 +1,7 @@
 package com.example.Spring_Salon_Project.controller;
 
-import com.example.Spring_Salon_Project.dto.AppointmentDTO;
 import com.example.Spring_Salon_Project.dto.CommonResponse;
 import com.example.Spring_Salon_Project.dto.ProductDTO;
-import com.example.Spring_Salon_Project.service.CategoryService;
 import com.example.Spring_Salon_Project.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,6 @@ package com.example.Spring_Salon_Project.controller;
 
 import com.example.Spring_Salon_Project.dto.CategoryDTO;
 import com.example.Spring_Salon_Project.dto.CommonResponse;
-import com.example.Spring_Salon_Project.enumiration.AppointmentStatus;
 import com.example.Spring_Salon_Project.enumiration.CategoryStatus;
 import com.example.Spring_Salon_Project.security.JwtUtil;
 import com.example.Spring_Salon_Project.service.CategoryService;
