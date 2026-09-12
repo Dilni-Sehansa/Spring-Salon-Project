@@ -676,9 +676,14 @@
                     <input type="number" id="qtyOnHand" placeholder="0" min="0" required />
                 </div>
             </div>
+<!--            <div class="input-group">-->
+<!--                <label>Product Image URL</label>-->
+<!--                <input type="text" id="productImage" placeholder="https://example.com/image.jpg" />-->
+<!--            </div>-->
             <div class="input-group">
-                <label>Product Image URL</label>
-                <input type="text" id="productImage" placeholder="https://example.com/image.jpg" />
+                <label>Product Image</label>
+                <input type="file" id="productImageFile" accept="image/*" />
+                <small style="color:#9CA3AF; font-size:0.75rem;">JPG, PNG only (Max 5MB)</small>
             </div>
             <div class="row-2col">
                 <div class="input-group">
@@ -892,7 +897,7 @@
         let supplierId = $('#supplierId').val() ? parseInt($('#supplierId').val()) : null;
         let price = $('#price').val() ? parseFloat($('#price').val()) : 0.0;
         let qtyOnHand = $('#qtyOnHand').val() ? parseInt($('#qtyOnHand').val()) : 0;
-        let productImage = $('#productImage').val().trim();
+        // let productImage = $('#productImage').val().trim();
         let productStatus = $('#productStatus').val().toUpperCase();
 
         const productDTO = {
@@ -900,18 +905,29 @@
             "description": description,
             "price": price,
             "qtyOnHand": qtyOnHand,
-            "productImage": productImage,
+            // "productImage": productImage,
             "categoryId": categoryId,
             "supplierId": supplierId,
             "productStatus": productStatus
         };
 
+        let formData = new FormData();
+        formData.append("product", new Blob([JSON.stringify(productDTO)], { type: "application/json" }));
+
+        let imageFile = $('#productImageFile')[0].files[0];
+        if (imageFile) {
+            formData.append("image", imageFile);
+        }
+
         $.ajax({
             url: "http://localhost:8080/v1/product/save-product",
             type: "POST",
-            contentType: "application/json",
+            // contentType: "application/json",
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
-            data: JSON.stringify(productDTO),
+            // data: JSON.stringify(productDTO),
+            data: formData,
+            processData: false,
+            contentType:false,
             success: function (response) {
                 showToast("Product saved successfully!");
                 $('#productModal').removeClass('show');
@@ -932,7 +948,7 @@
         let supplierId = $('#supplierId').val() ? parseInt($('#supplierId').val()) : null;
         let price = $('#price').val() ? parseFloat($('#price').val()) : 0.0;
         let qtyOnHand = $('#qtyOnHand').val() ? parseInt($('#qtyOnHand').val()) : 0;
-        let productImage = $('#productImage').val().trim();
+        // let productImage = $('#productImage').val().trim();
         let productStatus = $('#productStatus').val().toUpperCase();
 
         const productDTO = {
@@ -941,18 +957,29 @@
             "description": description,
             "price": price,
             "qtyOnHand": qtyOnHand,
-            "productImage": productImage,
+            // "productImage": productImage,
             "categoryId": categoryId,
             "supplierId": supplierId,
             "productStatus": productStatus
         };
 
+        let formData = new FormData();
+        formData.append("product", new Blob([JSON.stringify(productDTO)], { type: "application/json" }));
+
+        let imageFile = $('#productImageFile')[0].files[0];
+        if (imageFile) {
+            formData.append("image", imageFile);
+        }
+
         $.ajax({
             url: "http://localhost:8080/v1/product/update-product",
             type: "PUT",
-            contentType: "application/json",
+            // contentType: "application/json",
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
-            data: JSON.stringify(productDTO),
+            // data: JSON.stringify(productDTO),
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function (response) {
                 showToast(response.message || "Product updated successfully!");
                 $('#productModal').removeClass('show');
@@ -979,8 +1006,19 @@
                 $('#supplierId').val(p.supplierId || '');
                 $('#price').val(p.price);
                 $('#qtyOnHand').val(p.qtyOnHand);
-                $('#productImage').val(p.productImage || '');
+                // $('#productImage').val(p.productImage || '');
                 $('#productStatus').val((p.productStatus || 'ACTIVE').toUpperCase());
+
+                $('#productImageFile').val('');
+
+                // setTimeout(function () {
+                //     if (p.categoryId) {
+                //         $('#categoryId').val(String(p.categoryId));
+                //     }
+                //     if (p.supplierId) {
+                //         $('#supplierId').val(String(p.supplierId));
+                //     }
+                // }, 200);
 
                 $('#modalTitle').text('Edit Product');
                 $('#productModal').addClass('show');
@@ -1020,6 +1058,17 @@
     function executeDeductStock() {
         let productId = $('#stockProductId').val();
         let qty = $('#stockQty').val();
+        let currentQty = parseInt($('#stockCurrentQty').text()) || 0;
+
+        if (!qty || qty <= 0) {
+            showToast("Please enter a valid quantity", "error");
+            return;
+        }
+
+        if (qty > currentQty) {
+            showToast(`Cannot sell! Only ${currentQty} items available.`, "error");
+            return;
+        }
 
         $.ajax({
             url: `http://localhost:8080/v1/product/deduct-stock?productId=${productId}&qty=${qty}`,
@@ -1035,7 +1084,8 @@
                 }
             },
             error: function (xhr) {
-                showToast("Error deducting stock!", "error");
+                let msg = (xhr.responseJSON && xhr.responseJSON.message) || "Error deducting stock!";
+                showToast(msg, "error");
             }
         });
     }
@@ -1068,7 +1118,11 @@
         } else {
             for (const p of list) {
                 let currentStatus = (p.productStatus || 'ACTIVE').toString().toUpperCase();
-                let formattedPrice = p.price ? `$${parseFloat(p.price).toFixed(2)}` : '$0.00';
+                let unitPrice = p.price ? parseFloat(p.price) : 0;
+                let qty = p.qtyOnHand || 0;
+                let totalValue = unitPrice * qty;
+                let formattedPrice = `LKR ${totalValue.toFixed(2)}`;
+
 
                 let imgPath = p.productImage ? p.productImage.trim() : '';
                 let imgHtml = '';

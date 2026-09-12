@@ -555,18 +555,18 @@
         <div class="kpi-card kpi-hero">
             <i class="fas fa-sack-dollar"></i>
             <div class="kpi-label"><i class="fas fa-circle-dollar-to-slot"></i> Total revenue</div>
-            <div class="kpi-number" id="kpiRevenue">$0.00</div>
+            <div class="kpi-number" id="kpiRevenue">LKR 0.00</div>
             <div class="kpi-sub">Collected from completed payments</div>
         </div>
         <div class="kpi-card kpi-plain completed">
             <div class="kpi-label"><i class="fas fa-circle-check"></i> Completed payments</div>
             <div class="kpi-number" id="kpiCompletedCount">0</div>
-            <div class="kpi-sub" id="kpiCompletedSub">$0.00 collected</div>
+            <div class="kpi-sub" id="kpiCompletedSub">LKR 0.00 collected</div>
         </div>
         <div class="kpi-card kpi-plain pending">
             <div class="kpi-label"><i class="fas fa-hourglass-half"></i> Pending payments</div>
             <div class="kpi-number" id="kpiPendingCount">0</div>
-            <div class="kpi-sub" id="kpiPendingSub">$0.00 awaiting</div>
+            <div class="kpi-sub" id="kpiPendingSub">LKR 0.00 awaiting</div>
         </div>
     </div>
     <div class="work-grid">
@@ -584,27 +584,27 @@
                 </div>
                 <div class="field-row">
                     <div class="field">
-                        <label for="totalAmount">Total amount (Rs)</label>
+                        <label for="totalAmount">Total amount (LKR)</label>
                         <input type="number" step="0.01" min="0" id="totalAmount" placeholder="0.00" required readonly />
                     </div>
                     <div class="field">
-                        <label for="discount">Discount (Rs)</label>
+                        <label for="discount">Discount (LKR)</label>
                         <input type="number" step="0.01" min="0" id="discount" placeholder="0.00" />
                     </div>
                 </div>
                 <div class="final-strip">
                     <span>Final amount</span>
-                    <span id="finalAmountDisplay">$0.00</span>
+                    <span id="finalAmountDisplay">LKR 0.00</span>
                 </div>
                 <!-- Amount Paid by Customer -->
                 <div class="field">
-                    <label for="amountPaid">Amount Paid by Customer ($)</label>
+                    <label for="amountPaid">Amount Paid by Customer (LKR)</label>
                     <input type="number" step="0.01" min="0" id="amountPaid" placeholder="0.00" required />
                 </div>
                 <!-- Change Amount -->
                 <div class="change-strip">
                     <span>Change (balance)</span>
-                    <span id="changeAmountDisplay">$0.00</span>
+                    <span id="changeAmountDisplay">LKR 0.00</span>
                 </div>
                 <div class="field-row">
                     <div class="field">
@@ -740,10 +740,10 @@
         const total = parseFloat($('#totalAmount').val()) || 0;
         const discount = parseFloat($('#discount').val()) || 0;
         const final = Math.max(total - discount, 0);
-        $('#finalAmountDisplay').text('$' + final.toFixed(2));
+        $('#finalAmountDisplay').text('LKR' + final.toFixed(2));
         const amountPaid = parseFloat($('#amountPaid').val()) || 0;
         const change = Math.max(amountPaid - final, 0);
-        $('#changeAmountDisplay').text('$' + change.toFixed(2));
+        $('#changeAmountDisplay').text('LKR' + change.toFixed(2));
     }
 
     function showToast(message, type = 'success') {
@@ -769,7 +769,7 @@
                 });
 
                 let options = '<option value="">— Select completed appointment —</option>';
-                completedAppointments = {}; // reset
+                completedAppointments = {};
 
                 completed.forEach(a => {
                     const id = a.appointmentId;
@@ -783,7 +783,7 @@
                         date: date
                     };
 
-                    options += `<option value="${id}">#${id} — ${name} (${date}) — $${amount.toFixed(2)}</option>`;
+                    options += `<option value="${id}">#${id} — ${name} (${date}) — LKR ${amount.toFixed(2)}</option>`;
                 });
 
                 $('#appointmentId').html(options);
@@ -958,11 +958,11 @@
                 pendingSum += amount;
             }
         });
-        $('#kpiRevenue').text('$' + revenue.toFixed(2));
+        $('#kpiRevenue').text('LKR' + revenue.toFixed(2));
         $('#kpiCompletedCount').text(completedCount);
-        $('#kpiCompletedSub').text('$' + completedSum.toFixed(2) + ' collected');
+        $('#kpiCompletedSub').text('LKR' + completedSum.toFixed(2) + ' collected');
         $('#kpiPendingCount').text(pendingCount);
-        $('#kpiPendingSub').text('$' + pendingSum.toFixed(2) + ' awaiting');
+        $('#kpiPendingSub').text('LKR' + pendingSum.toFixed(2) + ' awaiting');
     }
 
     function methodIcon(method) {
@@ -986,11 +986,11 @@
                 html += `<tr>
                     <td>#${p.paymentId}</td>
                     <td>#${p.appointmentId}</td>
-                    <td class="num">$${parseFloat(p.totalAmount || 0).toFixed(2)}</td>
-                    <td class="num">$${parseFloat(p.discount || 0).toFixed(2)}</td>
-                    <td class="final-amt">$${parseFloat(p.finalAmount || 0).toFixed(2)}</td>
-                    <td class="num">$${parseFloat(p.amountPaid || 0).toFixed(2)}</td>
-                    <td class="change-amt">$${parseFloat(p.changeAmount || 0).toFixed(2)}</td>
+                    <td class="num">LKR ${parseFloat(p.totalAmount || 0).toFixed(2)}</td>
+                    <td class="num">LKR ${parseFloat(p.discount || 0).toFixed(2)}</td>
+                    <td class="final-amt">LKR ${parseFloat(p.finalAmount || 0).toFixed(2)}</td>
+                    <td class="num">LKR ${parseFloat(p.amountPaid || 0).toFixed(2)}</td>
+                    <td class="change-amt">LKR ${parseFloat(p.changeAmount || 0).toFixed(2)}</td>
                     <td><span class="method-badge"><i class="fas ${methodIcon(method)}"></i> ${method}</span></td>
                     <td><span class="status-badge ${status.toLowerCase()}">${status}</span></td>
                     <td>${date}</td>
@@ -1044,15 +1044,15 @@
         const date = p.paymentDate ? p.paymentDate.toString().replace('T', ' ').slice(0, 16) : '—';
         $('#receiptSub').text('Payment #' + p.paymentId + ' · Appointment #' + p.appointmentId);
         $('#receiptBody').html(`
-            <div class="receipt-row"><span>Total amount</span><span>$${parseFloat(p.totalAmount || 0).toFixed(2)}</span></div>
-            <div class="receipt-row"><span>Discount</span><span>-$${parseFloat(p.discount || 0).toFixed(2)}</span></div>
-            <div class="receipt-row"><span>Final amount</span><span>$${parseFloat(p.finalAmount || 0).toFixed(2)}</span></div>
-            <div class="receipt-row"><span>Amount Paid</span><span>$${parseFloat(p.amountPaid || 0).toFixed(2)}</span></div>
-            <div class="receipt-row change"><span>Change (balance)</span><span>$${parseFloat(p.changeAmount || 0).toFixed(2)}</span></div>
+            <div class="receipt-row"><span>Total amount</span><span>LKR ${parseFloat(p.totalAmount || 0).toFixed(2)}</span></div>
+            <div class="receipt-row"><span>Discount</span><span>-LKR ${parseFloat(p.discount || 0).toFixed(2)}</span></div>
+            <div class="receipt-row"><span>Final amount</span><span>LKR ${parseFloat(p.finalAmount || 0).toFixed(2)}</span></div>
+            <div class="receipt-row"><span>Amount Paid</span><span>LKR ${parseFloat(p.amountPaid || 0).toFixed(2)}</span></div>
+            <div class="receipt-row change"><span>Change (balance)</span><span>LKR ${parseFloat(p.changeAmount || 0).toFixed(2)}</span></div>
             <div class="receipt-row"><span>Method</span><span>${method}</span></div>
             <div class="receipt-row"><span>Status</span><span><span class="status-badge ${status.toLowerCase()}">${status}</span></span></div>
             <div class="receipt-row"><span>Date</span><span>${date}</span></div>
-            <div class="receipt-row total"><span>Final amount</span><span>$${parseFloat(p.finalAmount || 0).toFixed(2)}</span></div>
+            <div class="receipt-row total"><span>Final amount</span><span>LKR ${parseFloat(p.finalAmount || 0).toFixed(2)}</span></div>
         `);
         $('#viewModal').addClass('show');
     }

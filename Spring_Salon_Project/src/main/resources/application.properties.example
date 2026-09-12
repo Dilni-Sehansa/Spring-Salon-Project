@@ -1,0 +1,15 @@
+spring.datasource.url=
+spring.datasource.username=
+spring.datasource.password=
+
+jwt.secret=
+
+spring.mail.username=
+spring.mail.password=
+
+vonage.api.key=
+vonage.api.secret=
+
+ai.api.key=
+ai.api.url=https://api.groq.com/openai/v1/chat/completions
+ai.model=openai/gpt-oss-20b

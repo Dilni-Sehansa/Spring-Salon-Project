@@ -1014,6 +1014,21 @@
             .modal { padding: 22px; }
             .main-header h2 { font-size: 1.5rem; }
         }
+
+        /*/////////////////////////////////////////*/
+
+        #aiRecommendBox {
+            display: none;
+            margin-top: 14px;
+            padding: 16px 18px;
+            background: #FDF2F8;
+            border-radius: 14px;
+            border: 1px solid #F9A8D4;
+            font-size: 0.9rem;
+            line-height: 1.65;
+            color: #374151;
+            box-shadow: 0 4px 12px rgba(219, 39, 119, 0.08);
+        }
     </style>
 </head>
 <body>
@@ -1207,6 +1222,13 @@
         <div class="search-wrapper">
             <i class="fas fa-search"></i>
             <input type="text" id="searchInput" placeholder="Search by customer name..." />
+        </div>
+        <div class="input-group" style="margin-top:12px;">
+            <button type="button" class="btn-secondary" id="aiRecommendBtn" style="width:100%;">
+                <i class="fas fa-magic"></i> Get AI Service Recommendations
+            </button>
+        </div>
+        <div id="aiRecommendBox" style="display:none; margin-top:12px; padding:14px; background:#FDF2F8; border-radius:12px; border:1px solid #F9A8D4; font-size:0.88rem; line-height:1.5; white-space:pre-wrap;">
         </div>
         <select id="statusFilter">
             <option value="all">All Status</option>
@@ -1472,7 +1494,7 @@
             for (const a of list) {
                 let status = (a.appointmentStatus || 'PENDING').toString().toUpperCase();
                 let statusClass = status.toLowerCase();
-                let amount = a.totalAmount ? `$${parseFloat(a.totalAmount).toFixed(2)}` : '$0.00';
+                let amount = a.totalAmount ? `Rs ${parseFloat(a.totalAmount).toFixed(2)}` : '$0.00';
 
                 html += `<tr>
                     <td>#${a.appointmentId}</td>
@@ -1694,6 +1716,40 @@
 
         renderTable(filtered);
     }
+
+    $('#aiRecommendBtn').on('click', function () {
+        let customerId = $('#customerId').val();
+
+        $('#aiRecommendBox')
+            .show()
+            .html('<i class="fas fa-spinner fa-spin"></i> Generating recommendations...');
+
+        $.ajax({
+            url: "http://localhost:8080/v1/ai/recommend-services" + (customerId ? "?customerId=" + customerId : ""),
+            type: "GET",
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+            success: function (response) {
+                let reply = (response.body && response.body.reply) || response.data?.reply || "No recommendations";
+
+                let formatted = reply
+                    .replace(/\*\*(.*?)\*\*/g, '<strong style="color:#DB2777;">$1</strong>')
+                    .replace(/\n/g, '<br>')
+                    .replace(/- /g, '• ');
+
+                $('#aiRecommendBox').html(
+                    '<div style="font-size:0.9rem; line-height:1.7; color:#374151;">' +
+                    '<div style="font-weight:600; color:#BE185D; margin-bottom:8px;"><i class="fas fa-magic"></i> AI Recommendations</div>' +
+                    formatted +
+                    '</div>'
+                );
+            },
+            error: function () {
+                $('#aiRecommendBox').html(
+                    '<span style="color:#BE123C;"><i class="fas fa-exclamation-circle"></i> Failed to get recommendations. Please try again.</span>'
+                );
+            }
+        });
+    });
 </script>
 </body>
 </html>

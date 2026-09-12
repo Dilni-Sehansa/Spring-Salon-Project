@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+Spring_Salon_Project/src/main/resources/application.properties
+

@@ -2,11 +2,13 @@ package com.example.Spring_Salon_Project.controller;
 
 import com.example.Spring_Salon_Project.dto.CommonResponse;
 import com.example.Spring_Salon_Project.dto.ProductDTO;
+import com.example.Spring_Salon_Project.service.FileStorageService;
 import com.example.Spring_Salon_Project.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,9 +18,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
+    private final FileStorageService fileStorageService;
 
-    @PostMapping(value = "/save-product", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse saveProduct(@Valid @RequestBody ProductDTO productDTO) {
+//    @PostMapping(value = "/save-product", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public CommonResponse saveProduct(@Valid @RequestBody ProductDTO productDTO) {
+//        ProductDTO saveProduct = productService.saveProduct(productDTO);
+//        return new CommonResponse(0, saveProduct, "Product Saved Successfully");
+//    }
+
+    @PostMapping(value = "/save-product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CommonResponse saveProduct(
+            @RequestPart("product") @Valid ProductDTO productDTO,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        if (image != null && !image.isEmpty()) {
+            String imagePath = fileStorageService.upload(image);
+            productDTO.setProductImage(imagePath);
+        }
+
         ProductDTO saveProduct = productService.saveProduct(productDTO);
         return new CommonResponse(0, saveProduct, "Product Saved Successfully");
     }
@@ -35,11 +52,24 @@ public class ProductController {
         return new CommonResponse(0, productDTO, "Product Loaded Successfully");
     }
 
-    @PutMapping(value = "/update-product", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse updateProduct(@Valid @RequestBody ProductDTO productDTO) {
+    @PutMapping(value = "/update-product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CommonResponse updateProduct(
+            @RequestPart("product") @Valid ProductDTO productDTO,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        if (image != null && !image.isEmpty()) {
+            String imagePath = fileStorageService.upload(image);
+            productDTO.setProductImage(imagePath);
+        }
+
         productService.updateProduct(productDTO);
         return new CommonResponse(0, "Product Updated Successfully");
     }
+//    @PutMapping(value = "/update-product", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public CommonResponse updateProduct(@Valid @RequestBody ProductDTO productDTO) {
+//        productService.updateProduct(productDTO);
+//        return new CommonResponse(0, "Product Updated Successfully");
+//    }
 
     @DeleteMapping(value = "/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonResponse deleteProduct(@PathVariable long productId) {
