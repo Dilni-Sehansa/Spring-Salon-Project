@@ -18,7 +18,7 @@ public class UserDTO {
     private String userName;
     private UserRole userRole;
 
-    @Size(min = 6, message = "Password must be at least 6 characters")
+    @Size(min = 8, message = "Password must be at least 6 characters")
     private String password;
     private UserStatus userStatus;
 

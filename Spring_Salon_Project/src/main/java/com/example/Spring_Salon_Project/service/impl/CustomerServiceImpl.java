@@ -32,6 +32,14 @@ public class CustomerServiceImpl implements CustomerService {
 
         try {
 
+            if (customerDTO.getUserId() != null) {
+                Optional<CustomerDTO> existing = customerRepository.getCustomerByUserId(customerDTO.getUserId());
+                if (existing.isPresent()) {
+                    throw new CustomerException(400,
+                            "This user is already linked to another customer (ID: " + existing.get().getCustomerId() + "). Please choose a different user.");
+                }
+            }
+
             Customer customer = new Customer();
             customer.setCustomerName(customerDTO.getCustomerName());
             customer.setPhone(customerDTO.getPhone());
@@ -60,7 +68,12 @@ public class CustomerServiceImpl implements CustomerService {
 
         } catch (Exception e) {
             log.error("Error saving customer: {}", e.getMessage());
-            throw e;
+
+            if (e.getMessage() != null && e.getMessage().contains("Duplicate entry")) {
+                throw new CustomerException(400, "This user is already linked to another customer. Choose a different user.");
+            }
+
+            throw new CustomerException(500, "Error saving customer: " + e.getMessage());
         }
     }
 
@@ -73,6 +86,17 @@ public class CustomerServiceImpl implements CustomerService {
             throw new CustomerException(404,"Customer not found");
 
         Customer customer = optionalCustomer.get();
+
+        if (customerDTO.getUserId() != null) {
+            Optional<CustomerDTO> existing = customerRepository.getCustomerByUserId(customerDTO.getUserId());
+            if (existing.isPresent()
+                    && !existing.get().getCustomerId().equals(customerDTO.getCustomerId())) {
+                throw new CustomerException(400,
+                        "This user is already linked to another customer (ID: "
+                                + existing.get().getCustomerId() + "). Please choose a different user.");
+            }
+        }
+
         customer.setCustomerName(customerDTO.getCustomerName());
 
         if(customerDTO.getPhone() != null && !customerDTO.getPhone().trim().isEmpty()){
@@ -87,9 +111,21 @@ public class CustomerServiceImpl implements CustomerService {
             User user = new User();
             user.setUserId(customerDTO.getUserId());
             customer.setUser(user);
+        }else {
+            customer.setUser(null);
         }
-        customerRepository.save(customer);
-        log.info("Customer updated successfully");
+
+        try{
+            customerRepository.save(customer);
+            log.info("Customer updated successfully");
+        }catch (Exception e){
+            log.error("Error updating customer: {}", e.getMessage());
+            if (e.getMessage() != null && e.getMessage().contains("Duplicate entry")) {
+                throw new CustomerException(400, "This user is already linked to another customer. Choose a different user.");
+            }
+            throw new CustomerException(500, "Failed to update customer: " + e.getMessage());
+        }
+
 
         AuditLogDTO logDTO = new AuditLogDTO();
         logDTO.setAction("UPDATE");

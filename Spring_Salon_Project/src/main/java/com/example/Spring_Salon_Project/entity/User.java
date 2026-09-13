@@ -4,6 +4,7 @@ package com.example.Spring_Salon_Project.entity;
 import com.example.Spring_Salon_Project.enumiration.UserRole;
 import com.example.Spring_Salon_Project.enumiration.UserStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

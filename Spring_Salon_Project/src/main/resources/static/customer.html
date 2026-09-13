@@ -497,15 +497,15 @@
     </div>
     <nav class="sidebar-nav">
         <a href="dashboard.html"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
-        <a href="appointment.html"><i class="fas fa-calendar-check"></i> <span>Appointments</span></a>
-        <a href="appointmentDetail.html"><i class="fas fa-calendar-alt"></i> <span>Appointment Detail</span></a>
         <a href="customer.html" class="active"><i class="fas fa-users"></i> <span>Customers</span></a>
         <a href="staff.html"><i class="fas fa-user-tie"></i> <span>Staff</span></a>
-        <a href="staffSchedule.html"><i class="fas fa-clock"></i> <span>Staff Schedule</span></a>
-        <a href="staffService.html"><i class="fas fa-concierge-bell"></i> <span>Staff Service</span></a>
         <a href="supplier.html"><i class="fas fa-truck"></i> <span>Supplier</span></a>
         <a href="category.html"><i class="fas fa-list"></i> <span>Category</span></a>
         <a href="service.html"><i class="fas fa-cut"></i> <span>Service</span></a>
+        <a href="appointment.html"><i class="fas fa-calendar-check"></i> <span>Appointments</span></a>
+        <a href="appointmentDetail.html"><i class="fas fa-calendar-alt"></i> <span>Appointment Detail</span></a>
+        <a href="staffSchedule.html"><i class="fas fa-clock"></i> <span>Staff Schedule</span></a>
+        <a href="staffService.html"><i class="fas fa-concierge-bell"></i> <span>Staff Service</span></a>
         <a href="product.html"><i class="fas fa-box"></i> <span>Product</span></a>
         <a href="payment.html"><i class="fas fa-credit-card"></i> <span>Payment</span></a>
         <a href="Notification.html"><i class="fas fa-bell"></i> <span>Notification</span></a>
@@ -816,12 +816,22 @@
             },
             data: JSON.stringify(customerDTO),
             success: function (response){
-                alert("customer save successfully!");
+                showToast("customer save successfully!");
                 $('#customerModal').removeClass('show');
                 loadAllCustomers();
             },
             error: function (xhr){
-                alert("Error saving customer")
+                showToast("Error saving customer",xhr);
+                let msg = "Error saving customer";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                } else if (xhr.responseText) {
+                    try {
+                        let parsed = JSON.parse(xhr.responseText);
+                        msg = parsed.message || msg;
+                    } catch (e) {}
+                }
+                alert(msg);
             }
         });
     }
@@ -850,12 +860,22 @@
             },
             data: JSON.stringify(customerDTO),
             success: function (response){
-                alert(response.message || "Customer update successfully!");
+                showToast(response.message || "Customer update successfully!");
                 $('#customerModal').removeClass('show');
                 loadAllCustomers();
             },
             error: function (xhr){
-                alert("Error updating customer!");
+                console.error("Error updating customer", xhr);
+                let msg = "Error updating customer!";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                } else if (xhr.responseText) {
+                    try {
+                        let parsed = JSON.parse(xhr.responseText);
+                        msg = parsed.message || msg;
+                    } catch (e) {}
+                }
+                alert(msg);
             }
         });
     }
