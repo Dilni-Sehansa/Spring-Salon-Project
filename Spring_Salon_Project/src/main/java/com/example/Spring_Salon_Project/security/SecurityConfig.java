@@ -60,7 +60,8 @@ public class SecurityConfig {
 
                         .requestMatchers("/favicon.ico").permitAll()
                         .requestMatchers("/api/v1/sms/**").permitAll()
-                        .requestMatchers("/v1/ai/**").permitAll()
+//                        .requestMatchers("/v1/ai/**").permitAll()
+                        .requestMatchers("/api/ai/**").permitAll()
 
                         //-------------------------USER----------------------------------------
                         .requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll()

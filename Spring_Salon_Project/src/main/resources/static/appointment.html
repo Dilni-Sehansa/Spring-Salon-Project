@@ -1215,6 +1215,10 @@
         <div class="header-actions">
             <button class="btn-primary" id="addAppointmentBtn"><i class="fas fa-plus"></i> Add New Appointment</button>
         </div>
+        <a href="style-dna.html" class="stat-card" style="text-decoration:none; display:flex; flex-direction:column; align-items:center; justify-content:center; background:linear-gradient(135deg,#EC4899,#DB2777); color:white; border:none; border-radius: 10%; padding: 7px 10px 7px 10px">
+            <div style="font-weight:600; font-size:1.2rem;">AI ✨</div>
+<!--            <div style="font-size:0.60rem; opacity:0.9; margin-top:2px;">Analyze Face & Style</div>-->
+        </a>
     </div>
 
     <!-- MODIFIED UI: filter bar re-skinned with crisp bordered inputs + rose focus ring; IDs unchanged -->
@@ -1223,11 +1227,11 @@
             <i class="fas fa-search"></i>
             <input type="text" id="searchInput" placeholder="Search by customer name..." />
         </div>
-        <div class="input-group" style="margin-top:12px;">
-            <button type="button" class="btn-secondary" id="aiRecommendBtn" style="width:100%;">
-                <i class="fas fa-magic"></i> Get AI Service Recommendations
-            </button>
-        </div>
+<!--        <div class="input-group" style="margin-top:12px;">-->
+<!--            <button type="button" class="btn-secondary" id="aiRecommendBtn" style="width:100%;">-->
+<!--                <i class="fas fa-magic"></i> Get AI Service Recommendations-->
+<!--            </button>-->
+<!--        </div>-->
         <div id="aiRecommendBox" style="display:none; margin-top:12px; padding:14px; background:#FDF2F8; border-radius:12px; border:1px solid #F9A8D4; font-size:0.88rem; line-height:1.5; white-space:pre-wrap;">
         </div>
         <select id="statusFilter">
@@ -1238,7 +1242,11 @@
             <option value="CANCELLED">Cancelled</option>
         </select>
         <input type="date" id="dateFilter" />
+
+
     </div>
+
+
 
     <!-- MODIFIED UI: table now sits in a flat white "panel" card instead of the frosted-glass card -->
     <div class="card">
@@ -1717,39 +1725,39 @@
         renderTable(filtered);
     }
 
-    $('#aiRecommendBtn').on('click', function () {
-        let customerId = $('#customerId').val();
-
-        $('#aiRecommendBox')
-            .show()
-            .html('<i class="fas fa-spinner fa-spin"></i> Generating recommendations...');
-
-        $.ajax({
-            url: "http://localhost:8080/v1/ai/recommend-services" + (customerId ? "?customerId=" + customerId : ""),
-            type: "GET",
-            headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
-            success: function (response) {
-                let reply = (response.body && response.body.reply) || response.data?.reply || "No recommendations";
-
-                let formatted = reply
-                    .replace(/\*\*(.*?)\*\*/g, '<strong style="color:#DB2777;">$1</strong>')
-                    .replace(/\n/g, '<br>')
-                    .replace(/- /g, '• ');
-
-                $('#aiRecommendBox').html(
-                    '<div style="font-size:0.9rem; line-height:1.7; color:#374151;">' +
-                    '<div style="font-weight:600; color:#BE185D; margin-bottom:8px;"><i class="fas fa-magic"></i> AI Recommendations</div>' +
-                    formatted +
-                    '</div>'
-                );
-            },
-            error: function () {
-                $('#aiRecommendBox').html(
-                    '<span style="color:#BE123C;"><i class="fas fa-exclamation-circle"></i> Failed to get recommendations. Please try again.</span>'
-                );
-            }
-        });
-    });
+    // $('#aiRecommendBtn').on('click', function () {
+    //     let customerId = $('#customerId').val();
+    //
+    //     $('#aiRecommendBox')
+    //         .show()
+    //         .html('<i class="fas fa-spinner fa-spin"></i> Generating recommendations...');
+    //
+    //     $.ajax({
+    //         url: "http://localhost:8080/v1/ai/recommend-services" + (customerId ? "?customerId=" + customerId : ""),
+    //         type: "GET",
+    //         headers: { 'Authorization': 'Bearer ' + localStorage.getItem("JWT") },
+    //         success: function (response) {
+    //             let reply = (response.body && response.body.reply) || response.data?.reply || "No recommendations";
+    //
+    //             let formatted = reply
+    //                 .replace(/\*\*(.*?)\*\*/g, '<strong style="color:#DB2777;">$1</strong>')
+    //                 .replace(/\n/g, '<br>')
+    //                 .replace(/- /g, '• ');
+    //
+    //             $('#aiRecommendBox').html(
+    //                 '<div style="font-size:0.9rem; line-height:1.7; color:#374151;">' +
+    //                 '<div style="font-weight:600; color:#BE185D; margin-bottom:8px;"><i class="fas fa-magic"></i> AI Recommendations</div>' +
+    //                 formatted +
+    //                 '</div>'
+    //             );
+    //         },
+    //         error: function () {
+    //             $('#aiRecommendBox').html(
+    //                 '<span style="color:#BE123C;"><i class="fas fa-exclamation-circle"></i> Failed to get recommendations. Please try again.</span>'
+    //             );
+    //         }
+    //     });
+    // });
 </script>
 </body>
 </html>

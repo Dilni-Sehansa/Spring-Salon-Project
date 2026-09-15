@@ -1,10 +1,9 @@
 package com.example.Spring_Salon_Project.service.impl;
 
-import com.example.Spring_Salon_Project.dto.AppointmentDTO;
-import com.example.Spring_Salon_Project.dto.AppointmentDetailDTO;
+import com.example.Spring_Salon_Project.dto.AiStyleDnaResponseDTO;
+import com.example.Spring_Salon_Project.entity.Product;
 import com.example.Spring_Salon_Project.entity.SaloonService;
-import com.example.Spring_Salon_Project.repository.AppointmentDetailRepository;
-import com.example.Spring_Salon_Project.repository.AppointmentRepository;
+import com.example.Spring_Salon_Project.repository.ProductRepository;
 import com.example.Spring_Salon_Project.repository.SaloonServiceRepository;
 import com.example.Spring_Salon_Project.service.AiService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,10 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,10 +26,8 @@ public class AiServiceImpl implements AiService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
-
     private final SaloonServiceRepository saloonServiceRepository;
-    private final AppointmentRepository appointmentRepository;
-    private final AppointmentDetailRepository appointmentDetailRepository;
+    private final ProductRepository productRepository;
 
     @Value("${ai.api.key}")
     private String apiKey;
@@ -42,115 +38,122 @@ public class AiServiceImpl implements AiService {
     @Value("${ai.model}")
     private String model;
 
-//    @Override
-//    public String getChatReply(String userMessage) {
-//        try {
-//            String systemPrompt = """
-//                You are a helpful AI assistant for "Glow Salon" - a beauty salon management system.
-//
-//                You can help customers with:
-//                - Information about services (Hair cut, Facial, Manicure, Pedicure, Hair coloring, etc.)
-//                - Approximate prices (you can say average prices if exact ones are not known)
-//                - Available appointment times (suggest morning, afternoon, evening)
-//                - General beauty tips
-//                - How to book an appointment
-//
-//                Rules:
-//                - Always be polite, friendly and professional
-//                - Reply in the same language the user is using (Sinhala or English)
-//                - If you don't know exact price or availability, politely say to contact the salon or check the website
-//                - Keep answers short and clear
-//                - Do not make up fake bookings
-//                """;
-//
-//            Map<String, Object> requestBody = new HashMap<>();
-//            requestBody.put("model", model);
-//            requestBody.put("messages", List.of(
-//                    Map.of("role", "system", "content", systemPrompt),
-//                    Map.of("role", "user", "content", userMessage)
-//            ));
-//            requestBody.put("temperature", 0.7);
-//            requestBody.put("max_tokens", 500);
-//
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_JSON);
-//            headers.setBearerAuth(apiKey);
-//
-//            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-//
-//            ResponseEntity<String> response = restTemplate.exchange(
-//                    apiUrl,
-//                    HttpMethod.POST,
-//                    entity,
-//                    String.class
-//            );
-//
-//            JsonNode root = objectMapper.readTree(response.getBody());
-//            String reply = root.path("choices").path(0).path("message").path("content").asText();
-//
-//            return reply != null && !reply.isEmpty() ? reply : "Sorry, I couldn't generate a reply right now.";
-//
-//        } catch (Exception e) {
-//            log.error("AI Chat error: {}", e.getMessage());
-//            return "Sorry, something went wrong. Please try again later.";
-//        }
-//    }
-
     @Override
-    public String getServiceRecommendations(Long customerId) {
+    public AiStyleDnaResponseDTO analyzeStyleDna(MultipartFile image, Long customerId, String preferredStyle) {
         try {
-            List<SaloonService> allServices = saloonServiceRepository.findAll();
-            String availableServices = allServices.stream()
-                    .filter(s -> s.getServiceStatus() == null ||
-                            "ACTIVE".equalsIgnoreCase(s.getServiceStatus().name()))
-                    .map(s -> s.getServiceName() + " (LKR " + s.getPrice() + ")")
-                    .collect(Collectors.joining(", "));
-
-            String pastServices = "No previous services";
-            if (customerId != null) {
-                List<AppointmentDTO> appointments =
-                        appointmentRepository.getAppointmentsByCustomerId(customerId);
-
-                if (appointments != null && !appointments.isEmpty()) {
-                    StringBuilder past = new StringBuilder();
-                    for (AppointmentDTO appt : appointments) {
-                        List<AppointmentDetailDTO> details =
-                                appointmentDetailRepository.getDetailsByAppointmentId(appt.getAppointmentId());
-                        if (details != null) {
-                            for (AppointmentDetailDTO d : details) {
-                                if (d.getServiceName() != null) {
-                                    past.append(d.getServiceName()).append(", ");
-                                }
-                            }
-                        }
-                    }
-                    if (past.length() > 0) {
-                        pastServices = past.toString();
-                    }
-                }
+            if (image == null || image.isEmpty()) {
+                throw new IllegalArgumentException("Please upload a clear face photo");
             }
 
-            String prompt = """
-               You are a professional beauty salon consultant for "Glow Salon".
-               Available services: %s
-               Customer's previous services: %s
-                Recommend the BEST 3 to 5 services for this customer.
-                Format EXACTLY like this (no extra text):
-                • Service Name – short reason why it is suitable
-                • Service Name – short reason why it is suitable
-                • Service Name – short reason why it is suitable
-                 
-Keep it short, friendly and clear. Do not use markdown ** or numbers.
-                  """.formatted(availableServices, pastServices);
+            log.info("Received image: name={}, size={} bytes, type={}",
+                    image.getOriginalFilename(), image.getSize(), image.getContentType());
+
+            String base64Image = Base64.getEncoder().encodeToString(image.getBytes());
+            String mimeType = image.getContentType() != null ? image.getContentType() : "image/jpeg";
+
+            List<SaloonService> allServices = new ArrayList<>();
+            saloonServiceRepository.findAll().forEach(s -> {
+                if (s.getServiceStatus() != null &&
+                        s.getServiceStatus().name().equalsIgnoreCase("ACTIVE")) {
+                    allServices.add(s);
+                }
+            });
+
+            List<Product> allProducts = new ArrayList<>();
+            productRepository.findAll().forEach(p -> {
+                if (p.getProductStatus() != null &&
+                        p.getProductStatus().name().equalsIgnoreCase("ACTIVE")) {
+                    allProducts.add(p);
+                }
+            });
+
+            String servicesText = allServices.stream()
+                    .map(s -> s.getServiceId() + "|" + s.getServiceName() + "|" + s.getPrice())
+                    .collect(Collectors.joining("\n"));
+
+            String productsText = allProducts.stream()
+                    .map(p -> p.getProductId() + "|" + p.getProductName() + "|" + p.getPrice())
+                    .collect(Collectors.joining("\n"));
+
+            String preference = (preferredStyle == null || preferredStyle.isBlank())
+                    ? "balanced modern look" : preferredStyle;
+
+            String systemPrompt = """
+    You are a face shape classifier. You must follow these steps EXACTLY:
+    
+    STEP 1: Describe the face proportions first (in your mind):
+    - Is the face longer than it is wide? (yes/no)
+    - Is the jawline soft and rounded or angular and strong?
+    - Is the forehead wider, equal, or narrower than the jaw?
+    - Is the chin pointed, rounded, or square?
+    
+    STEP 2: Choose face shape using this priority order (DO NOT skip):
+    1. If face is clearly longer than wide → "Oblong"
+    2. If jaw is strong and angular + forehead ≈ jaw width → "Square"
+    3. If forehead is wide + chin is narrow/pointed → "Heart"
+    4. If face is short and wide with full cheeks → "Round"
+    5. If cheekbones are widest part → "Diamond"
+    6. Only if none of the above fit well → "Oval"
+    
+    *** You are FORBIDDEN from choosing "Oval" unless steps 1-5 clearly do not match. ***
+    
+    STEP 3: Skin undertone - look carefully, do not default to Warm.
+    
+    Return ONLY JSON:
+    {
+      "faceShape": "...",
+      "skinUndertone": "...",
+      "hairType": "...",
+      "overallLookSummary": "...",
+      "recommendedHairStyles": [],
+      "recommendedHairColors": [],
+      "recommendedServiceIds": [],
+      "recommendedProductIds": [],
+      "packageSuggestion": "...",
+      "confidenceNote": "..."
+    }
+    
+    Only use IDs from the lists provided.
+    """;
+
+            String userText = """
+    Available Services (id|name|price):
+    %s
+    
+    Available Products (id|name|price):
+    %s
+    
+    Customer preferred style: %s
+    
+    Analyze the face in the photo. 
+    Do NOT default to Oval. Choose the most accurate face shape from the rules.
+    """.formatted(servicesText, productsText, preference);
+
+            Map<String, Object> imageUrl = new HashMap<>();
+            imageUrl.put("url", "data:" + mimeType + ";base64," + base64Image);
+
+            Map<String, Object> imageContent = new HashMap<>();
+            imageContent.put("type", "image_url");
+            imageContent.put("image_url", imageUrl);
+
+            Map<String, Object> textContent = new HashMap<>();
+            textContent.put("type", "text");
+            textContent.put("text", userText);
+
+            Map<String, Object> userMessage = new HashMap<>();
+            userMessage.put("role", "user");
+            userMessage.put("content", List.of(textContent, imageContent));
+
+            Map<String, Object> systemMessage = new HashMap<>();
+            systemMessage.put("role", "system");
+            systemMessage.put("content", systemPrompt);
 
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("model", model);
-            requestBody.put("messages", List.of(
-                    Map.of("role", "system", "content", "You are a helpful salon service recommendation assistant."),
-                    Map.of("role", "user", "content", prompt)
-            ));
-            requestBody.put("temperature", 0.6);
-            requestBody.put("max_tokens", 600);
+            requestBody.put("messages", List.of(systemMessage, userMessage));
+            requestBody.put("temperature", 0.2);          // low temperature for accuracy
+            requestBody.put("max_tokens", 1500);
+            requestBody.put("response_format", Map.of("type", "json_object"));
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -159,29 +162,83 @@ Keep it short, friendly and clear. Do not use markdown ** or numbers.
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
             ResponseEntity<String> response = restTemplate.exchange(
-                    apiUrl,
-                    HttpMethod.POST,
-                    entity,
-                    String.class
-            );
+                    apiUrl, HttpMethod.POST, entity, String.class);
+
+            log.info("Raw AI response: {}", response.getBody());
 
             JsonNode root = objectMapper.readTree(response.getBody());
-            String reply = root.path("choices").path(0).path("message").path("content").asText();
+            String content = root.path("choices").path(0).path("message").path("content").asText();
 
-            return (reply != null && !reply.isEmpty())
-                    ? reply
-                    : "Sorry, could not generate recommendations right now.";
-
-        } catch (Exception e) {
-            log.error("AI Recommendation FULL error: ", e);
-
-            String msg = e.getMessage() != null ? e.getMessage() : "Unknown error";
-
-            if (msg.contains("model_not_found") || msg.contains("does not exist")) {
-                return "AI model not available. Please change ai.model in application.properties (try llama-3.3-70b-versatile).";
+            if (content == null || content.isBlank()) {
+                throw new RuntimeException("AI returned empty content");
             }
 
-            return "Error: " + msg;
+            JsonNode aiJson = objectMapper.readTree(content);
+
+            List<AiStyleDnaResponseDTO.RecommendedService> recServices = new ArrayList<>();
+            if (aiJson.has("recommendedServiceIds") && aiJson.get("recommendedServiceIds").isArray()) {
+                for (JsonNode idNode : aiJson.get("recommendedServiceIds")) {
+                    Long id = idNode.asLong();
+                    allServices.stream()
+                            .filter(s -> s.getServiceId().equals(id))
+                            .findFirst()
+                            .ifPresent(s -> recServices.add(
+                                    AiStyleDnaResponseDTO.RecommendedService.builder()
+                                            .serviceId(s.getServiceId())
+                                            .serviceName(s.getServiceName())
+                                            .price(s.getPrice())
+                                            .reason("Matches your face shape & skin tone")
+                                            .build()
+                            ));
+                }
+            }
+
+            List<AiStyleDnaResponseDTO.RecommendedProduct> recProducts = new ArrayList<>();
+            if (aiJson.has("recommendedProductIds") && aiJson.get("recommendedProductIds").isArray()) {
+                for (JsonNode idNode : aiJson.get("recommendedProductIds")) {
+                    Long id = idNode.asLong();
+                    allProducts.stream()
+                            .filter(p -> p.getProductId().equals(id))
+                            .findFirst()
+                            .ifPresent(p -> recProducts.add(
+                                    AiStyleDnaResponseDTO.RecommendedProduct.builder()
+                                            .productId(p.getProductId())
+                                            .productName(p.getProductName())
+                                            .price(p.getPrice())
+                                            .reason("Complements the recommended look")
+                                            .build()
+                            ));
+                }
+            }
+
+            double total = recServices.stream().mapToDouble(AiStyleDnaResponseDTO.RecommendedService::getPrice).sum()
+                    + recProducts.stream().mapToDouble(AiStyleDnaResponseDTO.RecommendedProduct::getPrice).sum();
+
+            return AiStyleDnaResponseDTO.builder()
+                    .faceShape(aiJson.path("faceShape").asText("Unknown"))
+                    .skinUndertone(aiJson.path("skinUndertone").asText("Unknown"))
+                    .hairType(aiJson.path("hairType").asText("Unknown"))
+                    .overallLookSummary(aiJson.path("overallLookSummary").asText(""))
+                    .recommendedHairStyles(jsonArrayToList(aiJson.path("recommendedHairStyles")))
+                    .recommendedHairColors(jsonArrayToList(aiJson.path("recommendedHairColors")))
+                    .recommendedServices(recServices)
+                    .recommendedProducts(recProducts)
+                    .packageSuggestion(aiJson.path("packageSuggestion").asText(""))
+                    .estimatedPackagePrice(total)
+                    .confidenceNote(aiJson.path("confidenceNote").asText("Medium"))
+                    .build();
+
+        } catch (Exception e) {
+            log.error("StyleDNA analysis failed", e);
+            throw new RuntimeException("AI analysis failed: " + e.getMessage());
         }
+    }
+
+    private List<String> jsonArrayToList(JsonNode node) {
+        List<String> list = new ArrayList<>();
+        if (node != null && node.isArray()) {
+            node.forEach(n -> list.add(n.asText()));
+        }
+        return list;
     }
 }

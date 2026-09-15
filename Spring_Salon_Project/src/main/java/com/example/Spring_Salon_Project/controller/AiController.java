@@ -1,31 +1,34 @@
 package com.example.Spring_Salon_Project.controller;
 
-import com.example.Spring_Salon_Project.dto.AiChatResponse;
+import com.example.Spring_Salon_Project.dto.AiStyleDnaResponseDTO;
 import com.example.Spring_Salon_Project.dto.CommonResponse;
 import com.example.Spring_Salon_Project.service.AiService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/v1/ai")
+@RequestMapping("/api/ai")
 @RequiredArgsConstructor
 @CrossOrigin
 public class AiController {
 
     private final AiService aiService;
 
-//    @PostMapping(value = "/chat", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public CommonResponse chat(@RequestBody AiChatRequest request) {
-//        String reply = aiService.getChatReply(request.getMessage());
-//        return new CommonResponse(0, new AiChatResponse(reply), "Success");
-//    }
+    @PostMapping("/style-dna")
+    public ResponseEntity<CommonResponse> analyzeStyleDna(
+            @RequestParam("image") MultipartFile image,
+            @RequestParam(value = "customerId", required = false) Long customerId,
+            @RequestParam(value = "preferredStyle", required = false) String preferredStyle) {
 
-    @GetMapping(value = "/recommend-services", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse recommendServices(
-            @RequestParam(value = "customerId", required = false) Long customerId) {
+        AiStyleDnaResponseDTO result = aiService.analyzeStyleDna(image, customerId, preferredStyle);
 
-        String recommendations = aiService.getServiceRecommendations(customerId);
-        return new CommonResponse(0, new AiChatResponse(recommendations), "Recommendations generated successfully");
+        CommonResponse response = new CommonResponse();
+        response.setStatus(200);
+        response.setMessage("StyleDNA analysis completed successfully");
+        response.setBody(result);
+
+        return ResponseEntity.ok(response);
     }
 }
