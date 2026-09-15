@@ -79,41 +79,40 @@ public class AiServiceImpl implements AiService {
                     ? "balanced modern look" : preferredStyle;
 
             String systemPrompt = """
-    You are a face shape classifier. You must follow these steps EXACTLY:
+    You are a professional human face analysis AI for a beauty salon.
     
-    STEP 1: Describe the face proportions first (in your mind):
-    - Is the face longer than it is wide? (yes/no)
-    - Is the jawline soft and rounded or angular and strong?
-    - Is the forehead wider, equal, or narrower than the jaw?
-    - Is the chin pointed, rounded, or square?
+    STRICT RULES - NEVER BREAK THESE:
     
-    STEP 2: Choose face shape using this priority order (DO NOT skip):
-    1. If face is clearly longer than wide → "Oblong"
-    2. If jaw is strong and angular + forehead ≈ jaw width → "Square"
-    3. If forehead is wide + chin is narrow/pointed → "Heart"
-    4. If face is short and wide with full cheeks → "Round"
-    5. If cheekbones are widest part → "Diamond"
-    6. Only if none of the above fit well → "Oval"
+    1. ONLY analyze if there is a clear HUMAN face in the photo.
     
-    *** You are FORBIDDEN from choosing "Oval" unless steps 1-5 clearly do not match. ***
+    2. If the photo contains:
+       - Animals (cat, dog, bird, etc.)
+       - Objects
+       - Cartoon / drawing
+       - Blurry face
+       - No face at all
+       - Multiple people (group photo)
+       - Only body / back of head
+       
+       THEN you MUST return EXACTLY this JSON:
+       {
+         "faceShape": "No clear face detected",
+         "skinUndertone": "Unable to determine",
+         "hairType": "Unable to determine",
+         "overallLookSummary": "No clear human face was detected. Please upload a clear front-facing photo of one person.",
+         "recommendedHairStyles": [],
+         "recommendedHairColors": [],
+         "recommendedServiceIds": [],
+         "recommendedProductIds": [],
+         "packageSuggestion": "Please upload a clear human face photo",
+         "confidenceNote": "Low - Not a human face"
+       }
     
-    STEP 3: Skin undertone - look carefully, do not default to Warm.
+    3. ONLY if a clear single HUMAN face is present:
+       - Analyze face shape, skin undertone and hair type normally.
+       - Never analyze animals or non-human subjects.
     
-    Return ONLY JSON:
-    {
-      "faceShape": "...",
-      "skinUndertone": "...",
-      "hairType": "...",
-      "overallLookSummary": "...",
-      "recommendedHairStyles": [],
-      "recommendedHairColors": [],
-      "recommendedServiceIds": [],
-      "recommendedProductIds": [],
-      "packageSuggestion": "...",
-      "confidenceNote": "..."
-    }
-    
-    Only use IDs from the lists provided.
+    Return ONLY valid JSON. No extra text.
     """;
 
             String userText = """
@@ -125,8 +124,10 @@ public class AiServiceImpl implements AiService {
     
     Customer preferred style: %s
     
-    Analyze the face in the photo. 
-    Do NOT default to Oval. Choose the most accurate face shape from the rules.
+    IMPORTANT:
+    - First check if the photo has a clear HUMAN face.
+    - If it is an animal, object, or no face → return "No clear face detected".
+    - Only analyze real human faces.
     """.formatted(servicesText, productsText, preference);
 
             Map<String, Object> imageUrl = new HashMap<>();
