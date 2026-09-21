@@ -30,8 +30,6 @@ Manage customers, staff, appointments, services, products, suppliers, payments, 
 
 ## Screenshots
 
-> **Note:** Screenshots ටික තවම upload කරලා නැත්නම් පහත images පෙන්නේ නැහැ. පස්සේ upload කරන්න.
-
 ### Login & Sign Up
 ![Login](docs/screenshots/login.png)
 ![Sign Up](docs/screenshots/signup.png)
