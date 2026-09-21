@@ -1,4 +1,4 @@
-# Glow. — Beauty Salon Management System
+# ✂️ Glow. — Beauty Salon Management System
 
 A full-featured beauty salon management system.  
 Manage customers, staff, appointments, services, products, suppliers, payments, notifications, audit logs, and AI-powered style analysis — all from a polished admin portal.
@@ -7,7 +7,7 @@ Manage customers, staff, appointments, services, products, suppliers, payments, 
 
 ---
 
-## Features
+## 🌟 Features
 
 | Module                     | Description                                                                 |
 |----------------------------|-----------------------------------------------------------------------------|
@@ -28,7 +28,7 @@ Manage customers, staff, appointments, services, products, suppliers, payments, 
 
 ---
 
-## Screenshots
+## 🖼️ Screenshots
 
 ### Login & Sign Up
 ![Login](docs/screenshots/login.png)
@@ -69,7 +69,7 @@ Manage customers, staff, appointments, services, products, suppliers, payments, 
 
 ---
 
-## Tech Stack
+## 🛠 Tech Stack
 
 | Layer       | Technology                          |
 |-------------|-------------------------------------|
@@ -85,7 +85,7 @@ Manage customers, staff, appointments, services, products, suppliers, payments, 
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```text
 Spring-Salon-Project/
@@ -107,7 +107,7 @@ Spring-Salon-Project/
 
 ---
 
-## Getting Started
+##  🚀 Getting Started
 
 **Prerequisites**
 - Java 17+
@@ -164,7 +164,7 @@ The app starts at: **http://localhost:8080**
 
 ---
 
-## Authentication
+##  🔐 Authentication
 
 - JWT-based stateless authentication
 - Password hashing with BCrypt
@@ -179,7 +179,7 @@ The app starts at: **http://localhost:8080**
 
 ---
 
-## AI Features
+## 🤖 AI Features
 
 **AI StyleDNA / Chrono Style**
 
@@ -190,7 +190,7 @@ The app starts at: **http://localhost:8080**
 
 ---
 
-## User Roles
+## 👥 User Roles
 
 | Role     | Description                     |
 |----------|---------------------------------|
@@ -200,7 +200,7 @@ The app starts at: **http://localhost:8080**
 
 ---
 
-## Configuration Notes
+## ⚙️ Configuration Notes
 
 - File uploads (product images / face analysis): max 10 MB
 - CORS: enabled for all origins (adjust for production)
@@ -208,14 +208,17 @@ The app starts at: **http://localhost:8080**
 
 ---
 
-## License
+## 📄 License
 
 This project is for educational / portfolio purposes.
 
 ---
 
-## Author
+## 👩‍💻 Author
 
 Built with ❤️ for **Glow. Beauty Salon**.
 
 Feel free to fork, star, and contribute!
+
+---
+Happy coding🚀
